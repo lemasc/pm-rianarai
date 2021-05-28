@@ -2,15 +2,63 @@ html,
 body {
   padding: 0;
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen,
-    Ubuntu, Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+  font-family: 'Kanit', -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu,
+    Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+.creative-font {
+  font-family: 'Kodchasan', -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu,
+    Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+.circle::before {
+  content: '';
+  display: block;
+  width: 180px;
+  height: 180px;
+  position: absolute;
+  background-image: url('./circle.png');
+  background-repeat: no-repeat;
+  background-position: top right;
+  background-size: 100% auto;
+  top: -10px;
+  left: 0;
+  z-index: 0;
+  transform: scaleX(-1) scaleY(-1);
+  filter: opacity(0.6);
 }
 
-* {
+@media (prefers-color-scheme: dark) {
+  .circle::before {
+    filter: invert(1) opacity(0.6);
+  }
+}
+.input {
+  @apply px-2 sm:py-2 py-1 font-light border rounded-md dark:bg-black border-gray-400 hover:ring-2 hover:ring-blue-300 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent;
+}
+.btn {
+  @apply focus:bg-gradient-to-b hover:bg-gradient-to-b py-2 focus:outline-none dark:focus:ring-offset-gray-900 focus:ring-2 focus:ring-offset-4 rounded;
+}
+.zoom-btn {
+  background: #0e72ed;
+  border-radius: 8px;
+  -webkit-box-sizing: border-box;
   box-sizing: border-box;
+  color: #fff;
+  cursor: pointer;
+  display: inline-block;
+  font-size: 16px;
+  line-height: 32px;
+  margin-top: 12px;
+  padding: 8px 40px;
+  text-align: center;
+  zoom: 0.9;
+  font-family: 'Open Sans', 'Helvetica', 'Arial', sans-serif;
+}
+.zoom-btn:focus {
+  background-color: #0c63ce;
+  @apply ring-2 ring-offset-2 ring-zoom-600 outline-none dark:ring-offset-black;
+}
+.zoom-btn:hover {
+
+  background-color: #0c63ce;
 }
