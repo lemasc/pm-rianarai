@@ -1,8 +1,11 @@
-import { Popover, Transition } from '@headlessui/react'
+import { Transition } from '@headlessui/react'
 import { useDocument } from '@nandorojo/swr-firestore'
-import React, { useEffect, useState } from 'react'
+import React, { ReactNodeArray, useEffect, useState } from 'react'
 import { useAuth } from '../shared/authContext'
 import { Meeting, useMeeting } from '../shared/meetingContext'
+import { DocumentDuplicateIcon, ClipboardCheckIcon } from '@heroicons/react/outline'
+import Tippy from '@tippyjs/react'
+import Link from 'next/link'
 
 interface Schedule {
   [days: string]: TimeSlots[]
@@ -11,61 +14,123 @@ interface Schedule {
 interface TimeSlots {
   start: string
   end: string
-  teacher: string
-  code: string
+  teacher: string[]
+  code: string[]
+}
+
+interface TimeSlotsMemory {
+  active: TimeSlots | null
+  next: TimeSlots | null
 }
 
 interface MeetingComponentProps {
-  meeting: Meeting
+  meetings: Meeting[]
   slot?: TimeSlots
+  showNames: boolean
 }
 
 type State = 'active' | 'start' | 'break' | 'end'
 
-const MeetingJoin: React.FC<MeetingComponentProps> = ({ meeting }) => {
-  const { launchMeeting } = useMeeting()
-  const [copy, setCopy] = useState(false)
-  const copyToCp = () => {
-    navigator.clipboard.writeText(meeting.code)
-    setCopy(true)
-  }
+function MeetingNotFound(): JSX.Element {
   return (
     <>
-      <button className="zoom-btn mx-8" onClick={() => launchMeeting(meeting)}>
-        Launch Meetings
+      <h4 className="text-lg font-medium text-red-500 p-4">ไม่พบข้อมูลผู้สอนในรายวิชานี้</h4>
+      <p className="px-4 text-sm sm:w-64 font-light w-full">
+        หากมี Meeting ID หรือรหัสอยู่แล้ว รบกวนเพิ่ม
+        <Link href="/submit_update">
+          <a
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Submit Update"
+            className="font-normal underline text-blue-500 hover:text-blue-600"
+          >
+            ที่นี่
+          </a>
+        </Link>
+      </p>
+      <a
+        href="/about?search=ไม่พบข้อมูล#jump"
+        target="_blank"
+        title="ไม่พบข้อมูล"
+        rel="noopener noreferrer"
+        className="text-sm font-medium underline p-4 text-red-400 hover:text-red-500"
+      >
+        ทำไมจึงเกิดเหตุการณ์นี้ขึ้น?
+      </a>
+    </>
+  )
+}
+
+const MeetingJoin: React.FC<MeetingComponentProps> = ({ showNames, meetings }) => {
+  const { launchMeeting } = useMeeting()
+  const [copy, setCopy] = useState(-1)
+  const copyToCp = (code: string, index: number): void => {
+    navigator.clipboard.writeText(code)
+    setCopy(index)
+  }
+  const buttons: ReactNodeArray = []
+  const passcode: ReactNodeArray = []
+  let noUrls = false
+  meetings.map((meeting, index) => {
+    buttons.push(
+      <button
+        title={'เข้าสู่ห้องเรียน จำเป็นต้องมี Zoom ติดตั้งลงในอุปกรณ์แล้ว'}
+        key={index}
+        className="zoom-btn mx-8"
+        onClick={() => launchMeeting(meeting)}
+      >
+        Launch Meetings {showNames && ' : ' + meeting.name}
       </button>
-      {!meeting.url && (
-        <div className="flex flex-col p-4">
+    )
+    if (meeting.url) {
+      passcode.push(null)
+      return
+    }
+    noUrls = true
+    passcode.push(
+      <div key={index} className="flex flex-row justify-center align-middle p-2">
+        {showNames && <div className="pt-4 px-4 text-sm">{meeting.name} :</div>}
+        <div className="bg-zoom-100 dark:bg-zoom-900 rounded-l-lg text-lg py-2 px-4 border font-mono">
+          {meeting.code}
+        </div>
+        <Tippy
+          visible={copy === index}
+          content="คัดลอกแล้ว"
+          placement="bottom"
+          onShown={() => setTimeout(() => setCopy(-1), 3000)}
+        >
+          <button
+            title="คัดลอกรหัส"
+            onClick={() => copyToCp(meeting.code, index)}
+            className={
+              (copy === index ? 'bg-green-500 text-white' : 'bg-white hover:bg-gray-100') +
+              ' px-4 dark:bg-black dark:hover:bg-gray-900  rounded-r-lg text-sm p-2 border font-light focus:outline-none'
+            }
+          >
+            {copy === index ? (
+              <ClipboardCheckIcon className="h-5 w-5" />
+            ) : (
+              <DocumentDuplicateIcon className="h-5 w-5" />
+            )}
+          </button>
+        </Tippy>
+      </div>
+    )
+  })
+  return (
+    <>
+      {buttons}
+      {noUrls && (
+        <div className="flex flex-col pt-4 mt-4 px-4 border-t border-gray-400">
           <span className="text-sm">หากระบบร้องขอรหัสผ่าน ให้ใช้รหัสผ่านต่อไปนี้</span>
-          <div className="flex flex-row justify-center align-middle p-2">
-            <div className="bg-zoom-100 dark:bg-zoom-900 rounded-l-lg text-lg py-2 px-4 border font-mono">
-              {meeting.code}
-            </div>
-            <button
-              onClick={() => copyToCp()}
-              className="bg-white dark:bg-black dark:hover:bg-gray-900 hover:bg-gray-100 rounded-r-lg text-sm p-2 border font-light focus:outline-none"
-            >
-              คัดลอก
-            </button>
-            <Transition
-              show={copy}
-              enter="ease-out duration-300"
-              enterFrom="opacity-0"
-              enterTo="opacity-100"
-              leave="ease-in duration-200"
-              leaveFrom="opactity-100"
-              leaveTo="opacity-0"
-              className="text-red-500 text-xs py-4 px-2"
-              role="dialog"
-              aria-modal="true"
-              afterEnter={() => {
-                setTimeout(() => setCopy(false), 1000)
-              }}
-            >
-              คัดลอกแล้ว
-            </Transition>
-          </div>
-          <a href="/faq#passcode" title="รหัสผ่าน" className="text-sm underline p-2">
+          {passcode}
+          <a
+            href="/about?search=รหัสผ่าน#jump"
+            target="_blank"
+            title="รหัสผ่าน"
+            rel="noopener noreferrer"
+            className="text-sm underline p-2 text-blue-500 hover:text-blue-600"
+          >
             ทำไมยังต้องใช้รหัสผ่าน?
           </a>
         </div>
@@ -74,61 +139,83 @@ const MeetingJoin: React.FC<MeetingComponentProps> = ({ meeting }) => {
   )
 }
 
-const MeetingInfo: React.FC<MeetingComponentProps> = ({ meeting, slot }) => {
-  return (
-    <>
-      {meeting?.subject} : {slot.code}
-    </>
-  )
+function GenerateTeacherName(teacher: string[]): ReactNodeArray {
+  function getPrefix(t: string): string {
+    if (t.match(/^[a-zA-Z0-9]*$/g)) return 'T.'
+    if (t.indexOf('.') === -1) return 'อ.'
+    return ''
+  }
+  return teacher.map((t, i) => (
+    <span key={i}>
+      {i !== 0 && ' | '}
+      {getPrefix(t)}
+      {t}
+    </span>
+  ))
 }
 
 export default function TimetableComponent(): JSX.Element {
-  const [date, setDate] = useState(new Date())
-  const [active, setActive] = useState<TimeSlots | null>(null)
-  const [state, setState] = useState<State>('active')
-  const [nextActive, setNextActive] = useState<TimeSlots | null>(null)
-  const [curDay, setCurday] = useState<string>('monday')
+  const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
   const { metadata } = useAuth()
   const { getMeetingByName } = useMeeting()
-  const [meeting, setMeeting] = useState(null)
-  const { data, error } = useDocument<Schedule>(`classes/${metadata.class}`, {
+
+  const [date, setDate] = useState(new Date())
+  const [memory, _setMemory] = useState<TimeSlotsMemory>({ active: null, next: null })
+  const [memoryQueue, setQueue] = useState<TimeSlotsMemory>(null)
+  const [show, setShow] = useState(true)
+  const [state, setState] = useState<State>('active')
+  const [curDay, setCurday] = useState<string>('tuesday')
+  const [meeting, setMeeting] = useState<Meeting[]>([])
+  const { data } = useDocument<Schedule>(metadata ? `classes/${metadata.class}` : null, {
     listen: true,
-    onSuccess: (d) => {
-      console.log(d)
-    },
   })
 
-  const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
   useEffect(() => {
     const timerID = setInterval(() => {
       const d = new Date()
       setDate(d)
-      // setCurday(days[d.getDay()])
+      setCurday(days[d.getDay()])
     }, 1000)
     return () => clearInterval(timerID)
   })
+
+  const inTimeRange = (time: string, slot: TimeSlots): boolean => {
+    return time >= slot.start && time <= slot.end
+  }
   useEffect(() => {
+    const setMemory = (state: TimeSlotsMemory): void => {
+      // Compare the previous state and the current state
+      if (state.active === memory.active || memoryQueue !== null) return
+      console.log(state)
+      setQueue(state)
+      setShow(false)
+    }
+    let _isMounted = true
+    if (!_isMounted) return
     if (data && data[curDay]) {
+      //const timeString = '08:30'
       const timeString = date.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })
       const target = data[curDay]
+      // If the time is still in range, don't check anything.
+      if (memory.active !== null && inTimeRange(timeString, memory.active)) return
+      // Out of range, start recheck
       if (timeString < target[0].start) {
         setState('start')
-        setNextActive(target[0])
+        setMemory({ active: null, next: target[0] })
         return
       }
       if (timeString > target[target.length - 1].end) {
         setState('end')
-        setActive(null)
-        setNextActive(null)
+        setMemory({ active: null, next: null })
         return
       }
       for (let i = 0; i < target.length; i++) {
-        if (timeString >= target[i].start && timeString <= target[i].end) {
+        if (inTimeRange(timeString, target[i])) {
           setState('active')
-          setActive(target[i])
-          setMeeting(getMeetingByName(target[i].teacher))
-          if (target[i + 1]) setNextActive(target[i + 1])
-          else setNextActive(null)
+          setMemory({ active: target[i], next: target[i + 1] ? target[i + 1] : null })
+          const mList = []
+          target[i].teacher.map((t) => mList.push(getMeetingByName(t)))
+          setMeeting(mList)
           return
         } else if (
           target[i + 1] &&
@@ -136,14 +223,16 @@ export default function TimetableComponent(): JSX.Element {
           timeString < target[i + 1].start
         ) {
           setState('break')
-          setActive(null)
-          setNextActive(target[i + 1])
+          setMemory({ active: null, next: target[i + 1] })
+          return
         }
       }
-      setActive(null)
-      setNextActive(null)
     }
-  }, [data, date, curDay, getMeetingByName])
+    setMemory({ active: null, next: null })
+    return () => {
+      _isMounted = false
+    }
+  }, [curDay, data, date, getMeetingByName, memory.active, memoryQueue])
   let message = ''
   switch (state) {
     case 'start':
@@ -157,36 +246,63 @@ export default function TimetableComponent(): JSX.Element {
       break
   }
   return (
-    <div className="flex flex-col justify-center items-center">
-      <h4 className="text-gray-900 dark:text-gray-100 py-2">
-        วันที่ {date.toLocaleDateString('th-TH')} เวลา {date.toLocaleTimeString('th-TH')} น.
+    <Transition
+      show={show}
+      appear={true}
+      className="flex flex-col justify-center items-center"
+      enter="transition-opacity duration-500"
+      enterFrom="opacity-0"
+      enterTo="opacity-100"
+      leave="transition-opacity duration-500"
+      leaveFrom="opacity-100"
+      leaveTo="opacity-0"
+      beforeEnter={() => {
+        if (memoryQueue) {
+          _setMemory(memoryQueue)
+          setQueue(null)
+        }
+      }}
+      afterLeave={() => setShow(true)}
+    >
+      <h4 className="text-gray-900 dark:text-gray-100 py-2 creative-font">
+        สวัสดี {metadata?.displayName}
       </h4>
-      {active && meeting ? (
-        <div className="flex flex-col md:grid md:grid-cols-2 sm:divide-x-2">
+      {memory.active && (
+        <div className="flex flex-col sm:grid sm:grid-cols-2 w-full sm:divide-x divide-gray-400">
           <div className="flex flex-col justify-center">
             <div className="text-2xl p-4 text-blue-600 font-medium px-8">
-              <MeetingInfo slot={active} meeting={meeting} />
+              {meeting[0] !== null && meeting[0].subject + ' : '}
+              {memory.active.code.length > 1 && <br />}
+              {memory.active.code.join(' , ')}
             </div>
-            <span className="text-blue-600">สอนโดย อ.{active.teacher}</span>
+            <span className="px-4 text-blue-600">
+              สอนโดย {GenerateTeacherName(memory.active.teacher)}
+            </span>
             <span className="font-light p-2">
-              {active.start} น. - {active.end} น.
+              {memory.active.start} น. - {memory.active.end} น.
             </span>
           </div>
           <div className="flex flex-col justify-center">
-            <MeetingJoin meeting={meeting} />
+            {meeting[0] !== null ? (
+              <MeetingJoin meetings={meeting} showNames={meeting.length != 1} />
+            ) : (
+              <MeetingNotFound />
+            )}
           </div>
         </div>
-      ) : (
+      )}
+      {memory && !memory.active && (
         <>
           <div className="text-2xl p-8 text-green-600 font-medium">ไม่มีคาบเรียนในตอนนี้</div>
-          <span className="text-sm font-light creative-font">{message}</span>
+          <span className="text-sm font-light creative-font px-4 py-1">{message}</span>
         </>
       )}
-      {nextActive && (
-        <span className="mt-4 text-sm border-t w-full pt-4 font-light px-4">
-          รายวิชาต่อไป - {nextActive.code} (อ.{nextActive.teacher}) : {nextActive.start} น.
+      {memory.next && (
+        <span className="mt-4 text-sm border-t-2 border-gray-500 w-full pt-4 font-light px-4">
+          รายวิชาต่อไป - {memory.next.code.join(' , ')} ({GenerateTeacherName(memory.next.teacher)})
+          : {memory.next.start} น.
         </span>
       )}
-    </div>
+    </Transition>
   )
 }

@@ -7,6 +7,7 @@ import Loader from 'react-loader-spinner'
 
 import 'tailwindcss/tailwind.css'
 import '../styles/globals.css'
+import 'tippy.js/dist/tippy.css'
 
 function AuthSpinner(): JSX.Element {
   const auth = useAuth()

@@ -70,7 +70,7 @@ export function useProvideMeeting(): IMeetingContext {
     if (meeting.url && getCodeFromUrl(meeting.url)) {
       code = getCodeFromUrl(meeting.url)
     }
-    dynamicLink('85447473284', 'rvX63s')
+    dynamicLink(meeting.meeting, code)
   }
 
   return {

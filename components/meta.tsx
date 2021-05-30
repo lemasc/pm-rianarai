@@ -1,42 +1,52 @@
+import { useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useAuth, UserMetadata } from '../shared/authContext'
 
-export default function MetadataComponent(): JSX.Element {
-  const auth = useAuth()
+interface MetaProps {
+  onSubmit?: () => void
+}
+
+export default function MetadataComponent({ onSubmit }: MetaProps): JSX.Element {
+  const { updateMeta, metadata, remove, signout } = useAuth()
   const {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = useForm<UserMetadata>()
   const watchClass = watch('class')
-  const onSubmit = async (data): Promise<void> => {
+  const formSubmit = async (data): Promise<void> => {
     const meta = Object.assign({}, data) as UserMetadata
     meta.class = meta.class + '0' + meta.room
     delete meta.room
     try {
-      await auth.updateMeta(meta)
+      await updateMeta(meta)
+      onSubmit && onSubmit()
     } catch (err) {
       alert('ไม่สามารถอัปเดตข้อมูลได้')
     }
   }
-  console.log(errors)
+  const cancel = async (): Promise<void> => {
+    if (metadata) onSubmit && onSubmit()
+    else {
+      if (!(await remove())) {
+        await signout()
+      }
+    }
+  }
+  useEffect(() => {
+    if (metadata === null) return
+    setValue('class', metadata.class.toString().slice(0, 1))
+    setValue('room', metadata.class.toString().slice(2))
+    setValue('displayName', metadata.displayName)
+  }, [metadata, setValue])
   return (
     <>
       <form
         className="flex flex-col px-8 pb-2 gap-2 gap-x-4 sm:grid sm:grid-cols-2"
-        onSubmit={handleSubmit(onSubmit)}
+        onSubmit={handleSubmit(formSubmit)}
       >
-        <label htmlFor="id" className="p-1 sm:p-2 sm:text-left">
-          รหัสประจำตัวนักเรียน :
-        </label>
-        <input
-          name="id"
-          className="input text-center sm:text-left"
-          type="number"
-          inputMode="numeric"
-          {...register('id', { required: true, maxLength: 5, minLength: 5 })}
-        />
         <label htmlFor="class" className="p-1 sm:p-2 sm:text-left">
           ห้องเรียน :
         </label>
@@ -64,13 +74,13 @@ export default function MetadataComponent(): JSX.Element {
             })}
           />
         </div>
-        <label htmlFor="name" className="p-1 sm:p-2 sm:text-left">
-          อยากให้เราเรียกคุณว่าอะไร :
-        </label>
-        <input
+        <div className="p-1 sm:p-2 sm:text-left flex flex-col align-middle">
+          <label htmlFor="name">อยากให้เราเรียกคุณว่าอะไร? </label>
+          <span className="text-gray-400 text-xs py-2">ใส่อิโมจิหรือภาษาอื่น ๆ ลงก็ได้นะ</span>
+        </div>
+        <textarea
           name="displayName"
-          className="input text-center sm:text-left"
-          type="string"
+          className="input text-center sm:text-left text-sm"
           {...register('displayName', { required: true })}
         />
         <button
@@ -81,7 +91,7 @@ export default function MetadataComponent(): JSX.Element {
         </button>
         <button
           type="reset"
-          onClick={async () => await auth.remove()}
+          onClick={() => cancel()}
           className="sm:mt-4 btn ring-gray-300 text-black bg-gray-300 from-gray-300 to-gray-400"
         >
           ยกเลิก

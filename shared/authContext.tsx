@@ -2,13 +2,14 @@ import { useState, useEffect, useContext, createContext } from 'react'
 import { auth, UserData, db } from './firebase'
 
 export interface UserMetadata {
-  id: number
   class: number | string
-  room?: number
+  room?: number | string
   name: string
   displayName: string
   email: string
+  provider: Provider[]
 }
+type Provider = 'facebook.com' | 'google.com'
 
 interface IAuthContext {
   getToken: () => Promise<string | null>
@@ -56,6 +57,7 @@ export function useProvideAuth(): IAuthContext {
     try {
       meta.name = user.displayName
       meta.email = user.email
+      meta.provider = user.providerData.map((p) => p.providerId) as Provider[]
       await db.collection('users').doc(user.uid).set(meta)
       setMetadata(meta)
       return true
@@ -65,14 +67,16 @@ export function useProvideAuth(): IAuthContext {
   }
   useEffect(() => {
     let _isMounted = true
+    let authReady = null
     return auth.onIdTokenChanged(async (user) => {
       if (!_isMounted) return
-      setReady(true)
+      if (authReady) clearInterval(authReady)
+      authReady = setInterval(() => setReady(true), 500)
       if (user) {
         console.log('Effect user on:', user)
         setUser(user)
         // Check if user metadata exists.
-        console.log(user.uid)
+        console.log(user.providerData)
         const meta = await db.collection('users').doc(user.uid).get()
         if (meta.exists) {
           setMetadata(meta.data() as UserMetadata)

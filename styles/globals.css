@@ -9,6 +9,21 @@ body {
   font-family: 'Kodchasan', -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu,
     Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
+.sarabun-font {
+  font-family: "Sarabun", -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu,
+  Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+.kanit-font {
+  font-family: 'Kanit', -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu,
+    Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
+
+.background-default {
+  background-image: url("./default.jpg"); 
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+}
 
 .circle::before {
   content: '';
@@ -59,6 +74,5 @@ body {
   @apply ring-2 ring-offset-2 ring-zoom-600 outline-none dark:ring-offset-black;
 }
 .zoom-btn:hover {
-
   background-color: #0c63ce;
 }
