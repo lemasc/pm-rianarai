@@ -4,6 +4,7 @@ import { MainProvider } from '../shared'
 import { useAuth } from '../shared/authContext'
 import { Transition } from '@headlessui/react'
 import Loader from 'react-loader-spinner'
+import LogRocket from 'logrocket'
 
 import 'tailwindcss/tailwind.css'
 import '../styles/globals.css'
@@ -40,6 +41,7 @@ function AuthSpinner(): JSX.Element {
   )
 }
 function App({ Component, pageProps }: AppProps): JSX.Element {
+  if (process.env.NODE_ENV === 'production') LogRocket.init('sg61xt/pm-rianarai-i4kpt')
   return (
     <MainProvider>
       <AuthSpinner />

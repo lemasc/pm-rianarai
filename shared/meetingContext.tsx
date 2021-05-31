@@ -1,4 +1,5 @@
 import { Document, useCollection } from '@nandorojo/swr-firestore'
+import LogRocket from 'logrocket'
 import { createContext, useContext } from 'react'
 import { useAuth } from './authContext'
 
@@ -8,6 +9,7 @@ export interface Meeting {
   name: string
   subject: string
   url?: string
+  meet?: boolean
 }
 export interface IMeetingContext {
   error: boolean
@@ -59,6 +61,7 @@ export function useProvideMeeting(): IMeetingContext {
   const dynamicLink = (meeting: string, code: string): void => {
     const params = new URLSearchParams({ confno: meeting, pwd: code })
     const host = isMobile() ? 'zoomus://zoom.us/join?' : 'zoommtg://zoom.us/join?'
+    LogRocket.log('Dynamic Link', { meeting, code, isMobile: isMobile() })
     window.location.replace(host + params.toString())
   }
   /**

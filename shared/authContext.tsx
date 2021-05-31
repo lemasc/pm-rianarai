@@ -1,3 +1,4 @@
+import LogRocket from 'logrocket'
 import { useState, useEffect, useContext, createContext } from 'react'
 import { auth, UserData, db } from './firebase'
 
@@ -42,7 +43,6 @@ export function useProvideAuth(): IAuthContext {
       await user.delete()
       return true
     } catch (err) {
-      console.log(err.code)
       if (err.code === 'auth/requires-recent-login') {
         await signout()
         return true
@@ -59,6 +59,7 @@ export function useProvideAuth(): IAuthContext {
       meta.email = user.email
       meta.provider = user.providerData.map((p) => p.providerId) as Provider[]
       await db.collection('users').doc(user.uid).set(meta)
+      LogRocket.log('Metadata update', meta)
       setMetadata(meta)
       return true
     } catch (err) {
@@ -73,10 +74,12 @@ export function useProvideAuth(): IAuthContext {
       if (authReady) clearInterval(authReady)
       authReady = setInterval(() => setReady(true), 500)
       if (user) {
-        console.log('Effect user on:', user)
         setUser(user)
         // Check if user metadata exists.
-        console.log(user.providerData)
+        LogRocket.identify(user.uid, {
+          name: user.displayName,
+          email: user.email,
+        })
         const meta = await db.collection('users').doc(user.uid).get()
         if (meta.exists) {
           setMetadata(meta.data() as UserMetadata)
@@ -84,7 +87,6 @@ export function useProvideAuth(): IAuthContext {
           setMetadata(null)
         }
       } else {
-        console.log('Effect user off')
         setUser(null)
         setMetadata(null)
       }

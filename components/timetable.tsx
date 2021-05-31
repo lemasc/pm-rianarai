@@ -6,6 +6,7 @@ import { Meeting, useMeeting } from '../shared/meetingContext'
 import { DocumentDuplicateIcon, ClipboardCheckIcon } from '@heroicons/react/outline'
 import Tippy from '@tippyjs/react'
 import Link from 'next/link'
+import LogRocket from 'logrocket'
 
 interface Schedule {
   [days: string]: TimeSlots[]
@@ -35,28 +36,26 @@ function MeetingNotFound(): JSX.Element {
   return (
     <>
       <h4 className="text-lg font-medium text-red-500 p-4">ไม่พบข้อมูลผู้สอนในรายวิชานี้</h4>
-      <p className="px-4 text-sm sm:w-64 font-light w-full">
-        หากมี Meeting ID หรือรหัสอยู่แล้ว รบกวนเพิ่ม
-        <Link href="/submit_update">
+      <div className="text-sm">
+        นี่อาจเกิดจาก
+        <br />
+        <ul className="py-2 font-light block">
+          <li className="px-16">รายวิชานี้ไม่ได้เรียนในระบบ Zoom</li>
+          <li className="px-16">ยังไม่มีข้อมูลผู้สอนของรายวิชานี้</li>
+          <li className="px-16">พิมพ์ตกหล่นทำให้ระบบหาข้อมูลไม่เจอ</li>
+        </ul>
+        หากคิดว่านี้เป็นข้อผิดพลาด กรุณา{' '}
+        <Link href="/support">
           <a
             target="_blank"
             rel="noopener noreferrer"
-            title="Submit Update"
+            title="Support"
             className="font-normal underline text-blue-500 hover:text-blue-600"
           >
-            ที่นี่
+            แจ้งปัญหาการใช้งาน
           </a>
         </Link>
-      </p>
-      <a
-        href="/about?search=ไม่พบข้อมูล#jump"
-        target="_blank"
-        title="ไม่พบข้อมูล"
-        rel="noopener noreferrer"
-        className="text-sm font-medium underline p-4 text-red-400 hover:text-red-500"
-      >
-        ทำไมจึงเกิดเหตุการณ์นี้ขึ้น?
-      </a>
+      </div>
     </>
   )
 }
@@ -88,7 +87,7 @@ const MeetingJoin: React.FC<MeetingComponentProps> = ({ showNames, meetings }) =
     }
     noUrls = true
     passcode.push(
-      <div key={index} className="flex flex-row justify-center align-middle p-2">
+      <div key={index} className="flex flex-row justify-center align-middle">
         {showNames && <div className="pt-4 px-4 text-sm">{meeting.name} :</div>}
         <div className="bg-zoom-100 dark:bg-zoom-900 rounded-l-lg text-lg py-2 px-4 border font-mono">
           {meeting.code}
@@ -122,8 +121,8 @@ const MeetingJoin: React.FC<MeetingComponentProps> = ({ showNames, meetings }) =
       {buttons}
       {noUrls && (
         <div className="flex flex-col pt-4 mt-4 px-4 border-t border-gray-400">
-          <span className="text-sm">หากระบบร้องขอรหัสผ่าน ให้ใช้รหัสผ่านต่อไปนี้</span>
-          {passcode}
+          <span className="text-sm py-1">หากระบบร้องขอรหัสผ่าน ให้ใช้รหัสผ่านต่อไปนี้</span>
+          <div className="flex flex-col space-y-1">{passcode}</div>
           <a
             href="/about?search=รหัสผ่าน#jump"
             target="_blank"
@@ -186,14 +185,14 @@ export default function TimetableComponent(): JSX.Element {
     const setMemory = (state: TimeSlotsMemory): void => {
       // Compare the previous state and the current state
       if (state.active === memory.active || memoryQueue !== null) return
-      console.log(state)
       setQueue(state)
+      LogRocket.log('Set Memory', state)
       setShow(false)
     }
     let _isMounted = true
     if (!_isMounted) return
     if (data && data[curDay]) {
-      //const timeString = '08:30'
+      //const timeString = '10:31'
       const timeString = date.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })
       const target = data[curDay]
       // If the time is still in range, don't check anything.
@@ -213,9 +212,13 @@ export default function TimetableComponent(): JSX.Element {
         if (inTimeRange(timeString, target[i])) {
           setState('active')
           setMemory({ active: target[i], next: target[i + 1] ? target[i + 1] : null })
-          const mList = []
-          target[i].teacher.map((t) => mList.push(getMeetingByName(t)))
-          setMeeting(mList)
+          if (target[i].teacher.length === 0) {
+            setMeeting([null])
+          } else {
+            const mList = []
+            target[i].teacher.map((t) => mList.push(getMeetingByName(t)))
+            setMeeting(mList)
+          }
           return
         } else if (
           target[i + 1] &&
@@ -275,18 +278,20 @@ export default function TimetableComponent(): JSX.Element {
               {memory.active.code.length > 1 && <br />}
               {memory.active.code.join(' , ')}
             </div>
-            <span className="px-4 text-blue-600">
-              สอนโดย {GenerateTeacherName(memory.active.teacher)}
-            </span>
+            {memory.active.teacher.length > 0 && (
+              <span className="px-4 text-blue-600">
+                สอนโดย {GenerateTeacherName(memory.active.teacher)}
+              </span>
+            )}
             <span className="font-light p-2">
               {memory.active.start} น. - {memory.active.end} น.
             </span>
           </div>
           <div className="flex flex-col justify-center">
-            {meeting[0] !== null ? (
-              <MeetingJoin meetings={meeting} showNames={meeting.length != 1} />
-            ) : (
+            {meeting[0] === null || meeting[0].meet ? (
               <MeetingNotFound />
+            ) : (
+              <MeetingJoin meetings={meeting} showNames={meeting.length != 1} />
             )}
           </div>
         </div>
