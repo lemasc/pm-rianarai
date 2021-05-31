@@ -19,7 +19,7 @@ export default function SubmitUpdate(): JSX.Element {
   return (
     <div className="circle min-h-screen flex flex-col items-center justify-center dark:bg-gray-900 dark:text-white">
       <Head>
-        <title>Redirect : PM-Rianarai</title>
+        <title>Redirect : PM-RianArai</title>
       </Head>
 
       <main className="flex flex-1 flex-col w-full items-center justify-center">

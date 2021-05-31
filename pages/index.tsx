@@ -86,7 +86,7 @@ export default function MainPage(): JSX.Element {
   return (
     <div className="background-default overflow-hidden text-white min-h-screen flex flex-col items-center justify-center dark:bg-gray-900 dark:text-white">
       <Head>
-        <title>PM-Rianarai</title>
+        <title>PM-RianArai</title>
         <meta name="description" content="เข้าเรียนทุกวิชาได้จากที่เดียว" />
         <meta property="og:url" content="https://pm-rianarai.vercel.app" />
         <meta property="og:title" content="PM Rianarai - เรียนอะไร" />

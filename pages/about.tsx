@@ -72,7 +72,10 @@ export default function MainPage({
   return (
     <div className="circle min-h-screen flex flex-col items-center justify-center dark:bg-gray-900 dark:text-white">
       <Head>
-        <title>About : PM-Rianarai</title>
+        <title>About : PM-RianArai</title>
+        <meta property="og:url" content="https://pm-rianarai.vercel.app/about" />
+        <meta property="og:title" content="เกี่ยวกับ PM-RianArai" />
+        <meta property="og:description" content="เข้าเรียนทุกวิชาได้จากทีนี่ที่เดียว" />
       </Head>
 
       <main className="flex flex-1 flex-col w-full items-center justify-center">

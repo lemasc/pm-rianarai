@@ -27,6 +27,10 @@ class MyDocument extends Document {
           <link rel="manifest" href="/site.webmanifest" />
           <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#fb6236" />
           <meta name="theme-color" content="#ffffff" />
+          <meta property="og:image" content="https://pm-rianarai.vercel.app/banner_3105.jpg" />
+          <meta property="og:image:width" content="1200" />
+          <meta property="og:image:height" content="628" />
+          <meta name="twitter:card" content="summary_large_image" />
         </Head>
         <body>
           <Main />
