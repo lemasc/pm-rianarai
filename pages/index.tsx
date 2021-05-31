@@ -88,7 +88,9 @@ export default function MainPage(): JSX.Element {
       <Head>
         <title>PM-Rianarai</title>
         <meta name="description" content="เข้าเรียนทุกวิชาได้จากที่เดียว" />
-        <link rel="icon" href="/favicon.ico" />
+        <meta property="og:url" content="https://pm-rianarai.vercel.app" />
+        <meta property="og:title" content="PM Rianarai - เรียนอะไร" />
+        <meta property="og:description" content="เข้าเรียนทุกวิชาได้จากทีนี่ที่เดียว" />
       </Head>
       <div className="p-6 opacity-50 hidden sm:block absolute top-0 left-0 creative-font text-2xl">
         {date.toLocaleTimeString('th-TH')}

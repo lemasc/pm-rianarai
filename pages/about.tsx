@@ -73,7 +73,6 @@ export default function MainPage({
     <div className="circle min-h-screen flex flex-col items-center justify-center dark:bg-gray-900 dark:text-white">
       <Head>
         <title>About : PM-Rianarai</title>
-        <link rel="icon" href="/favicon.ico" />
       </Head>
 
       <main className="flex flex-1 flex-col w-full items-center justify-center">
