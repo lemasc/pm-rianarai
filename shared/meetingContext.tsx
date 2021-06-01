@@ -14,7 +14,7 @@ export interface Meeting {
 export interface IMeetingContext {
   error: boolean
   data: Document<Meeting>[]
-  getMeetingByName: (name: string) => Document<Meeting>[] | null
+  getMeetingByName: (name: string) => Document<Meeting>[]
   launchMeeting: (meeting: Meeting) => void
 }
 
@@ -40,7 +40,7 @@ export function useProvideMeeting(): IMeetingContext {
   const getMeetingByName = (name: string): Document<Meeting>[] | null => {
     if (!data) return null
     const result = data.filter((d) => d.name.includes(name))
-    if (result.length == 0) return null
+    if (result.length == 0) return [null]
     return result
   }
   /**
