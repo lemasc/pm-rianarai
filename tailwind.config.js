@@ -1,5 +1,5 @@
 module.exports = {
-  mode: "jit",
+  mode: 'jit',
   purge: ['./pages/**/*.{js,ts,jsx,tsx}', './components/**/*.{js,ts,jsx,tsx}'],
   darkMode: 'media', // or 'media' or 'class'
   theme: {
@@ -62,9 +62,9 @@ module.exports = {
   },
   variants: {
     extend: {
-      ringWidth: ["hover"],
-      ringColor: ["hover"]
-    }
+      ringWidth: ['hover'],
+      ringColor: ['hover'],
+    },
   },
   plugins: [],
 }

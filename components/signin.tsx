@@ -10,12 +10,27 @@ export default function SignInComponent(): JSX.Element {
     signInOptions: [
       firebase.auth.GoogleAuthProvider.PROVIDER_ID,
       firebase.auth.FacebookAuthProvider.PROVIDER_ID,
-      firebase.auth.EmailAuthProvider.PROVIDER_ID,
+      {
+        provider: firebase.auth.EmailAuthProvider.PROVIDER_ID,
+        requireDisplayName: false,
+      },
     ],
     callbacks: {
       // Avoid redirects after sign-in.
       signInSuccessWithAuthResult: () => false,
     },
   }
-  return <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={auth} />
+  return (
+    <div className="px-4">
+      <StyledFirebaseAuth
+        uiConfig={uiConfig}
+        firebaseAuth={auth}
+        uiCallback={(ui) => {
+          if (ui.isPendingRedirect()) {
+            ui.start('#firebaseui-auth-container', uiConfig)
+          }
+        }}
+      />
+    </div>
+  )
 }

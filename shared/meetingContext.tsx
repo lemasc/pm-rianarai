@@ -14,7 +14,7 @@ export interface Meeting {
 export interface IMeetingContext {
   error: boolean
   data: Document<Meeting>[]
-  getMeetingByName: (name: string) => Document<Meeting> | null
+  getMeetingByName: (name: string) => Document<Meeting>[] | null
   launchMeeting: (meeting: Meeting) => void
 }
 
@@ -37,11 +37,11 @@ export function useProvideMeeting(): IMeetingContext {
    * @param name Teacher Name
    * @returns First meeting data that matches
    */
-  const getMeetingByName = (name: string): Document<Meeting> | null => {
+  const getMeetingByName = (name: string): Document<Meeting>[] | null => {
     if (!data) return null
-    const result = data.filter((d) => d.name == name)
+    const result = data.filter((d) => d.name.includes(name))
     if (result.length == 0) return null
-    return result[0]
+    return result
   }
   /**
    * Get the encoded meeting passcode from Zoom Instant Meetings URL

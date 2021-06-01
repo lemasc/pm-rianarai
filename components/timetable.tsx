@@ -183,14 +183,14 @@ export default function TimetableComponent(): JSX.Element {
     return Array(+(zero > 0 && zero)).join('0') + num
   }
 
-  function getActualStartTime(t: TimeSlots): string {
-    return t.start.slice(0, 2) + ':' + zeroPad(parseInt(t.start.slice(3)) - 5, 2)
-  }
-
-  const inTimeRange = (time: string, slot: TimeSlots): boolean => {
-    return time >= getActualStartTime(slot) && time <= slot.end
-  }
   useEffect(() => {
+    function getActualStartTime(t: TimeSlots): string {
+      return t.start.slice(0, 2) + ':' + zeroPad(parseInt(t.start.slice(3)) - 5, 2)
+    }
+
+    const inTimeRange = (time: string, slot: TimeSlots): boolean => {
+      return time >= getActualStartTime(slot) && time <= slot.end
+    }
     const setMemory = (state: TimeSlotsMemory): void => {
       // Compare the previous state and the current state
       if (state.active === memory.active || memoryQueue !== null) return
@@ -224,8 +224,10 @@ export default function TimetableComponent(): JSX.Element {
           if (target[i].teacher.length === 0) {
             setMeeting([null])
           } else {
-            const mList = []
-            target[i].teacher.map((t) => mList.push(getMeetingByName(t)))
+            let mList = []
+            target[i].teacher.map((t) => {
+              mList = [...mList, ...getMeetingByName(t)]
+            })
             setMeeting(mList)
           }
           return
