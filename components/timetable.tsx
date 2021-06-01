@@ -178,8 +178,17 @@ export default function TimetableComponent(): JSX.Element {
     return () => clearInterval(timerID)
   })
 
+  function zeroPad(num, places): string {
+    const zero = places - num.toString().length + 1
+    return Array(+(zero > 0 && zero)).join('0') + num
+  }
+
+  function getActualStartTime(t: TimeSlots): string {
+    return t.start.slice(0, 2) + ':' + zeroPad(parseInt(t.start.slice(3)) - 5, 2)
+  }
+
   const inTimeRange = (time: string, slot: TimeSlots): boolean => {
-    return time >= slot.start && time <= slot.end
+    return time >= getActualStartTime(slot) && time <= slot.end
   }
   useEffect(() => {
     const setMemory = (state: TimeSlotsMemory): void => {
@@ -192,13 +201,13 @@ export default function TimetableComponent(): JSX.Element {
     let _isMounted = true
     if (!_isMounted) return
     if (data && data[curDay]) {
-      //const timeString = '10:31'
+      //const timeString = '10:25'
       const timeString = date.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })
       const target = data[curDay]
       // If the time is still in range, don't check anything.
       if (memory.active !== null && inTimeRange(timeString, memory.active)) return
       // Out of range, start recheck
-      if (timeString < target[0].start) {
+      if (timeString < getActualStartTime(target[0])) {
         setState('start')
         setMemory({ active: null, next: target[0] })
         return
@@ -223,7 +232,7 @@ export default function TimetableComponent(): JSX.Element {
         } else if (
           target[i + 1] &&
           timeString > target[i].end &&
-          timeString < target[i + 1].start
+          timeString < getActualStartTime(target[i + 1])
         ) {
           setState('break')
           setMemory({ active: null, next: target[i + 1] })
