@@ -5,7 +5,6 @@ import { Transition } from '@headlessui/react'
 import { LogoutIcon, CogIcon, XIcon } from '@heroicons/react/outline'
 import dynamic from 'next/dynamic'
 import HeaderComponent from '../components/header'
-import Link from 'next/link'
 import LogRocket from 'logrocket'
 
 const SignInComponent = dynamic(() => import('../components/signin'))
@@ -186,7 +185,11 @@ export default function MainPage(): JSX.Element {
           leaveTo="opacity-0"
           className="mb-8 text-sm sm:flex-row flex-col flex items-center justify-center space-y-2 sm:space-y-0 sm:space-x-4 p-4 bg-gradient-to-r from-purple-500 to-purple-700 text-white rounded shadow-md"
         >
-          <button onClick={() => dismissPWA()} className="focus:outline-none block sm:hidden">
+          <button
+            name="close"
+            onClick={() => dismissPWA()}
+            className="focus:outline-none block sm:hidden"
+          >
             <XIcon className="w-5 h-5" />
           </button>
           <h2 className="text-lg">รู้มั้ย?</h2>
@@ -200,17 +203,20 @@ export default function MainPage(): JSX.Element {
           >
             ติดตั้งเลย
           </button>
-          <Link href="/install">
-            <a
-              id="pwamore"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-normal underline"
-            >
-              เรียนรู้เพิ่มเติม
-            </a>
-          </Link>
-          <button onClick={() => dismissPWA()} className="focus:outline-none hidden sm:block">
+          <a
+            href="/install"
+            id="pwamore"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-normal underline"
+          >
+            เรียนรู้เพิ่มเติม
+          </a>
+          <button
+            name="close"
+            onClick={() => dismissPWA()}
+            className="focus:outline-none hidden sm:block"
+          >
             <XIcon className="w-5 h-5" />
           </button>
         </Transition>
@@ -218,16 +224,22 @@ export default function MainPage(): JSX.Element {
 
       <footer className="bg-white bg-opacity-30 text-black text-sm gap-2 flex flex-col justify-center items-center w-full p-8 border-t">
         <div className="flex flex-row justify-center text-center items-center w-full space-x-4">
-          <Link href="/about">
-            <a target="_blank" rel="noopener noreferrer" className="font-normal underline">
-              เกี่ยวกับเว็บไซต์นี้
-            </a>
-          </Link>
-          <Link href="/support">
-            <a target="_blank" rel="noopener noreferrer" className="font-normal underline">
-              แจ้งปัญหาการใช้งาน / ติดต่อ
-            </a>
-          </Link>
+          <a
+            href="/about"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-normal underline"
+          >
+            เกี่ยวกับเว็บไซต์นี้
+          </a>
+          <a
+            href="/support"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="font-normal underline"
+          >
+            แจ้งปัญหาการใช้งาน / ติดต่อ
+          </a>
         </div>
 
         <span className="text-gray-800">Producted By Lemasc</span>

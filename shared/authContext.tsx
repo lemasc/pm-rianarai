@@ -71,10 +71,9 @@ export function useProvideAuth(): IAuthContext {
     let authReady = null
     return auth.onIdTokenChanged(async (user) => {
       if (!_isMounted) return
-      if (authReady) clearInterval(authReady)
-      authReady = setInterval(() => setReady(true), 500)
+      if (authReady) clearTimeout(authReady)
       if (user) {
-        setUser(user)
+        authReady = setTimeout(() => setReady(false), 1000)
         // Check if user metadata exists.
         LogRocket.identify(user.uid, {
           name: user.displayName,
@@ -86,7 +85,11 @@ export function useProvideAuth(): IAuthContext {
         } else {
           setMetadata(null)
         }
+        setUser(user)
+        clearTimeout(authReady)
+        setReady(true)
       } else {
+        authReady = setTimeout(() => setReady(true), 1000)
         setUser(null)
         setMetadata(null)
       }

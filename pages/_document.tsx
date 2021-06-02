@@ -9,7 +9,7 @@ class MyDocument extends Document {
 
   render(): JSX.Element {
     return (
-      <Html>
+      <Html lang="th">
         <Head>
           <link rel="preconnect" href="https://fonts.gstatic.com" />
           <link
