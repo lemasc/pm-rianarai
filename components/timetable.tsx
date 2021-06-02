@@ -247,7 +247,7 @@ export default function TimetableComponent(): JSX.Element {
     return () => {
       _isMounted = false
     }
-  }, [curDay, data, date, getMeetingByName, memory.active, memoryQueue])
+  }, [curDay, data, date, getMeetingByName, memory, memoryQueue])
   let message = ''
   switch (state) {
     case 'start':
