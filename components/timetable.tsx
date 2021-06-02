@@ -30,7 +30,7 @@ interface MeetingComponentProps {
   showNames: boolean
 }
 
-type State = 'active' | 'start' | 'break' | 'end'
+type State = 'active' | 'start' | 'break' | 'end' | ''
 
 function MeetingNotFound(): JSX.Element {
   return (
@@ -162,7 +162,7 @@ export default function TimetableComponent(): JSX.Element {
   const [memory, _setMemory] = useState<TimeSlotsMemory>({ active: null, next: null })
   const [memoryQueue, setQueue] = useState<TimeSlotsMemory>(null)
   const [show, setShow] = useState(true)
-  const [state, setState] = useState<State>('active')
+  const [state, setState] = useState<State>('')
   const [curDay, setCurday] = useState<string>('sunday')
   const [meeting, setMeeting] = useState<Meeting[]>([])
   const { data } = useDocument<Schedule>(metadata ? `classes/${metadata.class}` : null, {
@@ -193,7 +193,8 @@ export default function TimetableComponent(): JSX.Element {
     }
     const setMemory = (state: TimeSlotsMemory): void => {
       // Compare the previous state and the current state
-      if (state.active === memory.active || memoryQueue !== null) return
+      if ((state.active === memory.active && state.next === memory.next) || memoryQueue !== null)
+        return
       setQueue(state)
       LogRocket.log('Set Memory', state)
       setShow(false)
@@ -201,8 +202,8 @@ export default function TimetableComponent(): JSX.Element {
     let _isMounted = true
     if (!_isMounted) return
     if (data && data[curDay]) {
-      //const timeString = '13:00'
-      const timeString = date.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })
+      const timeString = '12:11'
+      //const timeString = date.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })
       const target = data[curDay]
       // If the time is still in range, don't check anything.
       if (memory.active !== null && inTimeRange(timeString, memory.active)) return
@@ -281,7 +282,12 @@ export default function TimetableComponent(): JSX.Element {
       <h4 className="text-gray-900 dark:text-gray-100 py-2 creative-font">
         สวัสดี {metadata?.displayName}
       </h4>
-      {memory.active && (
+      {state == '' && (
+        <div className="flex flex-col px-4">
+          <h3 className="text-2xl p-4 text-blue-600 font-medium px-8">กำลังโหลด...</h3>
+        </div>
+      )}
+      {memory.active && state != '' && (
         <div className="flex flex-col sm:grid sm:grid-cols-2 w-full sm:divide-x divide-gray-400">
           <div className="flex flex-col justify-center">
             <div className="text-2xl p-4 text-blue-600 font-medium px-8">
@@ -307,13 +313,13 @@ export default function TimetableComponent(): JSX.Element {
           </div>
         </div>
       )}
-      {memory && !memory.active && (
+      {memory && !memory.active && state != '' && (
         <>
           <div className="text-2xl p-8 text-green-600 font-medium">ไม่มีคาบเรียนในตอนนี้</div>
           <span className="text-sm font-light creative-font px-4 py-1">{message}</span>
         </>
       )}
-      {memory.next && (
+      {memory.next && state != '' && (
         <span className="mt-4 text-sm border-t-2 border-gray-500 w-full pt-4 font-light px-4">
           รายวิชาต่อไป - {memory.next.code.join(' , ')} ({GenerateTeacherName(memory.next.teacher)})
           : {memory.next.start} น.

@@ -76,6 +76,13 @@ export default function MainPage(): JSX.Element {
     return () => window.removeEventListener('beforeinstallprompt', pwa)
   })
   useEffect(() => {
+    const appInstalled = (evt) => {
+      console.log('a2hs installed')
+    }
+    window.addEventListener('appinstalled', appInstalled)
+    return () => window.removeEventListener('appinstalled', appInstalled)
+  })
+  useEffect(() => {
     const isInWebAppiOS = (window.navigator as any).standalone === true
     const isInWebAppChrome = window.matchMedia('(display-mode: standalone)').matches
     if (isInWebAppChrome || isInWebAppiOS) {
