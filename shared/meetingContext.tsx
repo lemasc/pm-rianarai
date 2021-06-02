@@ -61,7 +61,7 @@ export function useProvideMeeting(): IMeetingContext {
   const dynamicLink = (meeting: string, code: string): void => {
     const params = new URLSearchParams({ confno: meeting, pwd: code })
     const host = isMobile() ? 'zoomus://zoom.us/join?' : 'zoommtg://zoom.us/join?'
-    LogRocket.log('Dynamic Link', { meeting, code, isMobile: isMobile() })
+    LogRocket.track('Launch Meeting')
     window.location.replace(host + params.toString())
   }
   /**

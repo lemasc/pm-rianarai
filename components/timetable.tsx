@@ -173,7 +173,7 @@ export default function TimetableComponent(): JSX.Element {
     const timerID = setInterval(() => {
       const d = new Date()
       setDate(d)
-      setCurday(days[d.getDay()])
+      //setCurday(days[d.getDay()])
     }, 1000)
     return () => clearInterval(timerID)
   })

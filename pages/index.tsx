@@ -5,7 +5,6 @@ import { Transition } from '@headlessui/react'
 import { LogoutIcon, CogIcon, XIcon } from '@heroicons/react/outline'
 import dynamic from 'next/dynamic'
 import HeaderComponent from '../components/header'
-import LogRocket from 'logrocket'
 
 const SignInComponent = dynamic(() => import('../components/signin'))
 const MetaDataComponent = dynamic(() => import('../components/meta'))
@@ -76,17 +75,7 @@ export default function MainPage(): JSX.Element {
     return () => window.removeEventListener('beforeinstallprompt', pwa)
   })
   useEffect(() => {
-    const appInstalled = (evt) => {
-      console.log('a2hs installed')
-    }
-    window.addEventListener('appinstalled', appInstalled)
-    return () => window.removeEventListener('appinstalled', appInstalled)
-  })
-  useEffect(() => {
-    const isInWebAppiOS = (window.navigator as any).standalone === true
-    const isInWebAppChrome = window.matchMedia('(display-mode: standalone)').matches
-    if (isInWebAppChrome || isInWebAppiOS) {
-      LogRocket.log('Detected PWA mode for this session')
+    if (auth.isPWA()) {
       showPromo(false)
     } else if (!localStorage.getItem('pwaPrompt')) {
       // Prompt user for app install
@@ -100,10 +89,11 @@ export default function MainPage(): JSX.Element {
         setTimeout(() => showPromo(true), 2000)
       }
     }
-  }, [])
+  }, [auth])
 
   function installPWA(): void {
     if (prompt !== null) {
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ;(prompt as any).prompt()
     } else {
       // iOS devices doesn't support native prompt

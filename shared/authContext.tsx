@@ -13,6 +13,7 @@ export interface UserMetadata {
 type Provider = 'facebook.com' | 'google.com'
 
 interface IAuthContext {
+  isPWA: () => boolean
   getToken: () => Promise<string | null>
   user: UserData | null
   ready: boolean
@@ -34,6 +35,13 @@ export function useProvideAuth(): IAuthContext {
   const [metadata, setMetadata] = useState<UserMetadata | null>(null)
   const [ready, setReady] = useState<boolean>(false)
 
+  const isPWA = (): boolean => {
+    return (
+      // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      (window.navigator as any).standalone === true ||
+      window.matchMedia('(display-mode: standalone)').matches
+    )
+  }
   const getToken = async (): Promise<null | string> => {
     if (!user) return null
     return await user.getIdToken()
@@ -78,6 +86,7 @@ export function useProvideAuth(): IAuthContext {
         LogRocket.identify(user.uid, {
           name: user.displayName,
           email: user.email,
+          pwa: isPWA(),
         })
         const meta = await db.collection('users').doc(user.uid).get()
         if (meta.exists) {
@@ -104,6 +113,7 @@ export function useProvideAuth(): IAuthContext {
     metadata,
     remove,
     ready,
+    isPWA,
     signout,
     updateMeta,
   }
