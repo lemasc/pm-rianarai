@@ -186,6 +186,9 @@ export default function MainPage(): JSX.Element {
           leaveTo="opacity-0"
           className="mb-8 text-sm sm:flex-row flex-col flex items-center justify-center space-y-2 sm:space-y-0 sm:space-x-4 p-4 bg-gradient-to-r from-purple-500 to-purple-700 text-white rounded shadow-md"
         >
+          <button onClick={() => dismissPWA()} className="focus:outline-none block sm:hidden">
+            <XIcon className="w-5 h-5" />
+          </button>
           <h2 className="text-lg">รู้มั้ย?</h2>
           <span className="font-light py-1 px-4 text-center sm:flex-row flex-col flex">
             <span>สามารถติดตั้งแอปพลิเคชั่น </span>
@@ -207,7 +210,7 @@ export default function MainPage(): JSX.Element {
               เรียนรู้เพิ่มเติม
             </a>
           </Link>
-          <button onClick={() => dismissPWA()} className="focus:outline-none">
+          <button onClick={() => dismissPWA()} className="focus:outline-none hidden sm:block">
             <XIcon className="w-5 h-5" />
           </button>
         </Transition>

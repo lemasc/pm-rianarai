@@ -163,7 +163,7 @@ export default function TimetableComponent(): JSX.Element {
   const [memoryQueue, setQueue] = useState<TimeSlotsMemory>(null)
   const [show, setShow] = useState(true)
   const [state, setState] = useState<State>('active')
-  const [curDay, setCurday] = useState<string>('tuesday')
+  const [curDay, setCurday] = useState<string>('sunday')
   const [meeting, setMeeting] = useState<Meeting[]>([])
   const { data } = useDocument<Schedule>(metadata ? `classes/${metadata.class}` : null, {
     listen: true,
