@@ -2,10 +2,11 @@ import Head from 'next/head'
 import { useAuth } from '../shared/authContext'
 import { ReactNode, useEffect, useState } from 'react'
 import { Transition } from '@headlessui/react'
-import { LogoutIcon, CogIcon } from '@heroicons/react/outline'
+import { LogoutIcon, CogIcon, XIcon } from '@heroicons/react/outline'
 import dynamic from 'next/dynamic'
 import HeaderComponent from '../components/header'
 import Link from 'next/link'
+import LogRocket from 'logrocket'
 
 const SignInComponent = dynamic(() => import('../components/signin'))
 const MetaDataComponent = dynamic(() => import('../components/meta'))
@@ -67,7 +68,7 @@ export default function MainPage(): JSX.Element {
       // Prevent the mini-infobar from appearing on mobile
       e.preventDefault()
       // Stash the event so it can be triggered later.
-      //setPWAPrompt(e)
+      setPWAPrompt(e)
       // Optionally, send analytics event that PWA install promo was shown.
       console.log(`'beforeinstallprompt' event was fired.`)
       console.log(e)
@@ -76,14 +77,26 @@ export default function MainPage(): JSX.Element {
     return () => window.removeEventListener('beforeinstallprompt', pwa)
   })
   useEffect(() => {
-    if (prompt !== null && !localStorage.getItem('pwaPrompt')) {
+    const isInWebAppiOS = (window.navigator as any).standalone === true
+    const isInWebAppChrome = window.matchMedia('(display-mode: standalone)').matches
+    if (isInWebAppChrome || isInWebAppiOS) {
+      LogRocket.log('Detected PWA mode for this session')
+      showPromo(false)
+    } else if (!localStorage.getItem('pwaPrompt')) {
       // Prompt user for app install
       console.log('SHOW')
       setTimeout(() => showPromo(true), 2000)
+    } else {
+      const time = localStorage.getItem('pwaPrompt')
+      const dateToRemind = new Date(time)
+      dateToRemind.setDate(dateToRemind.getDate() + 3)
+      if (new Date(time) > dateToRemind) {
+        setTimeout(() => showPromo(true), 2000)
+      }
     }
-  }, [prompt])
+  }, [])
 
-  function installPWA() {
+  function installPWA(): void {
     if (prompt !== null) {
       ;(prompt as any).prompt()
     } else {
@@ -91,6 +104,10 @@ export default function MainPage(): JSX.Element {
       // Redirect to instructions instead.
       ;(document.querySelector('#pwamore') as HTMLButtonElement).click()
     }
+  }
+  function dismissPWA(): void {
+    showPromo(false)
+    localStorage.setItem('pwaPrompt', new Date().valueOf().toString())
   }
   function renderPage(): JSX.Element {
     if (!(auth && auth.ready)) return null
@@ -170,8 +187,9 @@ export default function MainPage(): JSX.Element {
           className="mb-8 text-sm sm:flex-row flex-col flex items-center justify-center space-y-2 sm:space-y-0 sm:space-x-4 p-4 bg-gradient-to-r from-purple-500 to-purple-700 text-white rounded shadow-md"
         >
           <h2 className="text-lg">รู้มั้ย?</h2>
-          <span className="font-light py-1 sm:w-auto w-44 text-center">
-            สามารถติดตั้งแอปพลิเคชั่นเพื่อให้เข้าใช้งานได้เร็วขึ้นด้วยนะ
+          <span className="font-light py-1 px-4 text-center sm:flex-row flex-col flex">
+            <span>สามารถติดตั้งแอปพลิเคชั่น </span>
+            <span>เพื่อให้เข้าใช้งานได้เร็วขึ้นด้วยนะ</span>
           </span>
           <button
             onClick={() => installPWA()}
@@ -189,6 +207,9 @@ export default function MainPage(): JSX.Element {
               เรียนรู้เพิ่มเติม
             </a>
           </Link>
+          <button onClick={() => dismissPWA()} className="focus:outline-none">
+            <XIcon className="w-5 h-5" />
+          </button>
         </Transition>
       </main>
 

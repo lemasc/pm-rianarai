@@ -9,6 +9,7 @@ import LogRocket from 'logrocket'
 import 'tailwindcss/tailwind.css'
 import '../styles/globals.css'
 import 'tippy.js/dist/tippy.css'
+import '../styles/react-tabs.css'
 
 function AuthSpinner(): JSX.Element {
   const auth = useAuth()

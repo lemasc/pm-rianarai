@@ -22,15 +22,7 @@ export default function SignInComponent(): JSX.Element {
   }
   return (
     <div className="px-4">
-      <StyledFirebaseAuth
-        uiConfig={uiConfig}
-        firebaseAuth={auth}
-        uiCallback={(ui) => {
-          if (ui.isPendingRedirect()) {
-            ui.start('#firebaseui-auth-container', uiConfig)
-          }
-        }}
-      />
+      <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={auth} />
     </div>
   )
 }

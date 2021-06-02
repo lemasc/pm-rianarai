@@ -27,6 +27,7 @@
     "react-loader-spinner": "^4.0.0",
     "react-markdown": "^6.0.2",
     "react-svg": "^13.0.6",
+    "react-tabs": "^3.2.2",
     "remark-gfm": "^1.0.0",
     "tailwindcss": "^2.1.2"
   },
