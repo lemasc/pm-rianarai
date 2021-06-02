@@ -202,8 +202,8 @@ export default function TimetableComponent(): JSX.Element {
     let _isMounted = true
     if (!_isMounted) return
     if (data && data[curDay]) {
-      const timeString = '12:11'
-      //const timeString = date.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })
+      //const timeString = '12:11'
+      const timeString = date.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })
       const target = data[curDay]
       // If the time is still in range, don't check anything.
       if (memory.active !== null && inTimeRange(timeString, memory.active)) return
