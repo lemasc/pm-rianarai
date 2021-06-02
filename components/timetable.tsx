@@ -209,19 +209,19 @@ export default function TimetableComponent(): JSX.Element {
       if (memory.active !== null && inTimeRange(timeString, memory.active)) return
       // Out of range, start recheck
       if (timeString < getActualStartTime(target[0])) {
-        setState('start')
         setMemory({ active: null, next: target[0] })
+        setState('start')
         return
       }
       if (timeString > target[target.length - 1].end) {
-        setState('end')
         setMemory({ active: null, next: null })
+        setState('end')
         return
       }
       for (let i = 0; i < target.length; i++) {
         if (inTimeRange(timeString, target[i])) {
-          setState('active')
           setMemory({ active: target[i], next: target[i + 1] ? target[i + 1] : null })
+          setState('active')
           if (target[i].teacher.length === 0) {
             setMeeting([null])
           } else {
@@ -237,8 +237,8 @@ export default function TimetableComponent(): JSX.Element {
           timeString > target[i].end &&
           timeString < getActualStartTime(target[i + 1])
         ) {
-          setState('break')
           setMemory({ active: null, next: target[i + 1] })
+          setState('break')
           return
         }
       }
