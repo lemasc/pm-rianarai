@@ -10,6 +10,7 @@ type PWAPromoProps = {
 export default function PWAPromo({ settings }: PWAPromoProps): JSX.Element {
   const auth = useAuth()
   const [prompt, setPWAPrompt] = useState<Event | null>(null)
+  const [installed, setInstalled] = useState(false)
   const [promo, showPromo] = useState(false)
   useEffect(() => {
     const pwa = (e: Event): void => {
@@ -28,20 +29,26 @@ export default function PWAPromo({ settings }: PWAPromoProps): JSX.Element {
   useEffect(() => {
     if (auth.isPWA()) {
       showPromo(false)
-    } else if (!localStorage.getItem('pwaPrompt')) {
-      // Prompt user for app install
-      setTimeout(() => showPromo(true), 2000)
-    } else {
-      const time = localStorage.getItem('pwaPrompt')
+      // Set the localStorage that the user open as PWA;
+    } else if (localStorage.getItem('lastPWA')) {
+      // PWA last session detected, if user open with-in 3 days
+      // Change button to OPEN APP
+      const time = localStorage.getItem('lastPWA')
       const dateToRemind = new Date(time)
       dateToRemind.setDate(dateToRemind.getDate() + 3)
-      if (new Date(time) > dateToRemind) {
-        setTimeout(() => showPromo(true), 2000)
+      if (new Date(time) <= dateToRemind) {
+        setInstalled(true)
       }
+    } else if (localStorage.getItem('pwaPrompt')) {
+      const time = localStorage.getItem('pwaPrompt')
+      const dateToRemind = new Date(time)
+      // If past 3 days, re-remind
+      dateToRemind.setDate(dateToRemind.getDate() + 3)
+      if (new Date(time) <= dateToRemind) return
     }
+    setTimeout(() => showPromo(true), 2000)
   }, [auth])
-
-  function installPWA(): void {
+  function installOrOpenPWA(): void {
     LogRocket.track('PWA Promo Clicked')
     if (prompt !== null) {
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -81,16 +88,14 @@ export default function PWAPromo({ settings }: PWAPromoProps): JSX.Element {
         <span>เพื่อให้เข้าใช้งานได้เร็วขึ้นด้วยนะ</span>
       </span>
       <button
-        onClick={() => installPWA()}
+        onClick={() => installOrOpenPWA()}
         className="text-black px-4 py-2 bg-gray-100 from-gray-100 to-gray-200 focus:bg-gradient-to-b hover:bg-gradient-to-b focus:outline-none rounded"
       >
-        ติดตั้งเลย
+        {installed ? 'เปิดในแอพ' : 'ติดตั้งเลย'}
       </button>
       <a
-        href="/install"
+        href={'/install' + (installed ? '#open' : '')}
         id="pwamore"
-        target="_blank"
-        rel="noopener noreferrer"
         className="font-normal underline"
       >
         เรียนรู้เพิ่มเติม

@@ -6,6 +6,8 @@ import { Tabs, TabList, Tab, TabPanel } from 'react-tabs'
 import { Disclosure, Transition } from '@headlessui/react'
 import { ChevronUpIcon, DotsVerticalIcon, DownloadIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
+import { useAuth } from '../shared/authContext'
+import { useRouter } from 'next/dist/client/router'
 
 type InstallPromoProps = {
   children: React.ReactNode
@@ -71,15 +73,21 @@ function InstallPromo({ children, index, mobile, className }: InstallPromoProps)
 }
 
 export default function Install(): JSX.Element {
+  const { isPWA } = useAuth()
+  const router = useRouter()
   const [index, setIndex] = useState(0)
   useEffect(() => {
     if (/Android/i.test(navigator.userAgent)) {
       setIndex(1)
+      if (isPWA && isPWA()) {
+        // User already use PWA, redirect to PWA
+        router.replace('/')
+      }
     }
     if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
       setIndex(2)
     }
-  }, [])
+  }, [isPWA, router])
   return (
     <div className="circle min-h-screen flex flex-col items-center justify-center dark:bg-gray-900 dark:text-white">
       <Head>
