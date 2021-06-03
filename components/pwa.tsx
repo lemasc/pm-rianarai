@@ -34,14 +34,14 @@ export default function PWAPromo({ settings }: PWAPromoProps): JSX.Element {
       // PWA last session detected, if user open with-in 3 days
       // Change button to OPEN APP
       const time = localStorage.getItem('lastPWA')
-      const dateToRemind = new Date(time)
+      const dateToRemind = new Date(parseInt(time))
       dateToRemind.setDate(dateToRemind.getDate() + 3)
       if (new Date(time) <= dateToRemind) {
         setInstalled(true)
       }
     } else if (localStorage.getItem('pwaPrompt')) {
       const time = localStorage.getItem('pwaPrompt')
-      const dateToRemind = new Date(time)
+      const dateToRemind = new Date(parseInt(time))
       // If past 3 days, re-remind
       dateToRemind.setDate(dateToRemind.getDate() + 3)
       if (new Date(time) <= dateToRemind) return
