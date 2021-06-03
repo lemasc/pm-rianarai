@@ -45,10 +45,9 @@ function App({ Component, pageProps }: AppProps): JSX.Element {
   if (process.env.NODE_ENV === 'production') LogRocket.init('sg61xt/pm-rianarai-i4kpt')
   return (
     <MainProvider>
-      <AuthSpinner />
       <Component {...pageProps} />
     </MainProvider>
   )
 }
-
+///<AuthSpinner />
 export default App
