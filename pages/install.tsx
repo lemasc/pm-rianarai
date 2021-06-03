@@ -91,7 +91,7 @@ export default function Install(): JSX.Element {
     if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
       setIndex(2)
     }
-    showTime = setTimeout(() => setShow(true), 500)
+    showTime = setTimeout(() => setShow(true), 1000)
   }, [isPWA, router])
   if (!show) return <div></div>
   return (
