@@ -36,11 +36,14 @@ export function useProvideAuth(): IAuthContext {
   const [ready, setReady] = useState<boolean>(false)
 
   const isPWA = (): boolean => {
-    return (
+    const isPWA =
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (window.navigator as any).standalone === true ||
       window.matchMedia('(display-mode: standalone)').matches
-    )
+    if (isPWA) {
+      localStorage.setItem('lastPWA', new Date().valueOf().toString())
+    }
+    return isPWA
   }
   const getToken = async (): Promise<null | string> => {
     if (!user) return null

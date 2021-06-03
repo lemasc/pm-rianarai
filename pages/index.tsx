@@ -10,6 +10,7 @@ const MetaDataComponent = dynamic(() => import('../components/meta'))
 const TimetableComponent = dynamic(() => import('../components/timetable'))
 const MenuComponent = dynamic(() => import('../components/menu'))
 const PWAPromoComponent = dynamic(() => import('../components/pwa'))
+//const NotifModalComponent = dynamic(() => import('../components/notifModal'))
 
 /**
  * Single Page Application!
@@ -54,6 +55,7 @@ export default function MainPage(): JSX.Element {
   const auth = useAuth()
   const [date, setDate] = useState(new Date())
   const [settings, setSettings] = useState(false)
+
   useEffect(() => {
     const timerID = setInterval(() => {
       setDate(new Date())
@@ -95,7 +97,12 @@ export default function MainPage(): JSX.Element {
       <div className="p-6 opacity-50 hidden sm:block absolute top-0 left-0 creative-font text-2xl">
         {date.toLocaleTimeString('th-TH')}
       </div>
-      {auth.user && auth.metadata && <MenuComponent onChange={setSettings} />}
+      {auth.user && auth.metadata && (
+        <>
+          <MenuComponent onChange={setSettings} />
+        </>
+      )}
+
       <main className="flex flex-1 flex-col w-full items-center justify-center">
         <HeaderComponent />
         <div className="mx-4 p-4 flex flex-col justify-center items-center bg-white rounded text-black dark:bg-gray-900 dark:text-white">

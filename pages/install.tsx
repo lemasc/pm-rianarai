@@ -6,6 +6,8 @@ import { Tabs, TabList, Tab, TabPanel } from 'react-tabs'
 import { Disclosure, Transition } from '@headlessui/react'
 import { ChevronUpIcon, DotsVerticalIcon, DownloadIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
+import { useAuth } from '../shared/authContext'
+import { useRouter } from 'next/dist/client/router'
 
 type InstallPromoProps = {
   children: React.ReactNode
@@ -71,21 +73,32 @@ function InstallPromo({ children, index, mobile, className }: InstallPromoProps)
 }
 
 export default function Install(): JSX.Element {
+  const { isPWA } = useAuth()
+  const router = useRouter()
   const [index, setIndex] = useState(0)
+  const [show, setShow] = useState(false)
   useEffect(() => {
+    let showTime = null
+    if (showTime) clearTimeout(showTime)
     if (/Android/i.test(navigator.userAgent)) {
       setIndex(1)
+      if (isPWA && isPWA()) {
+        // User already use PWA, redirect to PWA
+        router.replace('/')
+        return
+      }
     }
     if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
       setIndex(2)
     }
-  }, [])
+    showTime = setTimeout(() => setShow(true), 1000)
+  }, [isPWA, router])
+  if (!show) return <div></div>
   return (
     <div className="circle min-h-screen flex flex-col items-center justify-center dark:bg-gray-900 dark:text-white">
       <Head>
         <title>Install App : PM-RianArai</title>
       </Head>
-
       <main className="flex flex-1 flex-col w-full items-center justify-center">
         <HeaderComponent />
         <div className="px-8 py-4 text-center font-light">
@@ -100,7 +113,9 @@ export default function Install(): JSX.Element {
               <Tab>iOS/iPadOS</Tab>
             </TabList>
             <TabPanel>
-              <h2 className="font-medium text-2xl py-1">การติดตั้ง</h2>
+              <h2 className="font-medium text-2xl py-1" id="install">
+                การติดตั้ง
+              </h2>
               <p>
                 คอมพิวเตอร์ที่ใช้ Windows, MacOS และใช้เบราวเซอร์รุ่นใหม่ ๆ อย่าง Google Chrome หรือ
                 Microsoft Edge สามารถใช้งานได้ทันที
@@ -146,9 +161,18 @@ export default function Install(): JSX.Element {
                   <span className="text-gray-500">ไอคอนโปรแกรมที่ Start Menu</span>
                 </div>
               </div>
+              <h2 className="font-medium text-2xl py-1" id="open">
+                การเข้าใช้งาน
+              </h2>
+              <p>
+                สามารถเรียกใช้งานได้จากหน้า Shortcut ของโปรแกรมที่ตำแหน่งต่าง ๆ เช่น Desktop
+                ได้ทันที
+              </p>
             </TabPanel>
             <TabPanel>
-              <h2 className="font-medium text-2xl py-1">การติดตั้ง</h2>
+              <h2 className="font-medium text-2xl py-1" id="install">
+                การติดตั้ง
+              </h2>
               <p>
                 อุปกรณ์มือถือที่ใช้เบราวเซอร์ <b>Google Chrome (แนะนำ)</b> และ Samsung Internet
                 สามารถใช้งานเป็นแอพพลิเคชั่นได้ทันที
@@ -249,9 +273,18 @@ export default function Install(): JSX.Element {
                   </div>
                 </div>
               </div>
+              <h2 className="font-medium text-2xl py-1" id="open">
+                การเข้าใช้งาน
+              </h2>
+              <p>
+                สามารถเรียกใช้งานได้จากหน้าจอหลักได้ทันที
+                หรือหากเข้าเว็บไซต์จากเบราวเซอร์พื้นฐานอยู่แล้วให้เลือก <b>เปิดในแอพ</b>
+              </p>
             </TabPanel>
             <TabPanel>
-              <h2 className="font-medium text-2xl py-1">การติดตั้ง</h2>
+              <h2 className="font-medium text-2xl py-1" id="install">
+                การติดตั้ง
+              </h2>
               <p>
                 สำหรับอุปกรณ์ iOS/iPadOS จะมีบางฟีเจอร์ที่ขาดหายไป (เนื่องจากข้อจำกัดทางเทคนิค)
                 แต่ยังคงสามารถเพิ่มแอพพลิเคชั่นไปยังหน้าจอหลักได้ โดยดูจากคลิปวิดิโอต่อไปนี้
@@ -263,6 +296,10 @@ export default function Install(): JSX.Element {
                   </video>
                 </div>
               </div>
+              <h2 className="font-medium text-2xl py-1" id="open">
+                การเข้าใช้งาน
+              </h2>
+              <p>สามารถเรียกใช้งานได้จากหน้าจอหลักได้ทันที (ไม่มีขึ้นใน App Library)</p>
             </TabPanel>
           </Tabs>
         </div>

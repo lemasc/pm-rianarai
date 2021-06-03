@@ -15,6 +15,7 @@
     "@types/pdf-parse": "^1.1.0",
     "@types/pdfjs-dist": "^2.7.2",
     "autoprefixer": "^10.2.5",
+    "dayjs": "^1.10.5",
     "firebase": "^8.6.2",
     "logrocket": "^1.2.2",
     "next": "10.2.3",
