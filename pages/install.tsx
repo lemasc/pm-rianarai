@@ -76,24 +76,29 @@ export default function Install(): JSX.Element {
   const { isPWA } = useAuth()
   const router = useRouter()
   const [index, setIndex] = useState(0)
+  const [show, setShow] = useState(false)
   useEffect(() => {
+    let showTime = null
+    if (showTime) clearTimeout(showTime)
     if (/Android/i.test(navigator.userAgent)) {
       setIndex(1)
       if (isPWA && isPWA()) {
         // User already use PWA, redirect to PWA
         router.replace('/')
+        return
       }
     }
     if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
       setIndex(2)
     }
+    showTime = setTimeout(() => setShow(true), 500)
   }, [isPWA, router])
   return (
     <div className="circle min-h-screen flex flex-col items-center justify-center dark:bg-gray-900 dark:text-white">
       <Head>
         <title>Install App : PM-RianArai</title>
       </Head>
-      {isPWA && (
+      {show && (
         <main className="flex flex-1 flex-col w-full items-center justify-center">
           <HeaderComponent />
           <div className="px-8 py-4 text-center font-light">
