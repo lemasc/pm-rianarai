@@ -29,7 +29,7 @@ export default function PWAPromo({ settings }: PWAPromoProps): JSX.Element {
   useEffect(() => {
     if (auth.isPWA()) {
       showPromo(false)
-      // Set the localStorage that the user open as PWA;
+      return
     } else if (localStorage.getItem('lastPWA')) {
       // PWA last session detected, if user open with-in 3 days
       // Change button to OPEN APP
