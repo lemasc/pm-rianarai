@@ -2,6 +2,7 @@ import firebase from 'firebase/app'
 import 'firebase/auth'
 import 'firebase/firestore'
 import 'firebase/storage'
+import 'firebase/messaging'
 
 export const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -16,6 +17,7 @@ export const firebaseConfig = {
 if (!firebase.apps.length) {
   firebase.initializeApp(firebaseConfig)
 }
+const app = firebase
 const auth = firebase.auth()
 const db = firebase.firestore()
 const now = firebase.firestore.Timestamp.now()
@@ -39,4 +41,4 @@ class Fuego {
   }
 }
 
-export { auth, db, now, storage, Fuego }
+export { auth, db, now, storage, Fuego, app }
