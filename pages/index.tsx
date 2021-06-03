@@ -98,7 +98,7 @@ export default function MainPage(): JSX.Element {
       {auth.user && auth.metadata && <MenuComponent onChange={setSettings} />}
       <main className="flex flex-1 flex-col w-full items-center justify-center">
         <HeaderComponent />
-        <div className="p-4 flex flex-col justify-center items-center bg-white rounded text-black dark:bg-black dark:text-white">
+        <div className="mx-4 p-4 flex flex-col justify-center items-center bg-white rounded text-black dark:bg-gray-900 dark:text-white">
           <h2 className="text-2xl p-4 text-red-500 font-medium">ดำเนินการปิดปรับปรุงเว็บไซต์</h2>
           <p className="font-light text-sm text-center p-4">
             เพื่อปรับปรุงประสิทธิภาพการใช้งานและฟีเจอร์ต่าง ๆ ให้ดียิ่งขึ้น
