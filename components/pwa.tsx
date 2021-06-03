@@ -94,6 +94,8 @@ export default function PWAPromo({ settings }: PWAPromoProps): JSX.Element {
         {installed ? 'เปิดในแอพ' : 'ติดตั้งเลย'}
       </button>
       <a
+        target="_blank"
+        rel="noopener noreferrer"
         href={'/install' + (installed ? '#open' : '')}
         id="pwamore"
         className="font-normal underline"
