@@ -105,15 +105,8 @@ export default function MainPage(): JSX.Element {
 
       <main className="flex flex-1 flex-col w-full items-center justify-center">
         <HeaderComponent />
-        <div className="mx-4 p-4 flex flex-col justify-center items-center bg-white rounded text-black dark:bg-gray-900 dark:text-white">
-          <h2 className="text-2xl p-4 text-red-500 font-medium">ดำเนินการปิดปรับปรุงเว็บไซต์</h2>
-          <p className="font-light text-sm text-center p-4">
-            เพื่อปรับปรุงประสิทธิภาพการใช้งานและฟีเจอร์ต่าง ๆ ให้ดียิ่งขึ้น
-            <br />
-            ระบบจะกลับมาเปิดให้บริการในวันที่ 4 มิถุนายน 2564 เวลา 07:30 น. <br />
-            ขออภัยในความไม่สะดวก
-          </p>
-        </div>
+        {renderPage()}
+        <PWAPromoComponent settings={settings} />
       </main>
 
       <footer className="bg-white bg-opacity-30 text-black text-sm gap-2 flex flex-col justify-center items-center w-full p-8 border-t">
