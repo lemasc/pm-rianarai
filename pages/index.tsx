@@ -7,7 +7,7 @@ import HeaderComponent from '../components/header'
 
 const SignInComponent = dynamic(() => import('../components/signin'))
 const MetaDataComponent = dynamic(() => import('../components/meta'))
-const TimetableComponent = dynamic(() => import('../components/timetable'))
+const TimeSlotsComponent = dynamic(() => import('../components/timeslots'))
 const MenuComponent = dynamic(() => import('../components/menu'))
 const PWAPromoComponent = dynamic(() => import('../components/pwa'))
 //const NotifModalComponent = dynamic(() => import('../components/notifModal'))
@@ -81,7 +81,7 @@ export default function MainPage(): JSX.Element {
     }
     if (children === null) {
       // No page matched, load Main Time component
-      children = <TimetableComponent />
+      children = <TimeSlotsComponent />
     }
     return <MultiComponent title={title}>{children}</MultiComponent>
   }

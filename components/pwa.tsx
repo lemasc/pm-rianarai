@@ -73,10 +73,10 @@ export default function PWAPromo({ settings }: PWAPromoProps): JSX.Element {
       leave="transition duration-500"
       leaveFrom="opacity-100"
       leaveTo="opacity-0"
-      className="mb-8 text-sm sm:flex-row flex-col flex items-center justify-center space-y-2 sm:space-y-0 sm:space-x-4 p-4 bg-gradient-to-r from-purple-500 to-purple-700 text-white rounded shadow-md"
+      className="mb-8 text-sm sm:flex-row flex-col flex items-center justify-center space-y-3 sm:space-y-0 sm:space-x-4 p-4 bg-gradient-to-r from-purple-500 to-purple-700 text-white rounded shadow-md"
     >
       <button
-        name="close"
+        aria-label="Close"
         onClick={() => dismissPWA()}
         className="focus:outline-none block sm:hidden"
       >
@@ -103,6 +103,7 @@ export default function PWAPromo({ settings }: PWAPromoProps): JSX.Element {
         เรียนรู้เพิ่มเติม
       </a>
       <button
+        aria-label="Close"
         name="close"
         onClick={() => dismissPWA()}
         className="focus:outline-none hidden sm:block"

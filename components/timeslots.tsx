@@ -223,7 +223,7 @@ function MeetingPending({ slot }): JSX.Element {
   )
 }
 
-export default function TimetableComponent(): JSX.Element {
+export default function TimeSlotsComponent(): JSX.Element {
   const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
   const { metadata } = useAuth()
   const [nextPage, setNextPage] = useState(false)
