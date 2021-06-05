@@ -26,7 +26,9 @@ export default function PWAPromo({ settings }: PWAPromoProps): JSX.Element {
     return () => window.removeEventListener('beforeinstallprompt', pwa)
   })
   useEffect(() => {
-    if (!localStorage.getItem('pwaPrompt')) {
+    if (auth.isPWA()) {
+      showPromo(false)
+    } else if (!localStorage.getItem('pwaPrompt')) {
       // Prompt user for app install
       setTimeout(() => showPromo(true), 2000)
     } else {
@@ -37,7 +39,7 @@ export default function PWAPromo({ settings }: PWAPromoProps): JSX.Element {
         setTimeout(() => showPromo(true), 2000)
       }
     }
-  }, [])
+  }, [auth])
 
   function installPWA(): void {
     LogRocket.track('PWA Promo Clicked')

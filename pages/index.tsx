@@ -1,5 +1,5 @@
 import Head from 'next/head'
-import { isPWA, useAuth } from '../shared/authContext'
+import { useAuth } from '../shared/authContext'
 import { ReactNode, useEffect, useState } from 'react'
 import { Transition } from '@headlessui/react'
 import dynamic from 'next/dynamic'
@@ -99,7 +99,7 @@ export default function MainPage(): JSX.Element {
       <main className="flex flex-1 flex-col w-full items-center justify-center">
         <HeaderComponent />
         {renderPage()}
-        {!isPWA() && <PWAPromoComponent settings={settings} />}
+        <PWAPromoComponent settings={settings} />
       </main>
 
       <footer className="bg-white bg-opacity-30 text-black text-sm gap-2 flex flex-col justify-center items-center w-full p-8 border-t">
