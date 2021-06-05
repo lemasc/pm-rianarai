@@ -13,7 +13,6 @@ export interface UserMetadata {
 type Provider = 'facebook.com' | 'google.com'
 
 interface IAuthContext {
-  isPWA: () => boolean
   getToken: () => Promise<string | null>
   user: UserData | null
   ready: boolean
@@ -28,6 +27,13 @@ export const authContext = createContext<IAuthContext | undefined>(undefined)
 export const useAuth = (): IAuthContext | undefined => {
   return useContext(authContext)
 }
+export const isPWA = (): boolean => {
+  return (
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (window.navigator as any).standalone === true ||
+    window.matchMedia('(display-mode: standalone)').matches
+  )
+}
 
 // Provider hook that creates auth object and handles state
 export function useProvideAuth(): IAuthContext {
@@ -35,13 +41,6 @@ export function useProvideAuth(): IAuthContext {
   const [metadata, setMetadata] = useState<UserMetadata | null>(null)
   const [ready, setReady] = useState<boolean>(false)
 
-  const isPWA = (): boolean => {
-    return (
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (window.navigator as any).standalone === true ||
-      window.matchMedia('(display-mode: standalone)').matches
-    )
-  }
   const getToken = async (): Promise<null | string> => {
     if (!user) return null
     return await user.getIdToken()
@@ -113,7 +112,6 @@ export function useProvideAuth(): IAuthContext {
     metadata,
     remove,
     ready,
-    isPWA,
     signout,
     updateMeta,
   }

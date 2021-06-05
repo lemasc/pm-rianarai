@@ -244,6 +244,7 @@ export default function TimetableComponent(): JSX.Element {
       }
     }
     setMemory({ active: null, next: null })
+    setState('active')
     return () => {
       _isMounted = false
     }
@@ -313,7 +314,7 @@ export default function TimetableComponent(): JSX.Element {
           </div>
         </div>
       )}
-      {memory && !memory.active && state != '' && (
+      {!memory.active && state != '' && (
         <>
           <div className="text-2xl p-8 text-green-600 font-medium">ไม่มีคาบเรียนในตอนนี้</div>
           <span className="text-sm font-light creative-font px-4 py-1">{message}</span>
