@@ -4,12 +4,14 @@ import { ReactNode, useEffect, useState } from 'react'
 import { Transition } from '@headlessui/react'
 import dynamic from 'next/dynamic'
 import HeaderComponent from '../components/header'
+import type { Pages } from '../components/menu'
 
 const SignInComponent = dynamic(() => import('../components/signin'))
 const MetaDataComponent = dynamic(() => import('../components/meta'))
 const TimeSlotsComponent = dynamic(() => import('../components/timeslots'))
 const MenuComponent = dynamic(() => import('../components/menu'))
 const PWAPromoComponent = dynamic(() => import('../components/pwa'))
+const TimeTableComponent = dynamic(() => import('../components/timetable'))
 //const NotifModalComponent = dynamic(() => import('../components/notifModal'))
 
 /**
@@ -54,7 +56,7 @@ function MultiComponent(props: SPAProps): JSX.Element {
 export default function MainPage(): JSX.Element {
   const auth = useAuth()
   const [date, setDate] = useState(new Date())
-  const [settings, setSettings] = useState(false)
+  const [page, setPage] = useState<Pages>(null)
 
   useEffect(() => {
     const timerID = setInterval(() => {
@@ -75,9 +77,13 @@ export default function MainPage(): JSX.Element {
       title = 'อีกแค่นิดเดียว'
       children = <MetaDataComponent />
     }
-    if (settings) {
+    if (page == 'settings') {
       title = 'การตั้งค่า'
-      children = <MetaDataComponent onSubmit={() => setSettings(false)} />
+      children = <MetaDataComponent onSubmit={() => setPage(null)} />
+    }
+    if (page == 'timetable') {
+      title = 'ตารางเรียน'
+      children = <TimeTableComponent />
     }
     if (children === null) {
       // No page matched, load Main Time component
@@ -94,22 +100,25 @@ export default function MainPage(): JSX.Element {
         <meta property="og:title" content="PM Rianarai - เรียนอะไร" />
         <meta property="og:description" content="เข้าเรียนทุกวิชาได้จากทีนี่ที่เดียว" />
       </Head>
-      <div className="p-6 opacity-50 hidden sm:block absolute top-0 left-0 creative-font text-2xl">
+      <div
+        suppressHydrationWarning
+        className="p-6 opacity-50 hidden sm:block absolute top-0 left-0 creative-font text-2xl"
+      >
         {date.toLocaleTimeString('th-TH')}
       </div>
       {auth.user && auth.metadata && (
         <>
-          <MenuComponent onChange={setSettings} />
+          <MenuComponent onChange={setPage} page={page} />
         </>
       )}
 
       <main className="flex flex-1 flex-col w-full items-center justify-center">
         <HeaderComponent />
         {renderPage()}
-        <PWAPromoComponent settings={settings} />
+        <PWAPromoComponent show={page === null} />
       </main>
 
-      <footer className="bg-white bg-opacity-30 text-black text-sm gap-2 flex flex-col justify-center items-center w-full p-8 border-t">
+      <footer className="bg-white bg-opacity-30 text-black text-sm gap-2 flex flex-col justify-center items-center w-full p-8 border-t mx-8">
         <div className="flex flex-row justify-center text-center items-center w-full space-x-4">
           <a
             href="/about"

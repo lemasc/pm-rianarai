@@ -21,7 +21,7 @@ export default function SignInComponent(): JSX.Element {
     },
   }
   return (
-    <div className="px-4">
+    <div className="w-64">
       <StyledFirebaseAuth uiConfig={uiConfig} firebaseAuth={auth} />
     </div>
   )

@@ -3,18 +3,14 @@ import { useDocument } from '@nandorojo/swr-firestore'
 import React, { ReactNodeArray, useEffect, useState } from 'react'
 import { useAuth } from '../shared/authContext'
 import { Meeting, useMeeting } from '../shared/meetingContext'
-import {
-  DocumentDuplicateIcon,
-  ClipboardCheckIcon,
-  ChevronLeftIcon,
-  ChevronRightIcon,
-} from '@heroicons/react/outline'
+import PaginationComponent from './pagination'
+import { DocumentDuplicateIcon, ClipboardCheckIcon } from '@heroicons/react/outline'
 import Tippy from '@tippyjs/react'
 import Link from 'next/link'
 import LogRocket from 'logrocket'
 import dayjs from 'dayjs'
 
-interface Schedule {
+export interface Schedule {
   [days: string]: TimeSlots[]
 }
 
@@ -50,7 +46,7 @@ function MeetingNotFound(): JSX.Element {
       <div className="text-sm">
         นี่อาจเกิดจาก
         <br />
-        <ul className="py-2 font-light block">
+        <ul className="py-2 px-4 font-light">
           <li className="px-16">รายวิชานี้ไม่ได้เรียนในระบบ Zoom</li>
           <li className="px-16">ยังไม่มีข้อมูลผู้สอนของรายวิชานี้</li>
           <li className="px-16">พิมพ์ตกหล่นทำให้ระบบหาข้อมูลไม่เจอ</li>
@@ -154,7 +150,7 @@ const MeetingJoin: React.FC<MeetingComponentProps> = ({ showNames, meetings, dis
   )
 }
 
-function GenerateTeacherName(teacher: string[]): ReactNodeArray {
+export function GenerateTeacherName(teacher: string[]): ReactNodeArray {
   function getPrefix(t: string): string {
     if (t.match(/^[a-zA-Z0-9]*$/g)) return 'T.'
     if (t.indexOf('.') === -1) return 'อ.'
@@ -272,6 +268,10 @@ export default function TimeSlotsComponent(): JSX.Element {
     }
     let _isMounted = true
     if (!_isMounted) return
+    if (!data) {
+      setState('')
+      return
+    }
     if (data && data[curDay]) {
       //const timeString = '12:55'
       const timeString = date.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })
@@ -357,27 +357,14 @@ export default function TimeSlotsComponent(): JSX.Element {
       ) : (
         <>
           {state == 'active' && (
-            <div className="flex flex-row py-2">
-              <div className="w-4 h-4 pt-1">
-                {memory.next && (
-                  <ChevronLeftIcon
-                    className={'cursor-pointer ' + (!nextPage ? 'text-gray-500' : '')}
-                    onClick={() => setNextPage(false)}
-                  />
-                )}
-              </div>
-              <div className="flex flex-grow px-4 w-56 justify-center">
-                {nextPage ? 'รายวิชาต่อไป' : 'รายวิชาปัจจุบัน'}
-              </div>
-              <div className="w-4 h-4 pt-1">
-                {memory.next && (
-                  <ChevronRightIcon
-                    className={'cursor-pointer ' + (nextPage ? 'text-gray-500' : '')}
-                    onClick={() => setNextPage(true)}
-                  />
-                )}
-              </div>
-            </div>
+            <PaginationComponent
+              className="w-56"
+              index={nextPage ? 1 : 0}
+              onChange={(index) => setNextPage(index == 1 ? true : false)}
+              name={nextPage ? 'รายวิชาต่อไป' : 'รายวิชาปัจจุบัน'}
+              showIcons={!!memory.next}
+              length={2}
+            />
           )}
           <MeetingInfo
             slot={nextPage ? memory.next : memory.active}

@@ -79,3 +79,19 @@ body {
 .zoom-btn:disabled {
   @apply bg-gray-400 cursor-not-allowed;
 }
+
+.timetable {
+  @apply min-w-full sm:max-w-max sm:overflow-visible divide-y divide-gray-200 text-sm;
+}
+.timetable > thead > tr > th {
+  @apply w-36 break-words px-6 py-3 text-center font-medium text-gray-500 uppercase;
+}
+.timetable > tbody > tr {
+  @apply hover:bg-gray-200 hover:bg-opacity-75;
+}
+.timetable > tbody > tr > td {
+  @apply px-6 py-4 whitespace-nowrap cursor-pointer;
+}
+.timetable > tbody > tr:nth-child(even) {
+  @apply bg-gray-50 bg-opacity-50 hover:bg-gray-200 hover:bg-opacity-75;
+}

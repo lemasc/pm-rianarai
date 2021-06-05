@@ -5,9 +5,9 @@ import { XIcon } from '@heroicons/react/outline'
 import LogRocket from 'logrocket'
 
 type PWAPromoProps = {
-  settings: boolean
+  show: boolean
 }
-export default function PWAPromo({ settings }: PWAPromoProps): JSX.Element {
+export default function PWAPromo({ show }: PWAPromoProps): JSX.Element {
   const auth = useAuth()
   const [prompt, setPWAPrompt] = useState<Event | null>(null)
   const [installed, setInstalled] = useState(false)
@@ -66,8 +66,8 @@ export default function PWAPromo({ settings }: PWAPromoProps): JSX.Element {
   }
   return (
     <Transition
-      show={promo && (auth.user == null || (auth.metadata != null && !settings))}
-      enter="transition duration-700 delay-150"
+      show={promo && auth.metadata != null && show}
+      enter="transition duration-700 delay-1000"
       enterFrom="opacity-0"
       enterTo="opactity-100"
       leave="transition duration-500"
