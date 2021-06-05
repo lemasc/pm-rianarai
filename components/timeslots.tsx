@@ -14,7 +14,7 @@ export interface Schedule {
   [days: string]: TimeSlots[]
 }
 
-interface TimeSlots {
+export interface TimeSlots {
   start: string
   end: string
   teacher: string[]

@@ -3,9 +3,22 @@ import dayjs from 'dayjs'
 import { useEffect, useState } from 'react'
 import { useAuth } from '../shared/authContext'
 import PaginationComponent from './pagination'
-import type { Schedule } from './timeslots'
+import type { Schedule, TimeSlots } from './timeslots'
 import { GenerateTeacherName } from './timeslots'
 import { useWindowWidth } from '@react-hook/window-size'
+
+function TimeSlotsData({ data }: { data: TimeSlots }): JSX.Element {
+  return (
+    <>
+      <span className="text-lg py-2 font-bold sarabun-font">{data.code.join(',')}</span>
+      {data.teacher.length !== 0 && (
+        <div className="flex flex-row space-x-2 justify-center w-full">
+          {GenerateTeacherName(data.teacher)}
+        </div>
+      )}
+    </>
+  )
+}
 
 export default function TimetableComponent(): JSX.Element {
   const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
@@ -25,6 +38,8 @@ export default function TimetableComponent(): JSX.Element {
       _isMounted = false
     }
   }, [data])
+  const break10Class = 'bg-green-500 bg-opacity-40 italic'
+  const breakClass = 'bg-yellow-500 bg-opacity-40 italic'
   return (
     <div>
       <PaginationComponent
@@ -48,21 +63,29 @@ export default function TimetableComponent(): JSX.Element {
                   </tr>
                 </thead>
                 <tbody className="divide-y divide-gray-200">
-                  {data[days[curDay]].map((d, i) => (
-                    <tr key={i}>
-                      <td>
-                        {d.start} - {d.end}
-                      </td>
-                      <td>
-                        {d.code.join(',')}
-                        {d.teacher.length !== 0 && (
-                          <>
-                            <br />
-                            {GenerateTeacherName(d.teacher)}
-                          </>
-                        )}
-                      </td>
-                    </tr>
+                  {data[days[curDay]].map((d) => (
+                    <>
+                      <tr key={d.start}>
+                        <td>
+                          {d.start} - {d.end}
+                        </td>
+                        <td>
+                          <TimeSlotsData data={d} />
+                        </td>
+                      </tr>
+                      {d.end == '10:10' && (
+                        <tr key="break10" className={break10Class}>
+                          <td>10:10 - 10:30</td>
+                          <td>พัก 10 นาที</td>
+                        </tr>
+                      )}
+                      {d.end == '12:10' && (
+                        <tr key="break" className={breakClass}>
+                          <td>12:10 - 13:00</td>
+                          <td>พักกลางวัน</td>
+                        </tr>
+                      )}
+                    </>
                   ))}
                 </tbody>
               </table>
@@ -86,22 +109,15 @@ export default function TimetableComponent(): JSX.Element {
                     {data[days[curDay]].map((d) => (
                       <>
                         <td key={d.code.toString()}>
-                          <span className="text-lg py-2 font-bold sarabun-font">
-                            {d.code.join(',')}
-                          </span>
-                          {d.teacher.length !== 0 && (
-                            <div className="flex flex-row space-x-2 justify-center w-full">
-                              {GenerateTeacherName(d.teacher)}
-                            </div>
-                          )}
+                          <TimeSlotsData data={d} />
                         </td>
                         {d.end == '10:10' && (
-                          <td key="break10" className="bg-green-500 bg-opacity-40 italic">
+                          <td key="break10" className={break10Class}>
                             พัก 10 นาที
                           </td>
                         )}
                         {d.end == '12:10' && (
-                          <td key="break" className="bg-yellow-500 bg-opacity-40 italic">
+                          <td key="break" className={breakClass}>
                             พักกลางวัน
                           </td>
                         )}
