@@ -346,9 +346,9 @@ export default function TimeSlotsComponent(): JSX.Element {
       }}
       afterLeave={() => setShow(true)}
     >
-      <h4 className="text-gray-900 dark:text-gray-100 py-2 creative-font">
+      <span className="text-gray-900 dark:text-gray-100 py-2 creative-font">
         สวัสดี {metadata?.displayName}
-      </h4>
+      </span>
 
       {state == '' ? (
         <div className="flex flex-col px-4">
