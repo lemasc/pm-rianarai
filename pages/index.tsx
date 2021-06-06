@@ -5,6 +5,7 @@ import { Transition } from '@headlessui/react'
 import dynamic from 'next/dynamic'
 import HeaderComponent from '../components/header'
 import type { Pages } from '../components/menu'
+import { useWindowWidth } from '@react-hook/window-size/throttled'
 
 const SignInComponent = dynamic(() => import('../components/signin'))
 const MetaDataComponent = dynamic(() => import('../components/meta'))
@@ -27,7 +28,7 @@ function MultiComponent(props: SPAProps): JSX.Element {
   return (
     <Transition
       show={props.title == prevState.title}
-      enter="transition duration-700 delay-150"
+      enter="transition duration-700"
       enterFrom="opacity-0"
       enterTo="opactity-100"
       leave="transition duration-500"
@@ -57,6 +58,7 @@ export default function MainPage(): JSX.Element {
   const auth = useAuth()
   const [date, setDate] = useState(new Date())
   const [page, setPage] = useState<Pages>(null)
+  const width = useWindowWidth()
 
   useEffect(() => {
     const timerID = setInterval(() => {
@@ -100,22 +102,25 @@ export default function MainPage(): JSX.Element {
         <meta property="og:title" content="PM Rianarai - เรียนอะไร" />
         <meta property="og:description" content="เข้าเรียนทุกวิชาได้จากทีนี่ที่เดียว" />
       </Head>
-      <div
-        suppressHydrationWarning
-        className="p-6 opacity-50 hidden sm:block absolute top-0 left-0 creative-font text-2xl"
-      >
-        {date.toLocaleTimeString('th-TH')}
-      </div>
+      {width >= 640 && (
+        <div
+          suppressHydrationWarning
+          className="p-6 opacity-50 hidden sm:block absolute top-0 left-0 creative-font text-2xl"
+        >
+          {date.toLocaleTimeString('th-TH')}
+        </div>
+      )}
+
       {auth.user && auth.metadata && (
         <>
           <MenuComponent onChange={setPage} page={page} />
         </>
       )}
 
-      <main className="flex flex-1 flex-col w-full items-center justify-center">
+      <main className={'flex flex-1 flex-col w-full items-center justify-center'}>
         <HeaderComponent />
         {renderPage()}
-        <PWAPromoComponent show={page === null} />
+        <PWAPromoComponent show={true} />
       </main>
 
       <footer className="bg-white bg-opacity-30 text-black text-sm gap-2 flex flex-col justify-center items-center w-full p-8 border-t mx-8">

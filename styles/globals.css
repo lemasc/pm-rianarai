@@ -19,7 +19,7 @@ body {
 }
 
 .background-default {
-  background-image: url('./default.jpg');
+  background-image: url('./default.webp');
   background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
@@ -81,7 +81,7 @@ body {
 }
 
 .timetable {
-  @apply min-w-full sm:max-w-max sm:overflow-visible divide-y divide-gray-200 text-sm border-collapse;
+  @apply select-none min-w-full sm:max-w-max sm:overflow-visible divide-y divide-gray-200 text-sm border-collapse;
 }
 .timetable > thead > tr > th {
   @apply sticky top-0 break-words px-6 py-3 text-center font-medium text-gray-500 uppercase bg-white;

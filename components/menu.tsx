@@ -10,7 +10,13 @@ type MenuComponentProps = {
 
 export default function MenuComponent({ onChange, page }: MenuComponentProps): JSX.Element {
   const auth = useAuth()
-  const iconClasses = 'sm:w-10 sm:h-10 w-8 h-8 font-light opacity-60 hover:opacity-100'
+  function iconClasses(target?: Pages): string {
+    const targetCheck = target !== undefined ? target === page : false
+    return (
+      'sm:w-10 sm:h-10 w-8 h-8 font-light ' +
+      (targetCheck ? 'opacity-100' : 'opacity-60 hover:opacity-100')
+    )
+  }
   function setPage(target: Pages): void {
     if (page == target) onChange(null)
     else onChange(target)
@@ -18,10 +24,10 @@ export default function MenuComponent({ onChange, page }: MenuComponentProps): J
   return (
     <div className="flex flex-row absolute top-0 right-0 p-4 sm:p-6 space-x-4">
       <button title="ตารางเวลา" className="focus:outline-none" onClick={() => setPage('timetable')}>
-        <ClockIcon className={iconClasses} strokeWidth={1} />
+        <ClockIcon className={iconClasses('timetable')} strokeWidth={1} />
       </button>
       <button title="การตั้งค่า" className="focus:outline-none" onClick={() => setPage('settings')}>
-        <CogIcon className={iconClasses} strokeWidth={1} />
+        <CogIcon className={iconClasses('settings')} strokeWidth={1} />
       </button>
       <button
         title="ออกจากระบบ"
@@ -34,7 +40,7 @@ export default function MenuComponent({ onChange, page }: MenuComponentProps): J
           })
         }}
       >
-        <LogoutIcon className={iconClasses} strokeWidth={1} />
+        <LogoutIcon className={iconClasses()} strokeWidth={1} />
       </button>
     </div>
   )

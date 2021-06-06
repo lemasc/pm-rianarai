@@ -5,7 +5,7 @@ import { useAuth } from '../shared/authContext'
 import PaginationComponent from './pagination'
 import type { Schedule, TimeSlots } from './timeslots'
 import { GenerateTeacherName } from './timeslots'
-import { useWindowWidth } from '@react-hook/window-size'
+import { useWindowWidth } from '@react-hook/window-size/throttled'
 
 function TimeSlotsData({ data }: { data: TimeSlots }): JSX.Element {
   return (
