@@ -12,7 +12,7 @@ function TimeSlotsData({ data }: { data: TimeSlots }): JSX.Element {
     <>
       <span className="text-lg py-2 font-bold sarabun-font">{data.code.join(',')}</span>
       {data.teacher.length !== 0 && (
-        <div className="flex flex-row space-x-2 justify-center w-full">
+        <div className="flex flex-row space-x-1 justify-center w-full">
           {GenerateTeacherName(data.teacher)}
         </div>
       )}
@@ -38,10 +38,12 @@ export default function TimetableComponent(): JSX.Element {
       _isMounted = false
     }
   }, [data])
+  // Desktop Breakpoints
+  const DESKTOP = 1200
   const break10Class = 'bg-green-500 bg-opacity-40 italic'
   const breakClass = 'bg-yellow-500 bg-opacity-40 italic'
   return (
-    <div>
+    <div className={width > DESKTOP ? '' : 'w-80 flex flex-col justify-center items-center'}>
       <PaginationComponent
         className="w-48"
         index={curDay}
@@ -50,12 +52,11 @@ export default function TimetableComponent(): JSX.Element {
         showIcons={true}
         length={7}
       />
-      <main className="p-4">
+      <main className="py-4 flex items-center justify-center">
         {data && data[days[curDay]] ? (
           <>
-            {' '}
-            {width < 1200 ? (
-              <table className="timetable">
+            {width < DESKTOP ? (
+              <table className="timetable w-full">
                 <thead className="bg-gray-50">
                   <tr>
                     <th scope="col">เวลา</th>
