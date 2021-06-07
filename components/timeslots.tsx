@@ -9,6 +9,7 @@ import Tippy from '@tippyjs/react'
 import Link from 'next/link'
 import LogRocket from 'logrocket'
 import dayjs from 'dayjs'
+import Image from 'next/image'
 
 export interface Schedule {
   [days: string]: TimeSlots[]
@@ -238,7 +239,7 @@ export default function TimeSlotsComponent(): JSX.Element {
     const timerID = setInterval(() => {
       const d = new Date()
       setDate(d)
-      setCurday(days[d.getDay()])
+      //setCurday(days[d.getDay()])
     }, 1000)
     return () => clearInterval(timerID)
   })

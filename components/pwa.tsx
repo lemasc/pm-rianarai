@@ -68,7 +68,7 @@ export default function PWAPromo({ show }: PWAPromoProps): JSX.Element {
   }
   function generateClass(large): string {
     const baseClass =
-      'absolute bottom-0 text-sm flex-row flex items-center justify-center bg-purple-600 bg-opacity-90 text-white shadow-2xl'
+      'fixed bottom-0 text-sm flex-row flex items-center justify-center bg-purple-600 bg-opacity-90 text-white shadow-2xl'
     if (large) return baseClass + ' mb-8 space-y-0 space-x-4 p-4 rounded-lg'
     return baseClass + ' w-full px-6 py-4 rounded-t-lg'
   }
