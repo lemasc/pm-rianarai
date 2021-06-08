@@ -77,7 +77,7 @@ export default function TimetableComponent(): JSX.Element {
                       {d.end == '10:10' && (
                         <tr key="break10" className={break10Class}>
                           <td>10:10 - 10:30</td>
-                          <td>พัก 10 นาที</td>
+                          <td>พัก 20 นาที</td>
                         </tr>
                       )}
                       {d.end == '12:10' && (
@@ -114,7 +114,7 @@ export default function TimetableComponent(): JSX.Element {
                         </td>
                         {d.end == '10:10' && (
                           <td key="break10" className={break10Class}>
-                            พัก 10 นาที
+                            พัก 20 นาที
                           </td>
                         )}
                         {d.end == '12:10' && (
