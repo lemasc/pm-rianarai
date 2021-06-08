@@ -1,6 +1,7 @@
 import LogRocket from 'logrocket'
 import { useState, useEffect, useContext, createContext } from 'react'
 import { auth, UserData, db } from './firebase'
+import firebase from 'firebase/app'
 
 export interface UserMetadata {
   class: number | string
@@ -10,7 +11,8 @@ export interface UserMetadata {
   email: string
   provider: Provider[]
 }
-type Provider = 'facebook.com' | 'google.com'
+
+export type Provider = 'facebook.com' | 'google.com' | 'password'
 
 interface IAuthContext {
   isPWA: () => boolean
@@ -19,6 +21,7 @@ interface IAuthContext {
   ready: boolean
   remove: () => Promise<boolean>
   metadata: UserMetadata | null
+  signInWithProvider: (provider: Provider) => Promise<boolean>
   signout: () => Promise<void>
   updateMeta: (meta: UserMetadata) => Promise<boolean>
 }
@@ -48,6 +51,29 @@ export function useProvideAuth(): IAuthContext {
   const getToken = async (): Promise<null | string> => {
     if (!user) return null
     return await user.getIdToken()
+  }
+
+  const signInWithProvider = async (p: Provider): Promise<boolean> => {
+    let provider
+    switch (p) {
+      case 'google.com':
+        provider = new firebase.auth.GoogleAuthProvider()
+        break
+      case 'facebook.com':
+        provider = new firebase.auth.FacebookAuthProvider()
+        break
+      default:
+        return
+    }
+    try {
+      const result = await auth.signInWithPopup(provider)
+      console.log(result)
+      return true
+    } catch (err) {
+      console.log(err)
+      if (err.code === 'auth/popup-closed-by-user') return true
+      return false
+    }
   }
   const remove = async (): Promise<boolean> => {
     try {
@@ -117,6 +143,7 @@ export function useProvideAuth(): IAuthContext {
     remove,
     ready,
     isPWA,
+    signInWithProvider,
     signout,
     updateMeta,
   }

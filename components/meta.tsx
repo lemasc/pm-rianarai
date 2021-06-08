@@ -85,14 +85,14 @@ export default function MetadataComponent({ onSubmit }: MetaProps): JSX.Element 
         />
         <button
           type="submit"
-          className="sm:mt-4 mt-2 text-white btn ring-apple-500 bg-apple-500 from-apple-500 to-apple-600"
+          className="sm:mt-4 mt-2 text-white btn py-2 ring-apple-500 bg-apple-500 from-apple-500 to-apple-600"
         >
           เรียบร้อย !
         </button>
         <button
           type="reset"
           onClick={() => cancel()}
-          className="sm:mt-4 btn ring-gray-300 text-black bg-gray-300 from-gray-300 to-gray-400"
+          className="sm:mt-4 btn py-2 ring-gray-300 text-black bg-gray-300 from-gray-300 to-gray-400"
         >
           ยกเลิก
         </button>
