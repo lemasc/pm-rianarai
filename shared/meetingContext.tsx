@@ -38,7 +38,7 @@ export function useProvideMeeting(): IMeetingContext {
    * @returns First meeting data that matches
    */
   const getMeetingByName = (name: string): Document<Meeting>[] | null => {
-    if (!data) return null
+    if (!data) return [null]
     const result = data.filter((d) => d.name.includes(name))
     if (result.length == 0) return [null]
     return result
