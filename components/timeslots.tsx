@@ -83,7 +83,7 @@ const MeetingJoin: React.FC<MeetingComponentProps> = ({ showNames, meetings, dis
       <button
         title={
           disabled
-            ? 'สามารถเข้าสู่ห้องเรียนก่อนเวลาได้ 5 นาที'
+            ? 'สามารถเข้าสู่ห้องเรียนก่อนเวลาได้ 10 นาที'
             : 'เข้าสู่ห้องเรียน จำเป็นต้องมี Zoom ติดตั้งลงในอุปกรณ์แล้ว'
         }
         key={index}
@@ -249,7 +249,7 @@ export default function TimeSlotsComponent(): JSX.Element {
       return dayjs()
         .hour(parseInt(t.slice(0, 2)))
         .minute(parseInt(t.slice(3)))
-        .subtract(5, 'minutes')
+        .subtract(10, 'minutes')
         .format('HH:mm')
     }
     const inTimeRange = (time: string, slot: TimeSlots): boolean => {
