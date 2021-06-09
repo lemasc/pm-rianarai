@@ -138,7 +138,7 @@ function EmailForm({ cancel }: MetaProps): JSX.Element {
         <h3 className="text-left text-xl pb-2 font-medium">{title[page]}</h3>
         <input
           name="email"
-          className={'input' + (page !== 'email' ? ' bg-gray-200' : '')}
+          className={'input' + (page !== 'email' ? ' bg-gray-100' : '')}
           type="email"
           readOnly={page !== 'email'}
           placeholder="ป้อนอีเมลของคุณ..."
