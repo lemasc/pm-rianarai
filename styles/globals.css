@@ -48,7 +48,7 @@ body {
   }
 }
 .input {
-  @apply px-2 sm:py-2 py-1 font-light border rounded-md dark:bg-black border-gray-400 hover:ring-2 hover:ring-blue-300 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent;
+  @apply px-2 py-2 font-light border rounded-md dark:bg-black border-gray-400 hover:ring-2 hover:ring-blue-300 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent;
 }
 .btn {
   @apply focus:bg-gradient-to-b hover:bg-gradient-to-b focus:outline-none dark:focus:ring-offset-gray-900 focus:ring-2 focus:ring-offset-4 rounded;
