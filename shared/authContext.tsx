@@ -12,6 +12,11 @@ export interface UserMetadata {
   provider: Provider[]
 }
 
+type FirebaseResult = {
+  success: boolean
+  message?: string
+}
+
 export type Provider = 'facebook.com' | 'google.com' | 'password'
 
 interface IAuthContext {
@@ -21,8 +26,11 @@ interface IAuthContext {
   ready: boolean
   remove: () => Promise<boolean>
   metadata: UserMetadata | null
+  getMethods: (email: string) => Promise<Provider[]>
+  signUp: (email: string, password: string) => Promise<FirebaseResult>
+  signIn: (email: string, password: string) => Promise<FirebaseResult>
   signInWithProvider: (provider: Provider) => Promise<boolean>
-  signout: () => Promise<void>
+  signOut: () => Promise<void>
   updateMeta: (meta: UserMetadata) => Promise<boolean>
 }
 
@@ -53,6 +61,28 @@ export function useProvideAuth(): IAuthContext {
     return await user.getIdToken()
   }
 
+  const getMethods = async (email: string): Promise<Provider[]> => {
+    return (await auth.fetchSignInMethodsForEmail(email)) as Provider[]
+  }
+
+  const signUp = async (email: string, password: string): Promise<FirebaseResult> => {
+    try {
+      await auth.createUserWithEmailAndPassword(email, password)
+      return { success: true }
+    } catch (err) {
+      LogRocket.error(err)
+      return { success: false, message: err.code }
+    }
+  }
+  const signIn = async (email: string, password: string): Promise<FirebaseResult> => {
+    try {
+      await auth.signInWithEmailAndPassword(email, password)
+      return { success: true }
+    } catch (err) {
+      LogRocket.error(err)
+      return { success: false, message: err.code }
+    }
+  }
   const signInWithProvider = async (p: Provider): Promise<boolean> => {
     let provider
     switch (p) {
@@ -63,14 +93,13 @@ export function useProvideAuth(): IAuthContext {
         provider = new firebase.auth.FacebookAuthProvider()
         break
       default:
-        return
+        return false
     }
     try {
-      const result = await auth.signInWithPopup(provider)
-      console.log(result)
+      await auth.signInWithPopup(provider)
       return true
     } catch (err) {
-      console.log(err)
+      LogRocket.error(err)
       if (err.code === 'auth/popup-closed-by-user') return true
       return false
     }
@@ -81,13 +110,13 @@ export function useProvideAuth(): IAuthContext {
       return true
     } catch (err) {
       if (err.code === 'auth/requires-recent-login') {
-        await signout()
+        await signOut()
         return true
       }
       return false
     }
   }
-  const signout = async (): Promise<void> => {
+  const signOut = async (): Promise<void> => {
     await auth.signOut()
   }
   const updateMeta = async (meta: UserMetadata): Promise<boolean> => {
@@ -143,8 +172,11 @@ export function useProvideAuth(): IAuthContext {
     remove,
     ready,
     isPWA,
+    getMethods,
+    signUp,
+    signIn,
     signInWithProvider,
-    signout,
+    signOut,
     updateMeta,
   }
 }

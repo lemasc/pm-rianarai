@@ -92,8 +92,45 @@ body {
 
 .login > button {
   font-family: 'Roboto', Arial, Helvetica, sans-serif;
-  @apply sm:px-8 px-4 py-2 text-sm shadow-md rounded flex flex-row space-x-4;
+  @apply sm:px-8 px-4 py-3 text-sm shadow-md rounded flex flex-row space-x-4 items-center justify-center;
 }
 .login > button > span {
   @apply flex flex-grow pt-0.5;
+}
+.password-strength-meter {
+  text-align: left;
+}
+
+.password-strength-meter-progress {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 250px;
+  height: 8px;
+}
+
+.password-strength-meter-progress::-webkit-progress-bar {
+  background-color: white;
+  border-radius: 3px;
+}
+
+.password-strength-meter-label {
+  font-size: 14px;
+}
+
+.password-strength-meter-progress::-webkit-progress-value {
+  border-radius: 2px;
+  background-size: 35px 20px, 100% 100%, 100% 100%;
+}
+
+.strength-Weak::-webkit-progress-value {
+  background-color: #f25f5c;
+}
+.strength-Fair::-webkit-progress-value {
+  background-color: #ffe066;
+}
+.strength-Good::-webkit-progress-value {
+  background-color: #247ba0;
+}
+.strength-Strong::-webkit-progress-value {
+  background-color: #70c1b3;
 }

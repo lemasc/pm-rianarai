@@ -7,7 +7,7 @@ interface MetaProps {
 }
 
 export default function MetadataComponent({ onSubmit }: MetaProps): JSX.Element {
-  const { updateMeta, metadata, remove, signout } = useAuth()
+  const { updateMeta, metadata, remove, signOut } = useAuth()
   const {
     register,
     handleSubmit,
@@ -31,7 +31,7 @@ export default function MetadataComponent({ onSubmit }: MetaProps): JSX.Element 
     if (metadata) onSubmit && onSubmit()
     else {
       if (!(await remove())) {
-        await signout()
+        await signOut()
       }
     }
   }
