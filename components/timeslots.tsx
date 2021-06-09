@@ -1,15 +1,14 @@
+import { ReactNodeArray, useEffect, useState } from 'react'
 import { Transition } from '@headlessui/react'
-import { useDocument } from '@nandorojo/swr-firestore'
-import React, { ReactNodeArray, useEffect, useState } from 'react'
-import { useAuth } from '../shared/authContext'
-import { Meeting, useMeeting } from '../shared/meetingContext'
-import PaginationComponent from './pagination'
+import { useDocument } from 'swr-firestore-v9'
 import { DocumentDuplicateIcon, ClipboardCheckIcon } from '@heroicons/react/outline'
 import Tippy from '@tippyjs/react'
 import Link from 'next/link'
 import LogRocket from 'logrocket'
 import dayjs from 'dayjs'
-import Image from 'next/image'
+import { useAuth } from '../shared/authContext'
+import { Meeting, useMeeting } from '../shared/meetingContext'
+import PaginationComponent from './pagination'
 
 export interface Schedule {
   [days: string]: TimeSlots[]
@@ -83,7 +82,7 @@ const MeetingJoin: React.FC<MeetingComponentProps> = ({ showNames, meetings, dis
       <button
         title={
           disabled
-            ? 'สามารถเข้าสู่ห้องเรียนก่อนเวลาได้ 10 นาที'
+            ? 'สามารถเข้าสู่ห้องเรียนก่อนเวลาได้ 5 นาที'
             : 'เข้าสู่ห้องเรียน จำเป็นต้องมี Zoom ติดตั้งลงในอุปกรณ์แล้ว'
         }
         key={index}
@@ -249,7 +248,7 @@ export default function TimeSlotsComponent(): JSX.Element {
       return dayjs()
         .hour(parseInt(t.slice(0, 2)))
         .minute(parseInt(t.slice(3)))
-        .subtract(10, 'minutes')
+        .subtract(5, 'minutes')
         .format('HH:mm')
     }
     const inTimeRange = (time: string, slot: TimeSlots): boolean => {
@@ -273,7 +272,7 @@ export default function TimeSlotsComponent(): JSX.Element {
       setState('')
       return
     }
-    if (data && data[curDay]) {
+    if (data[curDay]) {
       //const timeString = '12:55'
       const timeString = date.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })
       const target = data[curDay]
@@ -309,9 +308,10 @@ export default function TimeSlotsComponent(): JSX.Element {
           return
         }
       }
+    } else {
+      setState('active')
     }
     setMemory({ active: null, next: null })
-    setState('active')
     return () => {
       _isMounted = false
     }

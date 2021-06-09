@@ -1,4 +1,4 @@
-import { Document, useCollection } from '@nandorojo/swr-firestore'
+import { Document, useCollection } from 'swr-firestore-v9'
 import LogRocket from 'logrocket'
 import { createContext, useContext } from 'react'
 import { useAuth } from './authContext'

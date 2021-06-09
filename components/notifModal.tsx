@@ -11,13 +11,13 @@ export default function NotifModal(): JSX.Element {
     setTimeout(() => setNotiPrompt(true), 5000)
   }, [])
   async function requestNotification(): Promise<boolean> {
-    await Notification.requestPermission()
+    /* await Notification.requestPermission()
     const messaging = firebase.messaging()
     const perm = await Notification.requestPermission()
     if (perm !== 'granted') return false
     const token = await messaging.getToken({ vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY })
     if (!token) return false
-    console.log(token)
+    console.log(token)*/
     return true
   }
   return (

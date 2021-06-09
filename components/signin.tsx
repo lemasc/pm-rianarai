@@ -52,22 +52,6 @@ function EmailForm({ cancel }: MetaProps): JSX.Element {
         shortName.slice(1)
     )
   }
-  const createPasswordLabel = (result) => {
-    switch (result.score) {
-      case 0:
-        return 'Weak'
-      case 1:
-        return 'Weak'
-      case 2:
-        return 'Fair'
-      case 3:
-        return 'Good'
-      case 4:
-        return 'Strong'
-      default:
-        return 'Weak'
-    }
-  }
   async function _signUp(email: string, password: string): Promise<void> {
     if (zxcvbn(password).score < 2) return setError('กรุณากรอกรหัสผ่านที่แข็งแรงพอ')
     const result = await signUp(email, password)
@@ -186,8 +170,12 @@ export default function SignInComponent(): JSX.Element {
   const [show, setShow] = useState(true)
   const [email, setEmail] = useState(false)
   const [next, setNext] = useState<null | boolean>(false)
+  const [error, setError] = useState<null | string>(null)
   async function provider(p: Provider): Promise<void> {
-    console.log(await auth.signInWithProvider(p))
+    setError(null)
+    if (!(await auth.signInWithProvider(p))) {
+      setError('ไม่สามารถเข้าสู่ระบบได้ กรุณาลองใหม่อีกครั้ง')
+    }
   }
   return (
     <Transition
@@ -201,6 +189,7 @@ export default function SignInComponent(): JSX.Element {
       leaveFrom="opacity-100"
       leaveTo="opacity-0"
       beforeEnter={() => {
+        setError(null)
         if (next !== email) {
           setEmail(next)
           setNext(null)
@@ -208,6 +197,7 @@ export default function SignInComponent(): JSX.Element {
       }}
       afterLeave={() => setShow(true)}
     >
+      {error && <div className="px-4 py-3 border rounded-lg bg-red-200 text-red-700">{error}</div>}
       {email ? (
         <EmailForm
           cancel={() => {
