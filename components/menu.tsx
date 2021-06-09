@@ -34,9 +34,9 @@ export default function MenuComponent({ onChange, page }: MenuComponentProps): J
         className="focus:outline-none"
         onClick={() => {
           setPage(null)
-          if (auth.metadata) return auth.signout()
+          if (auth.metadata) return auth.signOut()
           auth.remove().then((ok) => {
-            if (!ok) auth.signout()
+            if (!ok) auth.signOut()
           })
         }}
       >

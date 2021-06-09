@@ -48,10 +48,10 @@ body {
   }
 }
 .input {
-  @apply px-2 sm:py-2 py-1 font-light border rounded-md dark:bg-black border-gray-400 hover:ring-2 hover:ring-blue-300 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent;
+  @apply px-2 py-2 font-light border rounded-md dark:bg-black border-gray-400 hover:ring-2 hover:ring-blue-300 hover:border-transparent focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent;
 }
 .btn {
-  @apply focus:bg-gradient-to-b hover:bg-gradient-to-b py-2 focus:outline-none dark:focus:ring-offset-gray-900 focus:ring-2 focus:ring-offset-4 rounded;
+  @apply focus:bg-gradient-to-b hover:bg-gradient-to-b focus:outline-none dark:focus:ring-offset-gray-900 focus:ring-2 focus:ring-offset-4 rounded;
 }
 .zoom-btn {
   background: #0e72ed;
@@ -88,4 +88,49 @@ body {
 }
 .timetable > tbody > tr > td {
   @apply px-6 py-4 whitespace-nowrap border-t border-b border-gray-400;
+}
+
+.login > button {
+  font-family: 'Roboto', Arial, Helvetica, sans-serif;
+  @apply sm:px-8 px-4 py-3 text-sm shadow-md rounded flex flex-row space-x-4 items-center justify-center;
+}
+.login > button > span {
+  @apply flex flex-grow pt-0.5;
+}
+.password-strength-meter {
+  text-align: left;
+}
+
+.password-strength-meter-progress {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 250px;
+  height: 8px;
+}
+
+.password-strength-meter-progress::-webkit-progress-bar {
+  background-color: white;
+  border-radius: 3px;
+}
+
+.password-strength-meter-label {
+  font-size: 14px;
+}
+
+.password-strength-meter-progress::-webkit-progress-value {
+  border-radius: 2px;
+  background-size: 35px 20px, 100% 100%, 100% 100%;
+}
+
+.strength-Weak::-webkit-progress-value {
+  background-color: #f25f5c;
+}
+.strength-Fair::-webkit-progress-value {
+  background-color: #ffe066;
+}
+.strength-Good::-webkit-progress-value {
+  background-color: #247ba0;
+}
+.strength-Strong::-webkit-progress-value {
+  background-color: #70c1b3;
 }
