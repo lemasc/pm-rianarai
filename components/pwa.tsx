@@ -14,6 +14,8 @@ export default function PWAPromo({ show }: PWAPromoProps): JSX.Element {
   const [prompt, setPWAPrompt] = useState<Event | null>(null)
   const [installed, setInstalled] = useState(false)
   const [promo, showPromo] = useState(false)
+  const PWA_PROMO = 'pwaPrompt'
+  const PWA_LOCAL = 'lastPWA'
   useEffect(() => {
     const pwa = (e: Event): void => {
       // Prevent the mini-infobar from appearing on mobile
@@ -32,17 +34,17 @@ export default function PWAPromo({ show }: PWAPromoProps): JSX.Element {
     if (auth.isPWA()) {
       showPromo(false)
       return
-    } else if (localStorage.getItem('lastPWA')) {
+    } else if (localStorage.getItem(PWA_LOCAL)) {
       // PWA last session detected, if user open with-in 3 days
       // Change button to OPEN APP
-      const time = parseInt(localStorage.getItem('lastPWA'))
+      const time = parseInt(localStorage.getItem(PWA_LOCAL))
       const dateToRemind = new Date(time)
       dateToRemind.setDate(dateToRemind.getDate() + 3)
       if (new Date(time) <= dateToRemind) {
         setInstalled(true)
       }
-    } else if (localStorage.getItem('pwaPrompt')) {
-      const time = parseInt(localStorage.getItem('lastPWA'))
+    } else if (localStorage.getItem(PWA_PROMO)) {
+      const time = parseInt(localStorage.getItem(PWA_PROMO))
       const dateToRemind = new Date(time)
       // If past 3 days, re-remind
       dateToRemind.setDate(dateToRemind.getDate() + 3)
@@ -64,7 +66,7 @@ export default function PWAPromo({ show }: PWAPromoProps): JSX.Element {
   function dismissPWA(): void {
     showPromo(false)
     LogRocket.track('PWA Promo Dismissed')
-    localStorage.setItem('pwaPrompt', new Date().valueOf().toString())
+    localStorage.setItem(PWA_PROMO, new Date().valueOf().toString())
   }
   function generateClass(large): string {
     const baseClass =

@@ -185,7 +185,7 @@ function MeetingInfo({ slot, disabled }: MeetingMetaProps): JSX.Element {
   return (
     <div className="flex flex-col sm:grid sm:grid-cols-2 w-full sm:divide-x divide-gray-400">
       <div className="flex flex-col justify-center">
-        <div className="text-2xl p-4 text-blue-600 font-medium px-8">
+        <div className="text-2xl p-4 text-blue-600 font-medium px-8 max-w-md">
           {meeting[0] !== null &&
             slot.code[0].match(/([0-9]){4}\w/g) !== null &&
             meeting[0].subject + ' : '}
@@ -347,7 +347,7 @@ export default function TimeSlotsComponent(): JSX.Element {
       }}
       afterLeave={() => setShow(true)}
     >
-      <span className="text-gray-900 dark:text-gray-100 py-2 creative-font">
+      <span className="text-gray-900 dark:text-gray-100 py-2 px-4 creative-font">
         สวัสดี {metadata?.displayName}
       </span>
 
