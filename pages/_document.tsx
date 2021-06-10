@@ -35,6 +35,10 @@ class MyDocument extends Document {
           <meta property="og:image:width" content="1200" />
           <meta property="og:image:height" content="628" />
           <meta name="twitter:card" content="summary_large_image" />
+          <meta
+            name="google-site-verification"
+            content="KW3TOoLBgwADlIMl6y7ESYzQBhl_Dtxmh6P7-nUDCyM"
+          />
         </Head>
         <body>
           <Main />
