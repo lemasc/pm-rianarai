@@ -6,4 +6,5 @@ module.exports = withPWA({
     disable: process.env.NODE_ENV === 'development',
   },
   future: { webpack5: true },
+  productionBrowserSourceMaps: true,
 })
