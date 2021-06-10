@@ -1,7 +1,16 @@
+import {
+  createUserWithEmailAndPassword,
+  FacebookAuthProvider,
+  fetchSignInMethodsForEmail,
+  GoogleAuthProvider,
+  signInWithEmailAndPassword,
+  signInWithPopup,
+  User,
+} from 'firebase/auth'
+import { getDoc, setDoc, doc } from 'firebase/firestore'
 import LogRocket from 'logrocket'
 import { useState, useEffect, useContext, createContext } from 'react'
-import { auth, UserData, db } from './firebase'
-import firebase from 'firebase/app'
+import { auth, db } from './firebase'
 
 export interface UserMetadata {
   class: number | string
@@ -22,7 +31,7 @@ export type Provider = 'facebook.com' | 'google.com' | 'password'
 interface IAuthContext {
   isPWA: () => boolean
   getToken: () => Promise<string | null>
-  user: UserData | null
+  user: User | null
   ready: boolean
   remove: () => Promise<boolean>
   metadata: UserMetadata | null
@@ -42,7 +51,7 @@ export const useAuth = (): IAuthContext | undefined => {
 
 // Provider hook that creates auth object and handles state
 export function useProvideAuth(): IAuthContext {
-  const [user, setUser] = useState<UserData | null>(null)
+  const [user, setUser] = useState<User | null>(null)
   const [metadata, setMetadata] = useState<UserMetadata | null>(null)
   const [ready, setReady] = useState<boolean>(false)
 
@@ -62,12 +71,12 @@ export function useProvideAuth(): IAuthContext {
   }
 
   const getMethods = async (email: string): Promise<Provider[]> => {
-    return (await auth.fetchSignInMethodsForEmail(email)) as Provider[]
+    return (await fetchSignInMethodsForEmail(auth, email)) as Provider[]
   }
 
   const signUp = async (email: string, password: string): Promise<FirebaseResult> => {
     try {
-      await auth.createUserWithEmailAndPassword(email, password)
+      await createUserWithEmailAndPassword(auth, email, password)
       return { success: true }
     } catch (err) {
       LogRocket.error(err)
@@ -76,7 +85,7 @@ export function useProvideAuth(): IAuthContext {
   }
   const signIn = async (email: string, password: string): Promise<FirebaseResult> => {
     try {
-      await auth.signInWithEmailAndPassword(email, password)
+      await signInWithEmailAndPassword(auth, email, password)
       return { success: true }
     } catch (err) {
       LogRocket.error(err)
@@ -87,16 +96,16 @@ export function useProvideAuth(): IAuthContext {
     let provider
     switch (p) {
       case 'google.com':
-        provider = new firebase.auth.GoogleAuthProvider()
+        provider = new GoogleAuthProvider()
         break
       case 'facebook.com':
-        provider = new firebase.auth.FacebookAuthProvider()
+        provider = new FacebookAuthProvider()
         break
       default:
         return false
     }
     try {
-      await auth.signInWithPopup(provider)
+      await signInWithPopup(auth, provider)
       return true
     } catch (err) {
       LogRocket.error(err)
@@ -124,7 +133,7 @@ export function useProvideAuth(): IAuthContext {
       meta.name = user.displayName
       meta.email = user.email
       meta.provider = user.providerData.map((p) => p.providerId) as Provider[]
-      await db.collection('users').doc(user.uid).set(meta)
+      await setDoc(doc(db, 'users/' + user.uid), meta)
       LogRocket.log('Metadata update', meta)
       setMetadata(meta)
       return true
@@ -146,7 +155,7 @@ export function useProvideAuth(): IAuthContext {
           email: user.email,
           pwa: isPWA(),
         })
-        const meta = await db.collection('users').doc(user.uid).get()
+        const meta = await getDoc(doc(db, 'users/' + user.uid))
         if (meta.exists) {
           setMetadata(meta.data() as UserMetadata)
         } else {
@@ -158,7 +167,6 @@ export function useProvideAuth(): IAuthContext {
       } else {
         authReady = setTimeout(() => setReady(true), 1000)
         setUser(null)
-        setMetadata(null)
       }
       return () => {
         _isMounted = false

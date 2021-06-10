@@ -1,9 +1,8 @@
 import React, { ReactNode } from 'react'
 import { useProvideAuth, authContext } from './authContext'
-import { FuegoProvider } from '@nandorojo/swr-firestore'
-import { Fuego } from './firebase'
+import { FuegoProvider } from 'swr-firestore-v9'
 import { meetingContext, useProvideMeeting } from './meetingContext'
-
+import { fuego } from './firebase'
 interface IProps {
   children: ReactNode
 }
@@ -19,7 +18,7 @@ function MeetingProvier({ children }: IProps): JSX.Element {
 export function MainProvider({ children }: IProps): JSX.Element {
   return (
     <AuthProvider>
-      <FuegoProvider fuego={new Fuego()}>
+      <FuegoProvider fuego={fuego}>
         <MeetingProvier>{children}</MeetingProvier>
       </FuegoProvider>
     </AuthProvider>

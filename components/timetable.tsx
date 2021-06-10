@@ -1,4 +1,4 @@
-import { useDocument } from '@nandorojo/swr-firestore'
+import { useDocument } from 'swr-firestore-v9'
 import dayjs from 'dayjs'
 import { useEffect, useState } from 'react'
 import { useAuth } from '../shared/authContext'

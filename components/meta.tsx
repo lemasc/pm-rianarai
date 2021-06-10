@@ -36,7 +36,7 @@ export default function MetadataComponent({ onSubmit }: MetaProps): JSX.Element 
     }
   }
   useEffect(() => {
-    if (metadata === null) return
+    if (!metadata) return
     setValue('class', metadata.class.toString().slice(0, 1))
     setValue('room', metadata.class.toString().slice(2))
     setValue('displayName', metadata.displayName)

@@ -1,8 +1,7 @@
-import firebase from 'firebase/app'
-import 'firebase/auth'
-import 'firebase/firestore'
-import 'firebase/storage'
-import 'firebase/messaging'
+import { Fuego } from 'swr-firestore-v9'
+import { initializeApp, getApps, getApp } from 'firebase/app'
+import { getAuth } from 'firebase/auth'
+import { getFirestore } from 'firebase/firestore'
 
 export const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -14,31 +13,9 @@ export const firebaseConfig = {
   appId: process.env.NEXT_PUBLIC_FIREBASE_APP_ID,
   measurementId: process.env.NEXT_PUBLIC_FIREBASE_MEASUREMENT_ID,
 }
-if (!firebase.apps.length) {
-  firebase.initializeApp(firebaseConfig)
-}
-const app = firebase
-const auth = firebase.auth()
-const db = firebase.firestore()
-const now = firebase.firestore.Timestamp.now()
-const storage = firebase.storage()
+const app = !getApps().length ? initializeApp(firebaseConfig) : getApp()
+const auth = getAuth(app)
+const db = getFirestore(app)
 
-export type UserData = firebase.User
-// Fuego for Firebasev8
-
-class Fuego {
-  public db: ReturnType<firebase.app.App['firestore']>
-  public auth: typeof firebase.auth
-  public functions: typeof firebase.functions
-  public storage: typeof firebase.storage
-  constructor() {
-    this.db = !firebase.apps.length
-      ? firebase.initializeApp(firebaseConfig).firestore()
-      : firebase.app().firestore()
-    this.auth = firebase.auth
-    this.functions = firebase.functions
-    this.storage = firebase.storage
-  }
-}
-
-export { auth, db, now, storage, Fuego, app }
+const fuego = new Fuego(firebaseConfig)
+export { auth, db, app, fuego }
