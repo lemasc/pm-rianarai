@@ -9,4 +9,4 @@
 * Next.js สำหรับ Web Framework
 * Firebase สำหรับการจัดเก็บข้อมูลและการล็อกอิน
 
-อยากรู้ข้อมูลเกี่ยวกับเราเพิ่มเติมหรอ? ได้[ที่นี่](https://github.com/lemasc/pm-rianarai/docs/about.md)เลย
+อยากรู้ข้อมูลเกี่ยวกับเราเพิ่มเติมหรอ? ได้[ที่นี่](docs/about.md)เลย
