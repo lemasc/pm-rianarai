@@ -248,7 +248,7 @@ export default function TimeSlotsComponent(): JSX.Element {
       return dayjs()
         .hour(parseInt(t.slice(0, 2)))
         .minute(parseInt(t.slice(3)))
-        .subtract(5, 'minutes')
+        .subtract(10, 'minutes')
         .format('HH:mm')
     }
     const inTimeRange = (time: string, slot: TimeSlots): boolean => {
