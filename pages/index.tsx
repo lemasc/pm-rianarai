@@ -13,7 +13,7 @@ const TimeSlotsComponent = dynamic(() => import('../components/timeslots'))
 const MenuComponent = dynamic(() => import('../components/menu'))
 const PWAPromoComponent = dynamic(() => import('../components/pwa'))
 const TimeTableComponent = dynamic(() => import('../components/timetable'))
-//const NotifModalComponent = dynamic(() => import('../components/notifModal'))
+const AnnouncementComponent = dynamic(() => import('../components/announce'))
 
 /**
  * Single Page Application!
@@ -58,7 +58,7 @@ export default function MainPage(): JSX.Element {
   const auth = useAuth()
   const [date, setDate] = useState(new Date())
   const [page, setPage] = useState<Pages>(null)
-  const width = useWindowWidth()
+  const width = useWindowWidth({ initialWidth: 1360 })
 
   useEffect(() => {
     const timerID = setInterval(() => {
@@ -111,16 +111,13 @@ export default function MainPage(): JSX.Element {
         </div>
       )}
 
-      {auth.user && auth.metadata && (
-        <>
-          <MenuComponent onChange={setPage} page={page} />
-        </>
-      )}
+      <MenuComponent onChange={setPage} page={page} />
 
       <main className={'flex flex-1 flex-col w-full items-center justify-center'}>
         <HeaderComponent />
         {renderPage()}
         <PWAPromoComponent show={true} />
+        <AnnouncementComponent show={page === 'announce'} onClose={() => setPage(null)} />
       </main>
 
       <footer className="bg-white bg-opacity-30 text-black text-sm gap-2 flex flex-col justify-center items-center w-full p-8 border-t mx-8">

@@ -42,6 +42,12 @@ export default function MarkDownComponent({
       />
     ),
     p: ({ node, ...props }) => <p className="py-2" {...props} />,
+    blockquote: ({ node, ...props }) => (
+      <blockquote
+        className="kanit-font py-2 my-2 pl-6 border-l-4 border-gray-500 bg-gray-100"
+        {...props}
+      />
+    ),
     li: ({ node, ordered, ...props }) => <li className="py-1 list-disc ml-8 px-2" {...props} />,
     strong: ({ node, ...props }) => <strong className="font-semibold" {...props} />,
     table: ({ node, ...props }) => (

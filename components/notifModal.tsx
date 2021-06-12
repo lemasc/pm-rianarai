@@ -22,7 +22,7 @@ export default function NotifModal(): JSX.Element {
   }
   return (
     <ModalComponent
-      initialFocus={completeButtonRef}
+      size="max-w-md"
       title="อนุญาตการเข้าถึงการแจ้งเตือน"
       show={notiPrompt}
       onClose={() => setNotiPrompt(false)}

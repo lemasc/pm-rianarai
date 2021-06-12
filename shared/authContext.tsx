@@ -7,9 +7,10 @@ import {
   signInWithPopup,
   User,
 } from 'firebase/auth'
-import { getDoc, setDoc, doc } from 'firebase/firestore'
+import { getDoc, setDoc, doc, updateDoc, arrayUnion } from 'firebase/firestore'
 import LogRocket from 'logrocket'
 import { useState, useEffect, useContext, createContext } from 'react'
+import { useCollection, Document } from 'swr-firestore-v9'
 import { auth, db } from './firebase'
 
 export interface UserMetadata {
@@ -19,6 +20,7 @@ export interface UserMetadata {
   displayName: string
   email: string
   provider: Provider[]
+  announceId?: string[]
 }
 
 type FirebaseResult = {
@@ -28,12 +30,22 @@ type FirebaseResult = {
 
 export type Provider = 'facebook.com' | 'google.com' | 'password'
 
+export type Announcement = {
+  created_at: Date
+  enable: boolean
+  displayName: string
+  name: string
+  needs_login: boolean
+  target: string
+}
+
 interface IAuthContext {
   isPWA: () => boolean
-  getToken: () => Promise<string | null>
   user: User | null
   ready: boolean
   remove: () => Promise<boolean>
+  announce: Document<Announcement>[]
+  markAsRead: (announceId: string) => Promise<void>
   metadata: UserMetadata | null
   getMethods: (email: string) => Promise<Provider[]>
   signUp: (email: string, password: string) => Promise<FirebaseResult>
@@ -54,7 +66,18 @@ export function useProvideAuth(): IAuthContext {
   const [user, setUser] = useState<User | null>(null)
   const [metadata, setMetadata] = useState<UserMetadata | null>(null)
   const [ready, setReady] = useState<boolean>(false)
-
+  const { data: announce } = useCollection<Announcement>(ready ? 'announcement' : null, {
+    where: [
+      ['enable', '==', true],
+      ['needs_login', '!=', !user ? true : ''],
+    ],
+    orderBy: [
+      ['needs_login', 'asc'],
+      ['created_at', 'desc'],
+    ],
+    parseDates: ['created_at', 'released_at'],
+    listen: true,
+  })
   const isPWA = (): boolean => {
     const isPWA =
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -64,10 +87,6 @@ export function useProvideAuth(): IAuthContext {
       localStorage.setItem('lastPWA', new Date().valueOf().toString())
     }
     return isPWA
-  }
-  const getToken = async (): Promise<null | string> => {
-    if (!user) return null
-    return await user.getIdToken()
   }
 
   const getMethods = async (email: string): Promise<Provider[]> => {
@@ -133,6 +152,9 @@ export function useProvideAuth(): IAuthContext {
       meta.name = user.displayName
       meta.email = user.email
       meta.provider = user.providerData.map((p) => p.providerId) as Provider[]
+      if (metadata && metadata.announceId) {
+        meta.announceId = metadata.announceId //Preserve fields
+      }
       await setDoc(doc(db, 'users/' + user.uid), meta)
       LogRocket.log('Metadata update', meta)
       setMetadata(meta)
@@ -173,9 +195,20 @@ export function useProvideAuth(): IAuthContext {
       }
     })
   }, [])
+
+  const markAsRead = async (announceId: string): Promise<void> => {
+    if (!user) return
+    const currentIds = new Set(metadata.announceId !== undefined ? metadata.announceId : [])
+    currentIds.add(announceId)
+    await updateDoc(doc(db, 'users/' + user.uid), {
+      announceId: arrayUnion(announceId),
+    })
+    setMetadata((meta) => ({ ...meta, announceId: Array.from(currentIds) }))
+  }
   return {
     user,
-    getToken,
+    announce,
+    markAsRead,
     metadata,
     remove,
     ready,

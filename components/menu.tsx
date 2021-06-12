@@ -1,7 +1,8 @@
-import { useAuth } from '../shared/authContext'
-import { CogIcon, LogoutIcon, ClockIcon } from '@heroicons/react/outline'
+import { Announcement, useAuth } from '../shared/authContext'
+import { CogIcon, LogoutIcon, ClockIcon, SpeakerphoneIcon } from '@heroicons/react/outline'
+import { Document } from 'swr-firestore-v9'
 
-export type Pages = 'settings' | 'timetable' | null
+export type Pages = 'settings' | 'timetable' | 'announce' | null
 
 type MenuComponentProps = {
   onChange: (page: Pages) => void
@@ -9,7 +10,7 @@ type MenuComponentProps = {
 }
 
 export default function MenuComponent({ onChange, page }: MenuComponentProps): JSX.Element {
-  const auth = useAuth()
+  const { announce, metadata, signOut, remove } = useAuth()
   function iconClasses(target?: Pages): string {
     const targetCheck = target !== undefined ? target === page : false
     return (
@@ -21,27 +22,54 @@ export default function MenuComponent({ onChange, page }: MenuComponentProps): J
     if (page == target) onChange(null)
     else onChange(target)
   }
+  function getUnreadAnnounce(): Document<Announcement>[] {
+    return Object.values(announce.filter((a) => !(metadata && metadata.announceId?.includes(a.id))))
+  }
   return (
     <div className="flex flex-row absolute top-0 right-0 p-4 sm:p-6 space-x-4">
-      <button title="ตารางเวลา" className="focus:outline-none" onClick={() => setPage('timetable')}>
-        <ClockIcon className={iconClasses('timetable')} strokeWidth={1} />
-      </button>
-      <button title="การตั้งค่า" className="focus:outline-none" onClick={() => setPage('settings')}>
-        <CogIcon className={iconClasses('settings')} strokeWidth={1} />
-      </button>
       <button
-        title="ออกจากระบบ"
-        className="focus:outline-none"
-        onClick={() => {
-          setPage(null)
-          if (auth.metadata) return auth.signOut()
-          auth.remove().then((ok) => {
-            if (!ok) auth.signOut()
-          })
-        }}
+        title="ประกาศ"
+        className="relative focus:outline-none"
+        onClick={() => setPage('announce')}
       >
-        <LogoutIcon className={iconClasses()} strokeWidth={1} />
+        <SpeakerphoneIcon className={iconClasses('announce')} strokeWidth={1} />
+        {announce && metadata && getUnreadAnnounce().length > 0 && (
+          <span className="absolute rounded-full bg-red-500 bg-opacity-75 hover:bg-opacity-100 px-2 text-sm text-white -top-1 -right-2">
+            {getUnreadAnnounce().length}
+          </span>
+        )}
       </button>
+      {metadata && (
+        <>
+          <button
+            title="ตารางเวลา"
+            className="focus:outline-none"
+            onClick={() => setPage('timetable')}
+          >
+            <ClockIcon className={iconClasses('timetable')} strokeWidth={1} />
+          </button>
+          <button
+            title="การตั้งค่า"
+            className="focus:outline-none"
+            onClick={() => setPage('settings')}
+          >
+            <CogIcon className={iconClasses('settings')} strokeWidth={1} />
+          </button>
+          <button
+            title="ออกจากระบบ"
+            className="focus:outline-none"
+            onClick={() => {
+              setPage(null)
+              if (metadata) return signOut()
+              remove().then((ok) => {
+                if (!ok) signOut()
+              })
+            }}
+          >
+            <LogoutIcon className={iconClasses()} strokeWidth={1} />
+          </button>
+        </>
+      )}
     </div>
   )
 }
