@@ -23,12 +23,19 @@ export default function PWAPromo({ show }: PWAPromoProps): JSX.Element {
       // Stash the event so it can be triggered later.
       setPWAPrompt(e)
       LogRocket.track('PWA Native Shown')
-      // Optionally, send analytics event that PWA install promo was shown.
-      console.log(`'beforeinstallprompt' event was fired.`)
-      console.log(e)
     }
+    const installed = (): void => {
+      // Hide the app-provided install promotion
+      setPWAPrompt(null)
+      showPromo(false)
+      LogRocket.track('PWA Native Installed')
+    }
+    window.addEventListener('appinstalled', installed)
     window.addEventListener('beforeinstallprompt', pwa)
-    return () => window.removeEventListener('beforeinstallprompt', pwa)
+    return () => {
+      window.removeEventListener('beforeinstallprompt', pwa)
+      window.removeEventListener('appinstalled', installed)
+    }
   })
   useEffect(() => {
     if (auth.isPWA()) {
