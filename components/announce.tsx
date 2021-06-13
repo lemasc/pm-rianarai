@@ -1,5 +1,6 @@
 import { ArrowLeftIcon } from '@heroicons/react/outline'
 import { useWindowWidth } from '@react-hook/window-size/throttled'
+import LogRocket from 'logrocket'
 import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
 import { DocsData } from '../pages/api/announce'
@@ -32,7 +33,6 @@ export default function AnnouncementComponent({ show, onClose }: ComponentProps)
       Object.values(announce).map((a, i) => {
         const content = data[i] ? data[i].content : undefined
         const success = data[i] ? data[i].success : undefined
-        console.log(metadata?.announceId, a.id)
         return {
           id: a.id,
           name: a.name,
@@ -61,7 +61,6 @@ export default function AnnouncementComponent({ show, onClose }: ComponentProps)
           '/api/announce?' + new URLSearchParams({ name: cData[index].name }).toString()
         )
         const result = (await api.json()) as DocsData
-        console.log(result)
         if (result.success && show && cData[index].new) {
           // Mark as readed
           await markAsRead(data[index].id)
@@ -70,7 +69,7 @@ export default function AnnouncementComponent({ show, onClose }: ComponentProps)
         cData[index].content = result.content
         setData(cData)
       } catch (err) {
-        console.error(err)
+        LogRocket.error(err)
       }
     })()
   }, [data, index, markAsRead, show])
@@ -127,17 +126,17 @@ export default function AnnouncementComponent({ show, onClose }: ComponentProps)
             (list ? 'hidden' : '')
           }
         >
-          {width <= 640 && (
-            <button
-              onClick={() => showList(true)}
-              className="flex flex-row focus:outline-none rounded px-4 py-2 bg-blue-500 text-white hober:bg-blue-600"
-            >
-              <ArrowLeftIcon className="h-5 w-5 mr-2" />
-              ดูประกาศทั้งหมด ({announce && announce.length})
-            </button>
-          )}
           {data[index] && data[index].success !== undefined ? (
             <>
+              {width <= 640 && (
+                <button
+                  onClick={() => showList(true)}
+                  className="flex flex-row focus:outline-none rounded px-4 py-2 bg-blue-500 text-white hober:bg-blue-600"
+                >
+                  <ArrowLeftIcon className="h-5 w-5 mr-2" />
+                  ดูประกาศทั้งหมด ({announce && announce.length})
+                </button>
+              )}
               {data[index].success === false ? (
                 <h4 className="py-3 text-lg font-bold text-red-500">ไม่สามารถโหลดข้อมูลได้</h4>
               ) : (

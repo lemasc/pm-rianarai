@@ -23,8 +23,6 @@ export default function MainPage({
   content,
 }: InferGetStaticPropsType<typeof getStaticProps>): JSX.Element {
   const router = useRouter()
-  console.log(router.query)
-
   return (
     <div className="circle min-h-screen flex flex-col items-center justify-center dark:bg-gray-900 dark:text-white">
       <Head>

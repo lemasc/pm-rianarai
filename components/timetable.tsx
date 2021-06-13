@@ -6,6 +6,7 @@ import PaginationComponent from './pagination'
 import type { Schedule, TimeSlots } from './timeslots'
 import { GenerateTeacherName } from './timeslots'
 import { useWindowWidth } from '@react-hook/window-size/throttled'
+import LogRocket from 'logrocket'
 
 function TimeSlotsData({ data }: { data: TimeSlots }): JSX.Element {
   return (
@@ -27,17 +28,12 @@ export default function TimetableComponent(): JSX.Element {
   const { metadata } = useAuth()
   const { data } = useDocument<Schedule>(metadata ? `classes/${metadata.class}` : null, {
     listen: true,
+    onSuccess: (data) => {
+      if (!data) return
+      LogRocket.log(data)
+    },
   })
   const width = useWindowWidth()
-  useEffect(() => {
-    let _isMounted = true
-    if (!_isMounted) return
-    if (!data) return
-    console.log(data)
-    return () => {
-      _isMounted = false
-    }
-  }, [data])
   // Desktop Breakpoints
   const DESKTOP = 1200
   const break10Class = 'bg-green-500 bg-opacity-40 italic'
