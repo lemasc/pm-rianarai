@@ -50,7 +50,7 @@ interface IAuthContext {
   getMethods: (email: string) => Promise<Provider[]>
   signUp: (email: string, password: string) => Promise<FirebaseResult>
   signIn: (email: string, password: string) => Promise<FirebaseResult>
-  signInWithProvider: (provider: Provider) => Promise<boolean>
+  signInWithProvider: (provider: Provider) => Promise<FirebaseResult>
   signOut: () => Promise<void>
   updateMeta: (meta: UserMetadata) => Promise<boolean>
 }
@@ -111,7 +111,7 @@ export function useProvideAuth(): IAuthContext {
       return { success: false, message: err.code }
     }
   }
-  const signInWithProvider = async (p: Provider): Promise<boolean> => {
+  const signInWithProvider = async (p: Provider): Promise<FirebaseResult> => {
     let provider
     switch (p) {
       case 'google.com':
@@ -121,15 +121,15 @@ export function useProvideAuth(): IAuthContext {
         provider = new FacebookAuthProvider()
         break
       default:
-        return false
+        return { success: false }
     }
     try {
       await signInWithPopup(auth, provider)
-      return true
+      return { success: true }
     } catch (err) {
+      if (err.code === 'auth/popup-closed-by-user') return { success: true }
       LogRocket.error(err)
-      if (err.code === 'auth/popup-closed-by-user') return true
-      return false
+      return { success: false, message: err.code }
     }
   }
   const remove = async (): Promise<boolean> => {

@@ -17,7 +17,6 @@ type EmailForm = {
 type EmailPage = 'email' | 'signin' | 'signup'
 function EmailForm({ cancel }: MetaProps): JSX.Element {
   const [_error, setError] = useState<null | string>(null)
-  const [show, setShow] = useState(false)
   const [page, setPage] = useState<EmailPage>('email')
   const { signUp, signIn, getMethods } = useAuth()
   const {
@@ -173,8 +172,15 @@ export default function SignInComponent(): JSX.Element {
   const [error, setError] = useState<null | string>(null)
   async function provider(p: Provider): Promise<void> {
     setError(null)
-    if (!(await auth.signInWithProvider(p))) {
-      setError('ไม่สามารถเข้าสู่ระบบได้ กรุณาลองใหม่อีกครั้ง')
+    const result = await auth.signInWithProvider(p)
+    if (!result.success && !email && result.message) {
+      switch (result.message) {
+        case 'auth/popup-blocked':
+          setError('กรุณาอนุญาตการเปิด Popup เพื่อเข้าสู่ระบบ')
+          break
+        default:
+          setError('ไม่สามารถเข้าสู่ระบบได้ กรุณาลองใหม่อีกครั้ง')
+      }
     }
   }
   return (
