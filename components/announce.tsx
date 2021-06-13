@@ -1,3 +1,5 @@
+import { ArrowLeftIcon } from '@heroicons/react/outline'
+import { useWindowWidth } from '@react-hook/window-size/throttled'
 import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
 import { DocsData } from '../pages/api/announce'
@@ -22,6 +24,8 @@ export default function AnnouncementComponent({ show, onClose }: ComponentProps)
   const { metadata, announce, markAsRead } = useAuth()
   const [data, setData] = useState<AnnounceData[]>([])
   const [index, setIndex] = useState(-1)
+  const [list, showList] = useState(false)
+  const width = useWindowWidth()
   useEffect(() => {
     if (!announce) return
     setData((data) =>
@@ -43,6 +47,7 @@ export default function AnnouncementComponent({ show, onClose }: ComponentProps)
   useEffect(() => {
     if (show) {
       setIndex(0)
+      showList(false)
     }
   }, [show])
 
@@ -78,17 +83,29 @@ export default function AnnouncementComponent({ show, onClose }: ComponentProps)
       onClose={onClose}
       titleClass="bg-apple-500 text-white bg-opacity-80 creative-font font-bold"
     >
-      <div className="flex flex-rows">
-        <div className="w-64 flex flex-col items-start bg-gray-50">
+      {}
+      <div className="flex flex-row">
+        <div
+          className={
+            'sm:w-64 w-full flex flex-col items-start bg-gray-50 sm:block ' +
+            (!list ? 'hidden' : '')
+          }
+        >
+          {width <= 640 && (
+            <span className="px-6 py-3 text-sm font-light">เลือกประกาศที่ต้องการ</span>
+          )}
           {announce &&
             announce.map((a, i) => (
               <button
                 key={i}
                 className={
-                  (index === i ? 'bg-gray-200' : 'bg-gray-100') +
+                  (width > 640 && index === i ? 'bg-gray-200' : 'bg-gray-100') +
                   ' flex flex-row w-full px-6 py-3 hover:bg-gray-200 focus:outline-none text-left items-center'
                 }
-                onClick={() => setIndex(i)}
+                onClick={() => {
+                  setIndex(i)
+                  showList(false)
+                }}
               >
                 <div className="flex flex-col flex-grow">
                   <h4 className="text-lg">{a.displayName}</h4>
@@ -104,7 +121,21 @@ export default function AnnouncementComponent({ show, onClose }: ComponentProps)
               </button>
             ))}
         </div>
-        <div className="text-sm text-gray-500 px-6 py-3 w-60 flex-grow sarabun-font">
+        <div
+          className={
+            'text-sm text-gray-700 px-6 py-3 w-60 flex-grow sarabun-font sm:block ' +
+            (list ? 'hidden' : '')
+          }
+        >
+          {width <= 640 && (
+            <button
+              onClick={() => showList(true)}
+              className="flex flex-row focus:outline-none rounded px-4 py-2 bg-blue-500 text-white hober:bg-blue-600"
+            >
+              <ArrowLeftIcon className="h-5 w-5 mr-2" />
+              ดูประกาศทั้งหมด ({announce && announce.length})
+            </button>
+          )}
           {data[index] && data[index].success !== undefined ? (
             <>
               {data[index].success === false ? (
