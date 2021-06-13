@@ -105,13 +105,12 @@ export default function MainPage(): JSX.Element {
       {width >= 640 && (
         <div
           suppressHydrationWarning
-          className="p-6 opacity-50 hidden sm:block absolute top-0 left-0 creative-font text-2xl"
+          className="p-6 opacity-50 absolute top-0 left-0 creative-font text-2xl"
         >
           {date.toLocaleTimeString('th-TH')}
         </div>
       )}
-
-      <MenuComponent onChange={setPage} page={page} />
+      {auth.ready && <MenuComponent onChange={setPage} page={page} />}
 
       <main className={'flex flex-1 flex-col w-full items-center justify-center'}>
         <HeaderComponent />
