@@ -82,7 +82,7 @@ const MeetingJoin: React.FC<MeetingComponentProps> = ({ showNames, meetings, dis
       <button
         title={
           disabled
-            ? 'สามารถเข้าสู่ห้องเรียนก่อนเวลาได้ 5 นาที'
+            ? 'สามารถเข้าสู่ห้องเรียนก่อนเวลาได้ 10 นาที'
             : 'เข้าสู่ห้องเรียน จำเป็นต้องมี Zoom ติดตั้งลงในอุปกรณ์แล้ว'
         }
         key={index}
@@ -167,7 +167,7 @@ export function GenerateTeacherName(teacher: string[]): ReactNodeArray {
 
 function MeetingInfo({ slot, disabled }: MeetingMetaProps): JSX.Element {
   const [meeting, setMeeting] = useState<Meeting[]>([])
-  const { ready, meeting: _meeting, error } = useMeeting()
+  const { ready, meeting: _meeting } = useMeeting()
   useEffect(() => {
     if (!_meeting || !slot) return
     setMeeting(_meeting.filter((m) => slot.teacher.includes(m.name)))
@@ -321,14 +321,13 @@ export default function TimeSlotsComponent(): JSX.Element {
       break
   }
   useEffect(() => {
-    if (!memoryQueue) return
-    if (memoryQueue.active !== null) {
-      memoryQueue.active.teacher.map((name) => add(name))
+    if (memory.active !== null) {
+      memory.active.teacher.map((name) => add(name))
     }
-    if (memoryQueue.next !== null) {
-      memoryQueue.next.teacher.map((name) => add(name))
+    if (memory.next !== null) {
+      memory.next.teacher.map((name) => add(name))
     }
-  }, [add, memoryQueue])
+  }, [add, memory])
   return (
     <Transition
       show={show}
