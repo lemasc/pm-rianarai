@@ -291,9 +291,15 @@ export default function Install(): JSX.Element {
               </p>
               <div className="flex items-center justify-center py-4">
                 <div className="mx-auto max-w-sm ">
-                  <video controls muted autoPlay loop className="mx-auto w-auto rounded-lg">
-                    <source src="/install/ios.mp4" type="video/mp4" />
-                  </video>
+                  <iframe
+                    title="iOS PWA Guide"
+                    src="https://player.vimeo.com/video/562619344?autoplay=1&loop=1&&muted=1autopause=0"
+                    width="640"
+                    height="564"
+                    frameBorder="0"
+                    allow="autoplay; fullscreen"
+                    allowFullScreen
+                  ></iframe>
                 </div>
               </div>
               <h2 className="font-medium text-2xl py-1" id="open">
