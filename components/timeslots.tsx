@@ -167,26 +167,17 @@ export function GenerateTeacherName(teacher: string[]): ReactNodeArray {
 
 function MeetingInfo({ slot, disabled }: MeetingMetaProps): JSX.Element {
   const [meeting, setMeeting] = useState<Meeting[]>([])
-  const { getMeetingByName } = useMeeting()
+  const { ready, meeting: _meeting, error } = useMeeting()
   useEffect(() => {
-    if (!slot) return
-    if (slot.teacher.length === 0) {
-      setMeeting([null])
-    } else {
-      let mList = []
-      slot.teacher.map((t) => {
-        mList = [...mList, ...getMeetingByName(t)]
-      })
-      setMeeting(mList)
-    }
-  }, [getMeetingByName, slot])
-  if (meeting.length === 0) return null
-  if (!slot) return null
+    if (!_meeting || !slot) return
+    setMeeting(_meeting.filter((m) => slot.teacher.includes(m.name)))
+  }, [_meeting, slot])
+  if (!ready || !slot) return null
   return (
     <div className="flex flex-col sm:grid sm:grid-cols-2 w-full sm:divide-x divide-gray-400">
       <div className="flex flex-col justify-center">
         <div className="text-2xl p-4 text-blue-600 font-medium px-8 max-w-md">
-          {meeting[0] !== null &&
+          {meeting.length > 0 &&
             slot.code[0].match(/([0-9]){4}\w/g) !== null &&
             meeting[0].subject + ' : '}
           {slot.code.length > 1 && <br />}
@@ -200,7 +191,7 @@ function MeetingInfo({ slot, disabled }: MeetingMetaProps): JSX.Element {
         </span>
       </div>
       <div className="flex flex-col justify-center">
-        {meeting[0] === null || meeting[0].meet ? (
+        {meeting.length === 0 || meeting[0].meet ? (
           <MeetingNotFound />
         ) : (
           <MeetingJoin meetings={meeting} showNames={meeting.length != 1} disabled={disabled} />
@@ -222,6 +213,7 @@ function MeetingPending({ slot }): JSX.Element {
 export default function TimeSlotsComponent(): JSX.Element {
   const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
   const { metadata } = useAuth()
+  const { add } = useMeeting()
   const [nextPage, setNextPage] = useState(false)
   const [date, setDate] = useState(new Date())
   const [disabled, setDisabled] = useState(false)
@@ -328,6 +320,15 @@ export default function TimeSlotsComponent(): JSX.Element {
       message = 'หมดวันแล้ว วันนี้เก่งมาก!'
       break
   }
+  useEffect(() => {
+    if (!memoryQueue) return
+    if (memoryQueue.active !== null) {
+      memoryQueue.active.teacher.map((name) => add(name))
+    }
+    if (memoryQueue.next !== null) {
+      memoryQueue.next.teacher.map((name) => add(name))
+    }
+  }, [add, memoryQueue])
   return (
     <Transition
       show={show}

@@ -1,6 +1,6 @@
 import { Document, useCollection } from 'swr-firestore-v9'
 import LogRocket from 'logrocket'
-import { createContext, useContext } from 'react'
+import { createContext, useContext, useState } from 'react'
 import { useAuth } from './authContext'
 
 export interface Meeting {
@@ -12,9 +12,11 @@ export interface Meeting {
   meet?: boolean
 }
 export interface IMeetingContext {
-  error: boolean
-  data: Document<Meeting>[]
-  getMeetingByName: (name: string) => Document<Meeting>[]
+  ready: boolean
+  error: any
+  meeting: Document<Meeting>[]
+  add: (name: string) => void
+  clear: () => void
   launchMeeting: (meeting: Meeting) => void
 }
 
@@ -28,21 +30,32 @@ export const useMeeting = (): IMeetingContext => {
 
 export function useProvideMeeting(): IMeetingContext {
   const { user } = useAuth()
+  const [names, setNames] = useState<Set<string>>(new Set([]))
+  const [ready, setReady] = useState(false)
 
-  const { data, error } = useCollection<Meeting>(user ? `meetings` : null, {
-    listen: true,
-  })
-  /**
-   * Get meeting data from the given teacher name
-   * @param name Teacher Name
-   * @returns First meeting data that matches
-   */
-  const getMeetingByName = (name: string): Document<Meeting>[] | null => {
-    if (!data) return [null]
-    const result = data.filter((d) => d.name.includes(name))
-    if (result.length == 0) return [null]
-    return result
+  const { data: meeting, error } = useCollection<Meeting>(
+    user ? `meetings` : null,
+    {
+      where: ['name', 'in', names.size === 0 ? [''] : Array.from(names)],
+      listen: true,
+    },
+    {
+      onSuccess: () => setReady(true),
+    }
+  )
+
+  const add = (name: string): void => {
+    if (!names.has(name)) {
+      setReady(false)
+      setNames((prev) => new Set(prev.add(name)))
+    }
   }
+
+  const clear = (): void => {
+    setReady(false)
+    setNames(new Set())
+  }
+
   /**
    * Get the encoded meeting passcode from Zoom Instant Meetings URL
    * @param url Zoom Meeting URL
@@ -77,9 +90,11 @@ export function useProvideMeeting(): IMeetingContext {
   }
 
   return {
-    getMeetingByName,
+    ready,
+    add,
+    clear,
+    meeting,
     launchMeeting,
     error,
-    data,
   }
 }
