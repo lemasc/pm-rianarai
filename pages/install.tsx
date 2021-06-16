@@ -75,7 +75,7 @@ function InstallPromo({ children, index, mobile, className }: InstallPromoProps)
 export default function Install(): JSX.Element {
   const { isPWA } = useAuth()
   const router = useRouter()
-  const [index, setIndex] = useState(0)
+  const [index, setIndex] = useState(2)
   const [show, setShow] = useState(false)
   useEffect(() => {
     let showTime = null
@@ -88,8 +88,8 @@ export default function Install(): JSX.Element {
         return
       }
     }
-    if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
-      setIndex(2)
+    if (/Windows/i.test(navigator.userAgent)) {
+      setIndex(0)
     }
     showTime = setTimeout(() => setShow(true), 1000)
   }, [isPWA, router])

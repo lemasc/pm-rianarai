@@ -1,8 +1,6 @@
 import { ReactNodeArray, useEffect, useState } from 'react'
 import { Transition } from '@headlessui/react'
 import { useDocument } from 'swr-firestore-v9'
-import { DocumentDuplicateIcon, ClipboardCheckIcon } from '@heroicons/react/outline'
-import Tippy from '@tippyjs/react'
 import Link from 'next/link'
 import LogRocket from 'logrocket'
 import dayjs from 'dayjs'
@@ -69,20 +67,13 @@ function MeetingNotFound(): JSX.Element {
 
 const MeetingJoin: React.FC<MeetingComponentProps> = ({ showNames, meetings, disabled }) => {
   const { launchMeeting } = useMeeting()
-  const [copy, setCopy] = useState(-1)
-  const copyToCp = (code: string, index: number): void => {
-    navigator.clipboard.writeText(code)
-    setCopy(index)
-  }
   const buttons: ReactNodeArray = []
-  const passcode: ReactNodeArray = []
-  let noUrls = false
   meetings.map((meeting, index) => {
     buttons.push(
       <button
         title={
           disabled
-            ? 'สามารถเข้าสู่ห้องเรียนก่อนเวลาได้ 5 นาที'
+            ? 'สามารถเข้าสู่ห้องเรียนก่อนเวลาได้ 10 นาที'
             : 'เข้าสู่ห้องเรียน จำเป็นต้องมี Zoom ติดตั้งลงในอุปกรณ์แล้ว'
         }
         key={index}
@@ -93,61 +84,8 @@ const MeetingJoin: React.FC<MeetingComponentProps> = ({ showNames, meetings, dis
         {disabled ? 'Not In Time' : 'Launch Meetings'} {showNames && ' : ' + meeting.name}
       </button>
     )
-    if (meeting.url) {
-      passcode.push(null)
-      return
-    }
-    noUrls = true
-    passcode.push(
-      <div key={index} className="flex flex-row justify-center align-middle">
-        {showNames && <div className="pt-4 px-4 text-sm">{meeting.name} :</div>}
-        <div className="bg-zoom-100 dark:bg-zoom-900 rounded-l-lg text-lg py-2 px-4 border font-mono">
-          {meeting.code}
-        </div>
-        <Tippy
-          visible={copy === index}
-          content="คัดลอกแล้ว"
-          placement="bottom"
-          onShown={() => setTimeout(() => setCopy(-1), 3000)}
-        >
-          <button
-            title="คัดลอกรหัส"
-            onClick={() => copyToCp(meeting.code, index)}
-            className={
-              (copy === index ? 'bg-green-500 text-white' : 'bg-white hover:bg-gray-100') +
-              ' px-4 dark:bg-black dark:hover:bg-gray-900  rounded-r-lg text-sm p-2 border font-light focus:outline-none'
-            }
-          >
-            {copy === index ? (
-              <ClipboardCheckIcon className="h-5 w-5" />
-            ) : (
-              <DocumentDuplicateIcon className="h-5 w-5" />
-            )}
-          </button>
-        </Tippy>
-      </div>
-    )
   })
-  return (
-    <>
-      {buttons}
-      {noUrls && (
-        <div className="flex flex-col pt-4 mt-4 px-4 border-t border-gray-400">
-          <span className="text-sm py-1">หากระบบร้องขอรหัสผ่าน ให้ใช้รหัสผ่านต่อไปนี้</span>
-          <div className="flex flex-col space-y-1">{passcode}</div>
-          <a
-            href="/about?search=รหัสผ่าน#jump"
-            target="_blank"
-            title="รหัสผ่าน"
-            rel="noopener noreferrer"
-            className="text-sm underline p-2 text-blue-500 hover:text-blue-600"
-          >
-            ทำไมยังต้องใช้รหัสผ่าน?
-          </a>
-        </div>
-      )}
-    </>
-  )
+  return <>{buttons}</>
 }
 
 export function GenerateTeacherName(teacher: string[]): ReactNodeArray {
@@ -252,10 +190,10 @@ export default function TimeSlotsComponent(): JSX.Element {
         .format('HH:mm')
     }
     const inTimeRange = (time: string, slot: TimeSlots): boolean => {
-      return slot && time >= getActualTime(slot.start) && time <= slot.end
+      return slot && time >= getActualTime(slot.start) && time < slot.end
     }
     const inNextRange = (time: string, slot: TimeSlots, next: TimeSlots): boolean => {
-      return slot && next && time >= getActualTime(next.start) && time <= slot.end
+      return slot && next && time >= getActualTime(next.start) && time < slot.end
     }
     const setMemory = (state: TimeSlotsMemory): void => {
       // Compare the previous state and the current state
