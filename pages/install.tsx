@@ -98,6 +98,12 @@ export default function Install(): JSX.Element {
     <div className="circle min-h-screen flex flex-col items-center justify-center dark:bg-gray-900 dark:text-white">
       <Head>
         <title>Install App : PM-RianArai</title>
+        <meta property="og:url" content="https://pm-rianarai.vercel.app/install" />
+        <meta property="og:title" content="ติดตั้งแอพพลิเคชั่น PM-RianArai" />
+        <meta
+          property="og:description"
+          content="ติดตั้งแอพพลิเคชั่นเพื่อการเข้าเรียนที่สะดวกและรวดเร็วขึ้น"
+        />
       </Head>
       <main className="flex flex-1 flex-col w-full items-center justify-center">
         <HeaderComponent />
