@@ -97,6 +97,11 @@ export default function MainPage(): JSX.Element {
     <div className="background-default overflow-hidden text-white min-h-screen flex flex-col items-center justify-center dark:bg-gray-900 dark:text-white">
       <Head>
         <title>PM-RianArai</title>
+        <meta name="title" content="PM-RianArai : เข้าเรียนทุกวิชาได้จากทีนี่ที่เดียว" />
+        <meta
+          name="description"
+          content="PM-RianArai เว็บไซต์สำหรับนักเรียนโรงเรียนมัธยมสาธิตวัดพระศรีมหาธาตุ ที่จะทำให้การเข้าเรียนเป็นทุกรายวิชาเป็นเรื่องง่าย รวบรวมทุกอย่างไว้ในที่เดียว"
+        />
         <meta name="description" content="เข้าเรียนทุกวิชาได้จากที่เดียว" />
         <meta property="og:url" content="https://pm-rianarai.vercel.app" />
         <meta property="og:title" content="PM Rianarai - เรียนอะไร" />
