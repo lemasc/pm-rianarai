@@ -102,7 +102,6 @@ export default function MainPage(): JSX.Element {
           name="description"
           content="PM-RianArai เว็บไซต์สำหรับนักเรียนโรงเรียนมัธยมสาธิตวัดพระศรีมหาธาตุ ที่จะทำให้การเข้าเรียนเป็นทุกรายวิชาเป็นเรื่องง่าย รวบรวมทุกอย่างไว้ในที่เดียว"
         />
-        <meta name="description" content="เข้าเรียนทุกวิชาได้จากที่เดียว" />
         <meta property="og:url" content="https://pm-rianarai.vercel.app" />
         <meta property="og:title" content="PM Rianarai - เรียนอะไร" />
         <meta property="og:description" content="เข้าเรียนทุกวิชาได้จากทีนี่ที่เดียว" />
