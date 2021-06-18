@@ -11,14 +11,14 @@ export default function LayoutComponent({ children }: LayoutProps): JSX.Element 
   const { ready, metadata } = useAuth()
   return (
     <>
-      <MenuBarComponent landing={!(ready && metadata)} />
+      <MenuBarComponent landing={ready ? metadata === null : false} />
       <main
         className={
-          'relative mt-20 flex flex-1 w-full ' +
+          'mt-20 flex flex-1 w-full ' +
           (ready &&
             (metadata
-              ? 'justify-center '
-              : 'md:flex-row flex-col md:justify-end items-center justify-center md:px-20'))
+              ? 'justify-center flex-col '
+              : 'relative md:flex-row flex-col md:justify-end items-center justify-center md:px-20'))
         }
       >
         {ready && children}

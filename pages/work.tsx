@@ -1,16 +1,11 @@
 import Head from 'next/head'
 import LayoutComponent, { CONTAINER, HEADER } from '../components/layout'
-import MetadataComponent from '../components/meta'
 
-export default function SettingsPage() {
+export default function WorkPage(): JSX.Element {
   return (
     <div className="overflow-hidden min-h-screen flex flex-col dark:bg-gray-900 dark:text-white items-center justify-center">
       <Head>
-        <title>PM-RianArai</title>
-        <meta name="description" content="เข้าเรียนทุกวิชาได้จากที่เดียว" />
-        <meta property="og:url" content="https://pm-rianarai.vercel.app" />
-        <meta property="og:title" content="PM Rianarai - เรียนอะไร" />
-        <meta property="og:description" content="เข้าเรียนทุกวิชาได้จากทีนี่ที่เดียว" />
+        <title>งานที่ได้รับ : PM-RianArai</title>
       </Head>
       <LayoutComponent>
         <div className={'flex-1 ' + CONTAINER}>

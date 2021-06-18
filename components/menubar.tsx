@@ -13,8 +13,17 @@ const AnnouncementComponent = dynamic(() => import('../components/announce'))
 export default function MenuBarComponent({ landing }: MenuBarProps): JSX.Element {
   const { metadata, ready } = useAuth()
   const [announce, setAnnounce] = useState(false)
+  const [top, setTop] = useState(true)
   const router = useRouter()
-  useEffect(() => console.log(router), [router])
+
+  useEffect(() => {
+    const scrollHandler = (): void => {
+      window.pageYOffset > 10 ? setTop(false) : setTop(true)
+    }
+    window.addEventListener('scroll', scrollHandler)
+    return () => window.removeEventListener('scroll', scrollHandler)
+  }, [top])
+
   function isActive(route: string): string {
     return (
       'cursor-pointer rounded-lg sm:px-8 px-4 py-2 text-sm ' +
@@ -26,15 +35,21 @@ export default function MenuBarComponent({ landing }: MenuBarProps): JSX.Element
       <AnnouncementComponent show={announce} onClose={() => setAnnounce(false)} />
       <div
         className={
-          (landing ? 'bg-transparent' : 'bg-white shadow-md') +
-          ' w-full fixed top-0 left-0 flex flex-row items-center justify-start px-6 py-4 sm:space-x-4 space-x-3'
+          (landing ? (!top ? 'bg-white blur shadow-md' : 'bg-transparent') : 'bg-white shadow-md') +
+          ' z-10 w-full fixed top-0 left-0 flex flex-row items-center justify-start px-6 py-4 sm:space-x-4 space-x-3 transition duration-300 ease-in-out'
         }
       >
         <div title="PM-RianArai" className="flex flex-row items-center">
           <Image src="/logo.png" width={50} height={50} />
-          <h1 className="px-4 text-2xl header-font select-none md:block hidden">
-            <span className={landing ? 'text-yellow-300' : 'text-red-500'}>เรียน</span>
-            <span className={landing ? 'text-purple-300' : 'text-purple-500'}>อะไร</span>
+          <h1
+            className={'px-4 text-2xl header-font select-none ' + (!landing && ' hidden md:block')}
+          >
+            <span className={landing && top ? 'text-yellow-300' : 'text-red-500'}>เรียน</span>
+            <span
+              className={landing && top ? 'lg:text-purple-300 text-purple-500' : 'text-purple-500'}
+            >
+              อะไร
+            </span>
           </h1>
         </div>
         {metadata && ready && (
@@ -56,7 +71,7 @@ export default function MenuBarComponent({ landing }: MenuBarProps): JSX.Element
             </Link>
           </>
         )}
-        <MenuComponent landing={landing} onAnnounce={() => setAnnounce(true)} />
+        <MenuComponent landing={landing && top} onAnnounce={() => setAnnounce(true)} />
       </div>
     </>
   )

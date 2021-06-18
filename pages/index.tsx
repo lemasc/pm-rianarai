@@ -14,6 +14,7 @@ import LayoutComponent, { CONTAINER, HEADER } from '../components/layout'
 import SignInComponent from '../components/signin'
 import { useMeeting } from '../shared/meetingContext'
 import { getUnreadAnnounce } from '../components/menu'
+import { useEffect } from 'react'
 
 const MetaDataComponent = dynamic(() => import('../components/meta'))
 const TimeSlotsComponent = dynamic(() => import('../components/timeslots'))
@@ -55,22 +56,28 @@ export default function MainPage(): JSX.Element {
   const { ready, user, metadata, announce } = useAuth()
   const { date } = useMeeting()
   const [showAnnounce, setAnnounce] = useState(false)
+  const [hero, showHero] = useState(false)
+  useEffect(() => {
+    setTimeout(() => showHero(true), 1500)
+  }, [])
   return (
     <div
       className={
         'overflow-hidden min-h-screen flex flex-col dark:bg-gray-900 dark:text-white' +
-        (ready && metadata ? '' : ' items-center justify-center background-hero')
+        (ready && (metadata ? '' : ' items-center justify-center background-hero'))
       }
     >
       <Head>
-        <title>PM-RianArai</title>
+        <title>
+          {ready ? (user && metadata ? 'หน้าหลัก' : 'ยินดีต้อนรับ') + ' : ' : ''}PM-RianArai
+        </title>
         <meta name="title" content="PM-RianArai : เข้าเรียนทุกวิชาได้จากทีนี่ที่เดียว" />
         <meta
           name="description"
           content="PM-RianArai เว็บไซต์สำหรับนักเรียนโรงเรียนมัธยมสาธิตวัดพระศรีมหาธาตุ ที่จะทำให้การเข้าเรียนเป็นทุกรายวิชาเป็นเรื่องง่าย รวบรวมทุกอย่างไว้ในที่เดียว"
         />
         <meta property="og:url" content="https://pm-rianarai.vercel.app" />
-        <meta property="og:title" content="PM Rianarai - เรียนอะไร" />
+        <meta property="og:title" content="PM RianArai - เรียนอะไร" />
         <meta property="og:description" content="เข้าเรียนทุกวิชาได้จากทีนี่ที่เดียว" />
       </Head>
       <LayoutComponent>
@@ -91,7 +98,7 @@ export default function MainPage(): JSX.Element {
                       <div className="flex flex-grow shadow-md rounded bg-gray-100 p-4">
                         <TimeSlotsComponent />
                       </div>
-                      <div className="grid grid-cols-2 pb-10 md:gap-16 gap-8">
+                      <div className="grid md:grid-cols-2 pb-10 md:gap-16 gap-8">
                         <Link href="/timetable">
                           <a
                             title="ตารางสอน"
@@ -138,18 +145,35 @@ export default function MainPage(): JSX.Element {
               </>
             ) : (
               <>
-                <div className="md:absolute left-24 top-8 flex flex-col text-white space-y-6 p-8 md:items-start items-center max-w-2xl font-light">
-                  <h1 className="text-4xl font-medium filter drop-shadow-xl">
+                <Transition
+                  show={hero}
+                  className="md:absolute xl:left-20 left-16 xl:top-8 top-0 flex flex-col text-white space-y-6 xl:px-8 md:px-0 px-8 py-8 md:items-start items-center xl:max-w-2xl lg:max-w-xl md:max-w-md font-light"
+                >
+                  <Transition.Child
+                    as="h1"
+                    enter="transform transition duration-700"
+                    enterFrom="opacity-50 scale-150"
+                    enterTo="opactity-100 scale-100"
+                    className="text-4xl font-medium filter drop-shadow-xl md:text-left text-center"
+                  >
                     เข้าเรียนทุกวิชาได้จากทีนี่ที่เดียว
-                  </h1>
-                  <p className="md:text-left text-center">
-                    จะมานั่งกรอกรหัสซ้ำ ๆ ทุกคาบเรียนทำไม เพียงแค่ไม่กี่ขั้นตอน
-                    คุณก็สามารถเริ่มต้นเข้าเรียนออนไลน์ ดูตารางสอน งานที่ได้รับมอบหมาย
-                    ทั้งหมดนี่ได้ทุกวิชา ทุกระดับชั้น และทุกอุปกรณ์
-                  </p>
-                  <p>และใช่ ทั้งหมดนั่นรวมอยู่ในนี้ให้คุณแล้ว แค่นั้นเลย</p>
-                </div>
-                <div className="md:mb-0 mb-20 rounded-lg border shadow-lg flex flex-col bg-white items-center justify-start">
+                  </Transition.Child>
+                  <Transition.Child
+                    as="div"
+                    enter="transition-opacity ease-linear duration-700 delay-1000"
+                    enterFrom="opacity-0"
+                    enterTo="opactity-100"
+                    className="flex flex-col flex-1 space-y-6 md:items-start items-center justify-center"
+                  >
+                    <p className="md:text-left text-center filter drop-shadow">
+                      จะมานั่งกรอกรหัสซ้ำ ๆ ทุกคาบเรียนทำไม เพียงแค่ไม่กี่ขั้นตอน
+                      คุณก็สามารถเริ่มต้นเข้าเรียนออนไลน์ ดูตารางสอน งานที่ได้รับมอบหมาย
+                      ทั้งหมดนี่ได้ทุกวิชา ทุกระดับชั้น และทุกอุปกรณ์
+                    </p>
+                    <p className="text-center">ทั้งหมดนั่นรวมอยู่ในนี้ให้คุณแล้ว แค่นั้นเลย</p>
+                  </Transition.Child>
+                </Transition>
+                <div className="md:mb-0 mb-20 rounded-lg border shadow-xl flex flex-col bg-white items-center justify-start">
                   {user ? (
                     <>
                       <MultiComponent title="ขั้นตอนสุดท้ายเท่านั้น">
@@ -159,7 +183,7 @@ export default function MainPage(): JSX.Element {
                   ) : (
                     <MultiComponent
                       title="ยินดีต้อนรับ"
-                      desc="ลงทะเบียนหรือเข้าสู่ระบบเพื่อเริ่มต้นใช้งาน"
+                      desc="เข้าสู่ระบบหรือลงทะเบียนเพื่อเริ่มต้นใช้งาน"
                     >
                       <SignInComponent />
                     </MultiComponent>

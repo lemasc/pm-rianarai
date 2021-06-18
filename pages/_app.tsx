@@ -16,4 +16,8 @@ function App({ Component, pageProps }: AppProps): JSX.Element {
     </MainProvider>
   )
 }
+export function reportWebVitals(metric) {
+  console.log(metric)
+}
+
 export default App

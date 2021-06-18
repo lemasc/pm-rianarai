@@ -103,9 +103,9 @@ function MeetingInfo({ slot, disabled }: MeetingMetaProps): JSX.Element {
   }, [_meeting, slot])
   if (!ready || !slot) return null
   return (
-    <div className="flex flex-col md:grid md:grid-cols-2 w-full md:divide-x divide-gray-400">
+    <div className="flex flex-col md:grid md:grid-cols-2 w-full md:divide-x divide-gray-400 text-center">
       <div className="flex flex-col justify-center items-center">
-        <div className="text-center text-2xl p-4 text-blue-600 font-medium px-8 max-w-md">
+        <div className="text-2xl p-4 text-blue-600 font-medium px-8 max-w-md">
           {meeting.length > 0 &&
             slot.code[0].match(/([0-9]){4}\w/g) !== null &&
             meeting[0].subject + ' : '}
@@ -119,7 +119,7 @@ function MeetingInfo({ slot, disabled }: MeetingMetaProps): JSX.Element {
           {slot.start} น. - {slot.end} น.
         </span>
       </div>
-      <div className="flex flex-col justify-center">
+      <div className="flex flex-col justify-center items-center">
         {meeting.length === 0 || meeting[0].meet ? (
           <MeetingNotFound />
         ) : (
