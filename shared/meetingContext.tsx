@@ -1,7 +1,18 @@
-import { Document, useCollection } from 'swr-firestore-v9'
+import { Document, useCollection, useDocument } from 'swr-firestore-v9'
 import LogRocket from 'logrocket'
-import { createContext, useContext, useState } from 'react'
+import { createContext, useContext, useEffect, useState } from 'react'
 import { useAuth } from './authContext'
+
+export interface Schedule {
+  [days: string]: TimeSlots[]
+}
+
+export interface TimeSlots {
+  start: string
+  end: string
+  teacher: string[]
+  code: string[]
+}
 
 export interface Meeting {
   code?: string
@@ -12,11 +23,39 @@ export interface Meeting {
   meet?: boolean
 }
 export interface IMeetingContext {
+  /**
+   * Indicates Meeting data ready state.
+   */
   ready: boolean
-  error: any
+  /**
+   * Current day. (Sunday, Monday, ...)
+   */
+  curDay: string
+  /**
+   * The global Date instance, shared between components.
+   */
+  date: Date
+  /**
+   * Current user's time schedule document
+   */
+  schedule: Document<Schedule>
+  /**
+   * Meeting database; dynamic query via `add` and `clear` commands.
+   */
   meeting: Document<Meeting>[]
+  /**
+   * Add teacher to the meeting database.
+   * @param name Teacher name
+   */
   add: (name: string) => void
+  /**
+   * Clear all teachers from the meeting database.
+   */
   clear: () => void
+  /**
+   * Launch the meetings on the user's device.
+   * @param meeting Prefered meeting
+   */
   launchMeeting: (meeting: Meeting) => void
 }
 
@@ -29,12 +68,24 @@ export const useMeeting = (): IMeetingContext => {
 }
 
 export function useProvideMeeting(): IMeetingContext {
-  const { user } = useAuth()
+  const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+  const { metadata } = useAuth()
   const [names, setNames] = useState<Set<string>>(new Set([]))
   const [ready, setReady] = useState(false)
+  const [date, setDate] = useState(new Date())
+  const [curDay, setCurDay] = useState<string>('sunday')
 
-  const { data: meeting, error } = useCollection<Meeting>(
-    user ? `meetings` : null,
+  useEffect(() => {
+    const timerID = setInterval(() => {
+      const d = new Date()
+      setDate(d)
+      setCurDay(days[d.getDay()])
+    }, 1000)
+    return () => clearInterval(timerID)
+  })
+
+  const { data: meeting } = useCollection<Meeting>(
+    metadata ? `meetings` : null,
     {
       where: ['name', 'in', names.size === 0 ? [''] : Array.from(names)],
       listen: true,
@@ -43,6 +94,9 @@ export function useProvideMeeting(): IMeetingContext {
       onSuccess: () => setReady(true),
     }
   )
+  const { data: schedule } = useDocument<Schedule>(metadata ? `classes/${metadata.class}` : null, {
+    listen: true,
+  })
 
   const add = (name: string): void => {
     if (!names.has(name)) {
@@ -56,11 +110,6 @@ export function useProvideMeeting(): IMeetingContext {
     setNames(new Set())
   }
 
-  /**
-   * Get the encoded meeting passcode from Zoom Instant Meetings URL
-   * @param url Zoom Meeting URL
-   * @returns Encoded passcode
-   */
   const getCodeFromUrl = (url: string): string | null => {
     const urlConst = new URL(url)
     if (!urlConst.hostname.includes('zoom.us')) return null
@@ -77,10 +126,6 @@ export function useProvideMeeting(): IMeetingContext {
     LogRocket.track('Launch Meeting')
     window.location.replace(host + params.toString())
   }
-  /**
-   * Launch meeting based on the given data
-   * @param meeting Meeting data
-   */
   const launchMeeting = (meeting: Meeting): void => {
     let code = meeting.code
     if (meeting.url && getCodeFromUrl(meeting.url)) {
@@ -90,11 +135,13 @@ export function useProvideMeeting(): IMeetingContext {
   }
 
   return {
+    date,
+    curDay,
     ready,
     add,
     clear,
     meeting,
+    schedule,
     launchMeeting,
-    error,
   }
 }

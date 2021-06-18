@@ -1,26 +1,29 @@
 import Head from 'next/head'
 import { useAuth } from '../shared/authContext'
-import { ReactNode, useEffect, useState } from 'react'
+import { ReactNode, useState } from 'react'
 import { Transition } from '@headlessui/react'
 import dynamic from 'next/dynamic'
-import HeaderComponent from '../components/header'
-import type { Pages } from '../components/menu'
-import { useWindowWidth } from '@react-hook/window-size/throttled'
+import Link from 'next/link'
+import {
+  AcademicCapIcon,
+  ClockIcon,
+  SpeakerphoneIcon,
+  BookOpenIcon,
+} from '@heroicons/react/outline'
+import LayoutComponent, { CONTAINER, HEADER } from '../components/layout'
+import SignInComponent from '../components/signin'
+import { useMeeting } from '../shared/meetingContext'
+import { getUnreadAnnounce } from '../components/menu'
 
-const SignInComponent = dynamic(() => import('../components/signin'))
 const MetaDataComponent = dynamic(() => import('../components/meta'))
 const TimeSlotsComponent = dynamic(() => import('../components/timeslots'))
-const MenuComponent = dynamic(() => import('../components/menu'))
 const PWAPromoComponent = dynamic(() => import('../components/pwa'))
-const TimeTableComponent = dynamic(() => import('../components/timetable'))
 const AnnouncementComponent = dynamic(() => import('../components/announce'))
 
-/**
- * Single Page Application!
- */
 interface SPAProps {
   children: ReactNode
-  title: string
+  title?: string
+  desc?: string
 }
 
 function MultiComponent(props: SPAProps): JSX.Element {
@@ -34,113 +37,145 @@ function MultiComponent(props: SPAProps): JSX.Element {
       leave="transition duration-500"
       leaveFrom="opacity-100"
       leaveTo="opacity-0"
-      className="flex flex-col mb-8 shadow-lg text-center items-center"
+      className="flex flex-col text-center items-center"
       afterLeave={() => setPrevState(props)}
     >
-      {prevState.title !== null && (
-        <h2 className="border-b border-gray-400 text-black text-xl font-medium py-4 rounded-t-lg bg-gradient-to-br from-paris-daisy-400 to-paris-daisy-600 p-4 w-full">
-          {prevState.title}
-        </h2>
-      )}
-      <div
-        className={
-          'text-black md:px-4 py-4 bg-white bg-opacity-80 dark:bg-gray-800 dark:bg-opacity-80 dark:text-gray-200 ' +
-          (prevState.title !== null ? 'rounded-b-lg' : 'rounded-lg filter drop-shadow-md')
-        }
-      >
-        {prevState.children}
+      <div className="px-4 m-4">
+        {prevState.title && (
+          <h2 className="text-2xl font-bold py-4 creative-font">{prevState.title}</h2>
+        )}
+        {prevState.desc && <span className="py-4 font-light">{prevState.desc}</span>}
       </div>
+      <div className="px-2 py-4 bg-gray-100">{prevState.children}</div>
     </Transition>
   )
 }
 
 export default function MainPage(): JSX.Element {
-  const auth = useAuth()
-  const [date, setDate] = useState(new Date())
-  const [page, setPage] = useState<Pages>(null)
-  const width = useWindowWidth({ initialWidth: 1360 })
-
-  useEffect(() => {
-    const timerID = setInterval(() => {
-      setDate(new Date())
-    }, 1000)
-    return () => clearInterval(timerID)
-  })
-
-  function renderPage(): JSX.Element {
-    if (!(auth && auth.ready)) return null
-    let children: JSX.Element = null,
-      title: string = null
-    if (!auth.user) {
-      children = <SignInComponent />
-      title = 'เข้าสู่ระบบ'
-    }
-    if (auth.user && !auth.metadata) {
-      title = 'อีกแค่นิดเดียว'
-      children = <MetaDataComponent />
-    }
-    if (page == 'settings') {
-      title = 'การตั้งค่า'
-      children = <MetaDataComponent onSubmit={() => setPage(null)} />
-    }
-    if (page == 'timetable') {
-      title = 'ตารางเรียน'
-      children = <TimeTableComponent />
-    }
-    if (children === null) {
-      // No page matched, load Main Time component
-      children = <TimeSlotsComponent />
-    }
-    return <MultiComponent title={title}>{children}</MultiComponent>
-  }
+  const { ready, user, metadata, announce } = useAuth()
+  const { date } = useMeeting()
+  const [showAnnounce, setAnnounce] = useState(false)
   return (
-    <div className="background-default overflow-hidden text-white min-h-screen flex flex-col items-center justify-center dark:bg-gray-900 dark:text-white">
+    <div
+      className={
+        'overflow-hidden min-h-screen flex flex-col dark:bg-gray-900 dark:text-white' +
+        (ready && metadata ? '' : ' items-center justify-center')
+      }
+    >
       <Head>
         <title>PM-RianArai</title>
-        <meta name="description" content="เข้าเรียนทุกวิชาได้จากที่เดียว" />
+        <meta name="title" content="PM-RianArai : เข้าเรียนทุกวิชาได้จากทีนี่ที่เดียว" />
+        <meta
+          name="description"
+          content="PM-RianArai เว็บไซต์สำหรับนักเรียนโรงเรียนมัธยมสาธิตวัดพระศรีมหาธาตุ ที่จะทำให้การเข้าเรียนเป็นทุกรายวิชาเป็นเรื่องง่าย รวบรวมทุกอย่างไว้ในที่เดียว"
+        />
         <meta property="og:url" content="https://pm-rianarai.vercel.app" />
         <meta property="og:title" content="PM Rianarai - เรียนอะไร" />
         <meta property="og:description" content="เข้าเรียนทุกวิชาได้จากทีนี่ที่เดียว" />
       </Head>
-      {width >= 640 && (
-        <div
-          suppressHydrationWarning
-          className="p-6 opacity-50 absolute top-0 left-0 creative-font text-2xl"
-        >
-          {date.toLocaleTimeString('th-TH')}
-        </div>
+      <LayoutComponent>
+        {ready && (
+          <>
+            {user && metadata ? (
+              <>
+                <div className={CONTAINER}>
+                  <div className={'flex ' + HEADER}>
+                    <h2 className="flex-grow">สวัสดี {metadata.displayName}</h2>
+                    <span className="text-2xl flex items-center creative-font text-gray-500 select-none">
+                      <ClockIcon className="mr-2 h-8 w-8" />
+                      <span className="w-20">{date.toLocaleTimeString('th-TH')}</span>
+                    </span>
+                  </div>
+                  <div className="flex md:flex-row flex-col gap-8">
+                    <div className="flex flex-1 flex-col flex-grow gap-8">
+                      <div className="flex flex-grow shadow-md rounded bg-gray-100 p-4">
+                        <TimeSlotsComponent />
+                      </div>
+                      <div className="grid grid-cols-2 pb-10 md:gap-16 gap-8">
+                        <Link href="/timetable">
+                          <a
+                            title="ตารางสอน"
+                            className="items-center flex flex-row shadow-md rounded bg-apple-500 hover:bg-gradient-to-b from-apple-500 to-apple-600 text-white p-6"
+                          >
+                            <div className="flex flex-col flex-grow items-start">
+                              <h4 className="py-2 text-2xl font-medium">ตารางสอน</h4>
+                              <span className="py-2 text-sm sarabun-font">7 คาบเรียนวันนี้</span>
+                            </div>
+                            <BookOpenIcon className="md:h-12 md:w-12 w-10 h-10" />
+                          </a>
+                        </Link>
+                        <div className="md:flex hidden items-center flex-row shadow-md rounded bg-blue-500 hover:bg-gradient-to-b from-blue-500 to-blue-600 text-white p-6">
+                          <button
+                            onClick={() => setAnnounce(true)}
+                            className="focus:outline-none flex flex-col flex-grow items-start"
+                          >
+                            <h4 className="py-2 text-2xl font-medium">ประกาศ</h4>
+                            <span className="py-2 text-sm sarabun-font">
+                              {getUnreadAnnounce(announce, metadata).length} ประกาศที่ยังไม่ได้อ่าน
+                            </span>
+                          </button>
+                          <SpeakerphoneIcon className="md:h-12 md:w-12 w-10 h-10" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="md:w-72 w-full">
+                      <div className="items-center flex flex-row rounded-t-lg hover:bg-yellow-500 bg-gradient-to-b from-yellow-400 to-yellow-500 text-white py-3 px-6">
+                        <h4 className="py-2 text-lg font-medium flex-grow">งานที่ได้รับ</h4>
+                        <AcademicCapIcon className="w-10 h-10" />
+                      </div>
+                      <div className="relative flex flex-col border p-4 rounded-b-lg font-light text-gray-800">
+                        ยังไม่ได้เชื่อมต่อกับ Google Classroom
+                        <Link href="/work">
+                          <a className="p-2 font-normal text-right sticky bottom-0 text-yellow-500 hover:text-yellow-600 underline">
+                            ดูเพิ่มเติม
+                          </a>
+                        </Link>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <AnnouncementComponent show={showAnnounce} onClose={() => setAnnounce(false)} />
+              </>
+            ) : (
+              <>
+                <div className="rounded-lg border shadow-lg flex flex-col bg-white bg-opacity-75 items-center justify-start">
+                  {user ? (
+                    <>
+                      <MultiComponent title="ขั้นตอนสุดท้าย">
+                        <MetaDataComponent />
+                      </MultiComponent>
+                    </>
+                  ) : (
+                    <MultiComponent title="ยินดีต้อนรับ" desc="เข้าเรียนทุกวิชาได้จากทีนี่ที่เดียว">
+                      <SignInComponent />
+                    </MultiComponent>
+                  )}
+                </div>
+              </>
+            )}
+          </>
+        )}
+      </LayoutComponent>
+      <PWAPromoComponent show={false} />
+      {!metadata && (
+        <footer className="bottom-0 bg-white bg-opacity-30 text-black text-sm gap-2 flex flex-col justify-center items-center w-full p-8 border-t">
+          <div className="flex flex-row justify-center text-center items-center w-full space-x-4">
+            <a href="/about" target="_blank" rel="noopener" className="font-normal underline">
+              เกี่ยวกับเรา
+            </a>
+            <a
+              href="/support"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="font-normal underline"
+            >
+              แจ้งปัญหาการใช้งาน / ติดต่อ
+            </a>
+          </div>
+
+          <span className="text-gray-800">Version 2.0 (@next)</span>
+        </footer>
       )}
-      {auth.ready && <MenuComponent onChange={setPage} page={page} />}
-
-      <main className={'flex flex-1 flex-col w-full items-center justify-center'}>
-        <HeaderComponent />
-        {renderPage()}
-        <PWAPromoComponent show={true} />
-        <AnnouncementComponent show={page === 'announce'} onClose={() => setPage(null)} />
-      </main>
-
-      <footer className="bg-white bg-opacity-30 text-black text-sm gap-2 flex flex-col justify-center items-center w-full p-8 border-t mx-8">
-        <div className="flex flex-row justify-center text-center items-center w-full space-x-4">
-          <a
-            href="/about"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-normal underline"
-          >
-            เกี่ยวกับเว็บไซต์นี้
-          </a>
-          <a
-            href="/support"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="font-normal underline"
-          >
-            แจ้งปัญหาการใช้งาน / ติดต่อ
-          </a>
-        </div>
-
-        <span className="text-gray-800">Producted By Lemasc</span>
-      </footer>
     </div>
   )
 }

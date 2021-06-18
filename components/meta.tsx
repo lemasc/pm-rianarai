@@ -50,18 +50,18 @@ export default function MetadataComponent({ onSubmit }: MetaProps): JSX.Element 
         <label htmlFor="class" className="p-1 sm:p-2 sm:text-left">
           ห้องเรียน :
         </label>
-        <div className="flex flex-row gap-2">
+        <div className="flex flex-row gap-2 items-center justify-center">
           <input
             name="class"
-            className="input text-center w-16"
+            className="input text-center w-20"
             type="number"
             inputMode="numeric"
             {...register('class', { required: true, min: 1, max: 6 })}
           />
-          <span className="p-2 flex-grow">/</span>
+          <span className="p-2 flex-grow text-center">/</span>
           <input
             name="room"
-            className="input text-center w-16"
+            className="input text-center w-20"
             type="number"
             inputMode="numeric"
             {...register('room', {
@@ -87,7 +87,7 @@ export default function MetadataComponent({ onSubmit }: MetaProps): JSX.Element 
           type="submit"
           className="sm:mt-4 mt-2 text-white btn py-2 ring-apple-500 bg-apple-500 from-apple-500 to-apple-600"
         >
-          เรียบร้อย !
+          {metadata ? 'บันทึก' : 'เสร็จสิ้น'}
         </button>
         <button
           type="reset"
@@ -97,10 +97,8 @@ export default function MetadataComponent({ onSubmit }: MetaProps): JSX.Element 
           ยกเลิก
         </button>
       </form>
-      {Object.keys(errors).length != 0 ? (
+      {Object.keys(errors).length != 0 && (
         <span className="font-bold text-sm text-red-500">กรุณาตรวจสอบข้อมูลที่กรอกให้ถูกต้อง</span>
-      ) : (
-        <span className="font-light text-sm">ระบบรวบรวมข้อมูลที่จำเป็นเท่านั้น</span>
       )}
     </>
   )

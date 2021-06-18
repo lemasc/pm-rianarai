@@ -1,27 +1,18 @@
 import { ReactNodeArray, useEffect, useState } from 'react'
 import { Transition } from '@headlessui/react'
-import { useDocument } from 'swr-firestore-v9'
 import Link from 'next/link'
-import LogRocket from 'logrocket'
 import dayjs from 'dayjs'
-import { useAuth } from '../shared/authContext'
-import { Meeting, useMeeting } from '../shared/meetingContext'
+import { Meeting, useMeeting, TimeSlots } from '../shared/meetingContext'
 import PaginationComponent from './pagination'
-
-export interface Schedule {
-  [days: string]: TimeSlots[]
-}
-
-export interface TimeSlots {
-  start: string
-  end: string
-  teacher: string[]
-  code: string[]
-}
 
 interface TimeSlotsMemory {
   active: TimeSlots | null
   next: TimeSlots | null
+}
+
+interface MemoryQueue {
+  slots: TimeSlotsMemory
+  state: State
 }
 
 interface MeetingComponentProps {
@@ -112,9 +103,9 @@ function MeetingInfo({ slot, disabled }: MeetingMetaProps): JSX.Element {
   }, [_meeting, slot])
   if (!ready || !slot) return null
   return (
-    <div className="flex flex-col sm:grid sm:grid-cols-2 w-full sm:divide-x divide-gray-400">
-      <div className="flex flex-col justify-center">
-        <div className="text-2xl p-4 text-blue-600 font-medium px-8 max-w-md">
+    <div className="flex flex-col md:grid md:grid-cols-2 w-full md:divide-x divide-gray-400">
+      <div className="flex flex-col justify-center items-center">
+        <div className="text-center text-2xl p-4 text-blue-600 font-medium px-8 max-w-md">
           {meeting.length > 0 &&
             slot.code[0].match(/([0-9]){4}\w/g) !== null &&
             meeting[0].subject + ' : '}
@@ -149,29 +140,13 @@ function MeetingPending({ slot }): JSX.Element {
 }
 
 export default function TimeSlotsComponent(): JSX.Element {
-  const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
-  const { metadata } = useAuth()
-  const { add } = useMeeting()
+  const { add, schedule, date, curDay } = useMeeting()
   const [nextPage, setNextPage] = useState(false)
-  const [date, setDate] = useState(new Date())
   const [disabled, setDisabled] = useState(false)
   const [memory, _setMemory] = useState<TimeSlotsMemory>({ active: null, next: null })
-  const [memoryQueue, setQueue] = useState<TimeSlotsMemory>(null)
+  const [memoryQueue, setQueue] = useState<MemoryQueue>(null)
   const [show, setShow] = useState(true)
   const [state, setState] = useState<State>('')
-  const [curDay, setCurday] = useState<string>('sunday')
-  const { data } = useDocument<Schedule>(metadata ? `classes/${metadata.class}` : null, {
-    listen: true,
-  })
-
-  useEffect(() => {
-    const timerID = setInterval(() => {
-      const d = new Date()
-      setDate(d)
-      setCurday(days[d.getDay()])
-    }, 1000)
-    return () => clearInterval(timerID)
-  })
 
   useEffect(() => {
     function getActualTime(t: string): string {
@@ -187,25 +162,28 @@ export default function TimeSlotsComponent(): JSX.Element {
     const inNextRange = (time: string, slot: TimeSlots, next: TimeSlots): boolean => {
       return slot && next && time >= getActualTime(next.start) && time < slot.end
     }
-    const setMemory = (state: TimeSlotsMemory): void => {
+    const setMemory = (queue: MemoryQueue): void => {
       // Compare the previous state and the current state
-      if ((state.active === memory.active && state.next === memory.next) || memoryQueue !== null)
+      if (
+        (queue.slots.active === memory.active &&
+          queue.slots.next === memory.next &&
+          queue.state === state) ||
+        memoryQueue !== null
+      )
         return
-      setQueue(state)
+      setQueue(queue)
       setNextPage(false)
-      LogRocket.log('Set Memory', state)
       setShow(false)
     }
     let _isMounted = true
     if (!_isMounted) return
-    if (!data) {
+    if (!schedule) {
       setState('')
       return
     }
-    if (data[curDay]) {
-      //const timeString = '12:55'
+    if (schedule[curDay]) {
       const timeString = date.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })
-      const target = data[curDay]
+      const target = schedule[curDay]
       // If the time is still in range, don't check anything.
       if (inTimeRange(timeString, memory.active)) {
         setDisabled(!inNextRange(timeString, memory.active, memory.next))
@@ -213,19 +191,19 @@ export default function TimeSlotsComponent(): JSX.Element {
       }
       // Out of range, start recheck
       if (timeString < getActualTime(target[0].start)) {
-        setMemory({ active: null, next: target[0] })
-        setState('start')
+        setMemory({ slots: { active: null, next: target[0] }, state: 'start' })
         return
       }
       if (timeString > target[target.length - 1].end) {
-        setMemory({ active: null, next: null })
-        setState('end')
+        setMemory({ slots: { active: null, next: null }, state: 'end' })
         return
       }
       for (let i = 0; i < target.length; i++) {
         if (inTimeRange(timeString, target[i])) {
-          setMemory({ active: target[i], next: target[i + 1] ? target[i + 1] : null })
-          setState('active')
+          setMemory({
+            slots: { active: target[i], next: target[i + 1] ? target[i + 1] : null },
+            state: 'active',
+          })
           setDisabled(!inNextRange(timeString, target[i], target[i + 1]))
           return
         } else if (
@@ -233,19 +211,16 @@ export default function TimeSlotsComponent(): JSX.Element {
           timeString > target[i].end &&
           timeString < getActualTime(target[i + 1].start)
         ) {
-          setMemory({ active: null, next: target[i + 1] })
-          setState('break')
+          setMemory({ slots: { active: null, next: target[i + 1] }, state: 'break' })
           return
         }
       }
-    } else {
-      setState('active')
     }
-    setMemory({ active: null, next: null })
+    setMemory({ slots: { active: null, next: null }, state: 'active' })
     return () => {
       _isMounted = false
     }
-  }, [curDay, data, date, memory, memoryQueue])
+  }, [curDay, schedule, date, memory, memoryQueue, state])
   let message = ''
   switch (state) {
     case 'start':
@@ -270,7 +245,7 @@ export default function TimeSlotsComponent(): JSX.Element {
     <Transition
       show={show}
       appear={true}
-      className="flex flex-col justify-center items-center"
+      className="flex flex-1 flex-col justify-center items-center"
       enter="transition-opacity duration-500"
       enterFrom="opacity-0"
       enterTo="opacity-100"
@@ -279,32 +254,27 @@ export default function TimeSlotsComponent(): JSX.Element {
       leaveTo="opacity-0"
       beforeEnter={() => {
         if (memoryQueue) {
-          _setMemory(memoryQueue)
+          setState(memoryQueue.state)
+          _setMemory(memoryQueue.slots)
           setQueue(null)
         }
       }}
       afterLeave={() => setShow(true)}
     >
-      <span className="text-gray-900 dark:text-gray-100 py-2 px-4 creative-font">
-        สวัสดี {metadata?.displayName}
-      </span>
-
       {state == '' ? (
         <div className="flex flex-col px-4">
           <h3 className="text-2xl p-4 text-blue-600 font-medium px-8">กำลังโหลด...</h3>
         </div>
       ) : (
         <>
-          {state == 'active' && (
-            <PaginationComponent
-              className="w-56"
-              index={nextPage ? 1 : 0}
-              onChange={(index) => setNextPage(index == 1 ? true : false)}
-              name={nextPage ? 'รายวิชาต่อไป' : 'รายวิชาปัจจุบัน'}
-              showIcons={!!memory.next}
-              length={2}
-            />
-          )}
+          <PaginationComponent
+            className="w-56"
+            index={nextPage ? 1 : 0}
+            onChange={(index) => setNextPage(index == 1 ? true : false)}
+            name={nextPage ? 'รายวิชาต่อไป' : 'รายวิชาปัจจุบัน'}
+            showIcons={!!memory.next && state === 'active'}
+            length={2}
+          />
           <MeetingInfo
             slot={nextPage ? memory.next : memory.active}
             disabled={nextPage && disabled}
@@ -316,7 +286,7 @@ export default function TimeSlotsComponent(): JSX.Element {
             </>
           )}
           {memory.next && (
-            <span className="mt-4 text-sm border-t-2 border-gray-500 w-full pt-4 font-light px-4">
+            <span className="text-center mt-4 text-sm border-t-2 border-gray-300 w-full pt-4 font-light px-4">
               {nextPage ? 'รายวิชาปัจจุบัน' : 'รายวิชาต่อไป'} -{' '}
               <MeetingPending slot={nextPage ? memory.active : memory.next} />
             </span>

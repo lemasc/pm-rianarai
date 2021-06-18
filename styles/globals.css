@@ -5,6 +5,10 @@ body {
   font-family: 'Kanit', -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu,
     Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }
+.header-font {
+  font-family: 'Pattaya', -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu,
+    Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
+}
 .creative-font {
   font-family: 'Kodchasan', -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu,
     Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
@@ -81,13 +85,29 @@ body {
 }
 
 .timetable {
-  @apply select-none min-w-full sm:max-w-max sm:overflow-visible divide-y divide-gray-200 text-sm border-collapse;
+  @apply border overflow-y-hidden divide-y divide-gray-200 text-sm border-collapse;
 }
+table {
+  display: block;
+  overflow-x: auto;
+  white-space: nowrap;
+}
+
+table tbody {
+  display: table;
+  width: 100%;
+}
+
 .timetable > thead > tr > th {
-  @apply sticky top-0 break-words px-6 py-3 text-center font-medium text-gray-500 uppercase bg-white;
+  min-width: 10rem;
+  @apply sticky w-64 px-2 py-4 top-0 border;
 }
 .timetable > tbody > tr > td {
-  @apply px-6 py-4 whitespace-nowrap border-t border-b border-gray-400;
+  min-width: 10rem;
+  @apply py-2 text-center border;
+}
+.timetable > tbody > tr > td[colspan='2'] {
+  min-width: 20rem !important;
 }
 
 .login > button {

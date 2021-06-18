@@ -1,12 +1,42 @@
-import { useDocument } from 'swr-firestore-v9'
 import dayjs from 'dayjs'
-import { useEffect, useState } from 'react'
-import { useAuth } from '../shared/authContext'
+import { ReactNodeArray, useState } from 'react'
 import PaginationComponent from './pagination'
-import type { Schedule, TimeSlots } from './timeslots'
 import { GenerateTeacherName } from './timeslots'
 import { useWindowWidth } from '@react-hook/window-size/throttled'
-import LogRocket from 'logrocket'
+import { useMeeting, TimeSlots } from '../shared/meetingContext'
+
+type dataTimeSlots = {
+  start: string[]
+  end: string[]
+}
+const timetable: dataTimeSlots = {
+  start: [
+    '08:30',
+    '09:20',
+    '10:10',
+    '10:30',
+    '11:20',
+    '12:10',
+    '13:00',
+    '13:50',
+    '14:40',
+    '15:30',
+    '16:20',
+  ],
+  end: [
+    '09:20',
+    '10:10',
+    '10:30',
+    '11:20',
+    '12:10',
+    '13:00',
+    '13:50',
+    '14:40',
+    '15:30',
+    '16:20',
+    '17:10',
+  ],
+}
 
 function TimeSlotsData({ data }: { data: TimeSlots }): JSX.Element {
   return (
@@ -25,108 +55,134 @@ export default function TimetableComponent(): JSX.Element {
   const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
   const daysTH = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์']
   const [curDay, setCurday] = useState<number>(dayjs().day())
-  const { metadata } = useAuth()
-  const { data } = useDocument<Schedule>(metadata ? `classes/${metadata.class}` : null, {
-    listen: true,
-    onSuccess: (data) => {
-      if (!data) return
-      LogRocket.log(data)
-    },
-  })
+  const { schedule: data } = useMeeting()
   const width = useWindowWidth()
   // Desktop Breakpoints
-  const DESKTOP = 1200
+  const DESKTOP = 900
   const break10Class = 'bg-green-500 bg-opacity-40 italic'
   const breakClass = 'bg-yellow-500 bg-opacity-40 italic'
+  const generatePendingSlots = (slot: TimeSlots[]): ReactNodeArray => {
+    // Get index of the last end time in schedule
+    const lastIndex = timetable.end.indexOf(slot[slot.length - 1].end)
+    return Array(timetable.start.length - lastIndex - 1).fill(<td></td>)
+  }
+  const calculateColSpan = (slot: TimeSlots): number | undefined => {
+    return timetable.end.indexOf(slot.end) - timetable.start.indexOf(slot.start) + 1
+  }
   return (
-    <div className={width > DESKTOP ? '' : 'w-80 flex flex-col justify-center items-center'}>
-      <PaginationComponent
-        className="w-48"
-        index={curDay}
-        onChange={setCurday}
-        name={daysTH[curDay]}
-        showIcons={true}
-        length={7}
-      />
+    <div
+      className={
+        width > DESKTOP
+          ? 'whitespace-nowrap block'
+          : 'w-80 flex flex-col justify-center items-center'
+      }
+    >
+      {width < DESKTOP && (
+        <PaginationComponent
+          className="w-48"
+          index={curDay}
+          onChange={setCurday}
+          name={daysTH[curDay]}
+          showIcons={true}
+          length={7}
+        />
+      )}
+
       <main className="py-4 flex items-center justify-center">
-        {data && data[days[curDay]] ? (
+        {width < DESKTOP ? (
           <>
-            {width < DESKTOP ? (
-              <table className="timetable w-full">
-                <thead className="bg-gray-50">
-                  <tr>
-                    <th scope="col">เวลา</th>
-                    <th scope="col">คาบเรียน</th>
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {data[days[curDay]].map((d) => (
-                    <>
-                      <tr key={d.start}>
-                        <td>
-                          {d.start} - {d.end}
-                        </td>
-                        <td>
-                          <TimeSlotsData data={d} />
-                        </td>
-                      </tr>
-                      {d.end == '10:10' && (
-                        <tr key="break10" className={break10Class}>
-                          <td>10:10 - 10:30</td>
-                          <td>พัก 20 นาที</td>
-                        </tr>
-                      )}
-                      {d.end == '12:10' && (
-                        <tr key="break" className={breakClass}>
-                          <td>12:10 - 13:00</td>
-                          <td>พักกลางวัน</td>
-                        </tr>
-                      )}
-                    </>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <table className="timetable">
-                <thead className="bg-gray-50">
-                  <tr>
+            {data && data[days[curDay]] ? (
+              <>
+                <table className="timetable w-full">
+                  <thead className="bg-gray-50">
+                    <tr>
+                      <th scope="col">เวลา</th>
+                      <th scope="col">คาบเรียน</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-200">
                     {data[days[curDay]].map((d) => (
                       <>
-                        <th key={d.start}>
-                          {d.start} - {d.end}
-                        </th>
-                        {d.end == '10:10' && <th key="break10_h">10:10 - 10:30</th>}
-                        {d.end == '12:10' && <th key="break_h">12:10 - 13:00</th>}
-                      </>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-gray-200 font-light">
-                  <tr>
-                    {data[days[curDay]].map((d) => (
-                      <>
-                        <td key={d.code.toString()}>
-                          <TimeSlotsData data={d} />
-                        </td>
-                        {d.end == '10:10' && (
-                          <td key="break10" className={break10Class}>
-                            พัก 20 นาที
+                        <tr key={d.start}>
+                          <td>
+                            {d.start} - {d.end}
                           </td>
+                          <td>
+                            <TimeSlotsData data={d} />
+                          </td>
+                        </tr>
+                        {d.end == '10:10' && (
+                          <tr key="break10" className={break10Class}>
+                            <td>10:10 - 10:30</td>
+                            <td>พัก 20 นาที</td>
+                          </tr>
                         )}
                         {d.end == '12:10' && (
-                          <td key="break" className={breakClass}>
-                            พักกลางวัน
-                          </td>
+                          <tr key="break" className={breakClass}>
+                            <td>12:10 - 13:00</td>
+                            <td>พักกลางวัน</td>
+                          </tr>
                         )}
                       </>
                     ))}
-                  </tr>
-                </tbody>
-              </table>
+                  </tbody>
+                </table>
+              </>
+            ) : (
+              <div className="text-lg text-red-500 p-12 font-medium">ไม่มีข้อมูลตารางเรียน</div>
             )}
           </>
         ) : (
-          <div className="text-lg text-red-500 p-12 font-medium">ไม่มีข้อมูลตารางเรียน</div>
+          <table className="timetable">
+            <thead className="bg-gray-50">
+              <tr>
+                <th className="sticky -left-0.5 bg-gray-50 z-20 border">วัน</th>
+                {timetable.start.map((d, i) => (
+                  <>
+                    <th key={d}>
+                      {d} - {timetable.end[i]}
+                    </th>
+                  </>
+                ))}
+              </tr>
+            </thead>
+            <tbody className="divide-y divide-gray-200 font-light">
+              {days.map((day, dayIndex) => (
+                <>
+                  {data[day] && (
+                    <tr>
+                      <td className="sticky -left-0.5 bg-gray-50 font-medium border">
+                        {daysTH[dayIndex]}
+                      </td>
+                      {data[day] &&
+                        data[day].map((d, i) => (
+                          <>
+                            <td colSpan={calculateColSpan(d)} key={d.code.toString()}>
+                              <TimeSlotsData data={d} />
+                            </td>
+                            {day === 'monday' && (
+                              <>
+                                {d.end == '10:10' && (
+                                  <td rowSpan={5} key="break10" className={break10Class}>
+                                    พัก 20 นาที
+                                  </td>
+                                )}
+                                {d.end == '12:10' && (
+                                  <td rowSpan={5} key="break" className={breakClass}>
+                                    พักกลางวัน
+                                  </td>
+                                )}
+                                {i === data[day].length - 1 && generatePendingSlots(data[day])}
+                              </>
+                            )}
+                          </>
+                        ))}
+                    </tr>
+                  )}
+                </>
+              ))}
+            </tbody>
+          </table>
         )}
       </main>
     </div>
