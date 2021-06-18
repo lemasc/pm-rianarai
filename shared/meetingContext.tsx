@@ -69,7 +69,8 @@ export function useProvideMeeting(): IMeetingContext {
     return params.get('pwd')
   }
   const isMobile = (): boolean => {
-    return /iPhone|iPad|iPod|Android/i.test(navigator.userAgent)
+    // Fix macOS Safari AND IPAD
+    return !(/Windows/i.test(navigator.userAgent))
   }
   const dynamicLink = (meeting: string, code: string): void => {
     const params = new URLSearchParams({ confno: meeting, pwd: code })
