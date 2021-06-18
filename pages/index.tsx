@@ -40,13 +40,13 @@ function MultiComponent(props: SPAProps): JSX.Element {
       className="flex flex-col text-center items-center"
       afterLeave={() => setPrevState(props)}
     >
-      <div className="px-4 m-4">
+      <div className="px-4 m-4 w-full">
         {prevState.title && (
           <h2 className="text-2xl font-bold py-4 creative-font">{prevState.title}</h2>
         )}
         {prevState.desc && <span className="py-4 font-light">{prevState.desc}</span>}
       </div>
-      <div className="px-2 py-4 bg-gray-100">{prevState.children}</div>
+      <div className="w-full p-4 bg-gray-100">{prevState.children}</div>
     </Transition>
   )
 }
@@ -59,7 +59,7 @@ export default function MainPage(): JSX.Element {
     <div
       className={
         'overflow-hidden min-h-screen flex flex-col dark:bg-gray-900 dark:text-white' +
-        (ready && metadata ? '' : ' items-center justify-center')
+        (ready && metadata ? '' : ' items-center justify-center background-hero')
       }
     >
       <Head>
@@ -138,15 +138,29 @@ export default function MainPage(): JSX.Element {
               </>
             ) : (
               <>
-                <div className="rounded-lg border shadow-lg flex flex-col bg-white bg-opacity-75 items-center justify-start">
+                <div className="md:absolute left-24 top-8 flex flex-col text-white space-y-6 p-8 md:items-start items-center max-w-2xl font-light">
+                  <h1 className="text-4xl font-medium filter drop-shadow-xl">
+                    เข้าเรียนทุกวิชาได้จากทีนี่ที่เดียว
+                  </h1>
+                  <p className="md:text-left text-center">
+                    จะมานั่งกรอกรหัสซ้ำ ๆ ทุกคาบเรียนทำไม เพียงแค่ไม่กี่ขั้นตอน
+                    คุณก็สามารถเริ่มต้นเข้าเรียนออนไลน์ ดูตารางสอน งานที่ได้รับมอบหมาย
+                    ทั้งหมดนี่ได้ทุกวิชา ทุกระดับชั้น และทุกอุปกรณ์
+                  </p>
+                  <p>และใช่ ทั้งหมดนั่นรวมอยู่ในนี้ให้คุณแล้ว แค่นั้นเลย</p>
+                </div>
+                <div className="md:mb-0 mb-20 rounded-lg border shadow-lg flex flex-col bg-white items-center justify-start">
                   {user ? (
                     <>
-                      <MultiComponent title="ขั้นตอนสุดท้าย">
+                      <MultiComponent title="ขั้นตอนสุดท้ายเท่านั้น">
                         <MetaDataComponent />
                       </MultiComponent>
                     </>
                   ) : (
-                    <MultiComponent title="ยินดีต้อนรับ" desc="เข้าเรียนทุกวิชาได้จากทีนี่ที่เดียว">
+                    <MultiComponent
+                      title="ยินดีต้อนรับ"
+                      desc="ลงทะเบียนหรือเข้าสู่ระบบเพื่อเริ่มต้นใช้งาน"
+                    >
                       <SignInComponent />
                     </MultiComponent>
                   )}

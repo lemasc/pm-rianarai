@@ -29,6 +29,13 @@ body {
   background-position: center;
 }
 
+.background-hero {
+  background-image: url('./hero.webp');
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: left;
+}
+
 .circle::before {
   content: '';
   display: block;

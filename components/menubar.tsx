@@ -24,7 +24,12 @@ export default function MenuBarComponent({ landing }: MenuBarProps): JSX.Element
   return (
     <>
       <AnnouncementComponent show={announce} onClose={() => setAnnounce(false)} />
-      <div className="w-full shadow-md fixed bg-white top-0 left-0 flex flex-row items-center justify-start px-6 py-4 sm:space-x-4 space-x-3">
+      <div
+        className={
+          (landing ? 'bg-transparent' : 'bg-white shadow-md') +
+          ' w-full fixed top-0 left-0 flex flex-row items-center justify-start px-6 py-4 sm:space-x-4 space-x-3'
+        }
+      >
         <div title="PM-RianArai" className="flex flex-row items-center">
           <Image src="/logo.png" width={50} height={50} />
           <h1 className="px-4 text-2xl header-font select-none md:block hidden">
