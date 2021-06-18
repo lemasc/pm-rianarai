@@ -57,8 +57,8 @@ export default function TimetableComponent(): JSX.Element {
   const [curDay, setCurday] = useState<number>(dayjs().day())
   const { schedule: data } = useMeeting()
   const width = useWindowWidth()
-  // Desktop Breakpoints
-  const DESKTOP = 900
+  // BREAKPOINT Breakpoints
+  const BREAKPOINT = 640
   const break10Class = 'bg-green-500 bg-opacity-40 italic'
   const breakClass = 'bg-yellow-500 bg-opacity-40 italic'
   const generatePendingSlots = (slot: TimeSlots[]): ReactNodeArray => {
@@ -72,12 +72,12 @@ export default function TimetableComponent(): JSX.Element {
   return (
     <div
       className={
-        width > DESKTOP
+        width > BREAKPOINT
           ? 'whitespace-nowrap block'
-          : 'w-80 flex flex-col justify-center items-center'
+          : 'min-w-min flex flex-col justify-center items-center'
       }
     >
-      {width < DESKTOP && (
+      {width < BREAKPOINT && (
         <PaginationComponent
           className="w-48"
           index={curDay}
@@ -89,7 +89,7 @@ export default function TimetableComponent(): JSX.Element {
       )}
 
       <main className="py-4 flex items-center justify-center">
-        {width < DESKTOP ? (
+        {width < BREAKPOINT ? (
           <>
             {data && data[days[curDay]] ? (
               <>

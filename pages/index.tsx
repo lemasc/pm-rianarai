@@ -13,7 +13,7 @@ import {
 import LayoutComponent, { CONTAINER, HEADER } from '../components/layout'
 import SignInComponent from '../components/signin'
 import { useMeeting } from '../shared/meetingContext'
-import { getUnreadAnnounce } from '../components/menu'
+import { getUnreadAnnounce } from '../components/menubar'
 import { useEffect } from 'react'
 
 const MetaDataComponent = dynamic(() => import('../components/meta'))
@@ -88,17 +88,17 @@ export default function MainPage(): JSX.Element {
                 <div className={CONTAINER}>
                   <div className={'flex ' + HEADER}>
                     <h2 className="flex-grow">สวัสดี {metadata.displayName}</h2>
-                    <span className="text-2xl flex items-center creative-font text-gray-500 select-none">
+                    <span className="text-2xl md:flex hidden items-center creative-font text-gray-500 select-none">
                       <ClockIcon className="mr-2 h-8 w-8" />
                       <span className="w-20">{date.toLocaleTimeString('th-TH')}</span>
                     </span>
                   </div>
-                  <div className="flex md:flex-row flex-col gap-8">
-                    <div className="flex flex-1 flex-col flex-grow gap-8">
+                  <div className="flex md:flex-row flex-col md:gap-8">
+                    <div className="flex flex-1 flex-col flex-grow md:gap-8 gap-6">
                       <div className="flex flex-grow shadow-md rounded bg-gray-100 p-4">
                         <TimeSlotsComponent />
                       </div>
-                      <div className="grid md:grid-cols-2 pb-10 md:gap-16 gap-8">
+                      <div className="grid md:grid-cols-2 md:pb-10 md:gap-16 pb-6">
                         <Link href="/timetable">
                           <a
                             title="ตารางสอน"
@@ -147,7 +147,7 @@ export default function MainPage(): JSX.Element {
               <>
                 <Transition
                   show={hero}
-                  className="md:absolute xl:left-20 left-16 xl:top-8 top-0 flex flex-col text-white space-y-6 xl:px-8 md:px-0 px-8 py-8 md:items-start items-center xl:max-w-2xl lg:max-w-xl md:max-w-md font-light"
+                  className="md:absolute left-20 top-8 flex flex-col text-white space-y-6 xl:px-8 md:px-0 px-8 py-8 md:items-start items-center xl:max-w-2xl lg:max-w-lg md:max-w-md font-light"
                 >
                   <Transition.Child
                     as="h1"
@@ -156,7 +156,7 @@ export default function MainPage(): JSX.Element {
                     enterTo="opactity-100 scale-100"
                     className="text-4xl font-medium filter drop-shadow-xl md:text-left text-center"
                   >
-                    เข้าเรียนทุกวิชาได้จากทีนี่ที่เดียว
+                    เครื่องมือเดียวสำหรับการเรียนออนไลน์
                   </Transition.Child>
                   <Transition.Child
                     as="div"
@@ -165,15 +165,17 @@ export default function MainPage(): JSX.Element {
                     enterTo="opactity-100"
                     className="flex flex-col flex-1 space-y-6 md:items-start items-center justify-center"
                   >
-                    <p className="md:text-left text-center filter drop-shadow">
-                      จะมานั่งกรอกรหัสซ้ำ ๆ ทุกคาบเรียนทำไม เพียงแค่ไม่กี่ขั้นตอน
-                      คุณก็สามารถเริ่มต้นเข้าเรียนออนไลน์ ดูตารางสอน งานที่ได้รับมอบหมาย
-                      ทั้งหมดนี่ได้ทุกวิชา ทุกระดับชั้น และทุกอุปกรณ์
+                    <p className="md:text-left md:px-0 px-8 text-center filter">
+                      จะมานั่งกรอกรหัสซ้ำ ๆ ทุกคาบเรียนทำไม เพียงแค่ 3 ขั้นตอน
+                      คุณก็สามารถเริ่มต้นเข้าเรียนออนไลน์ ดูตารางสอน จัดการงานที่ได้รับมอบหมาย
+                      ได้ทุกวิชา ทุกระดับชั้น และทุกอุปกรณ์
                     </p>
-                    <p className="text-center">ทั้งหมดนั่นรวมอยู่ในนี้ให้คุณแล้ว แค่นั้นเลย</p>
+                    <p className="text-center lg:text-white md:text-gray-900 text-white font-medium">
+                      และใช่ ทั้งหมดนั่นรวมอยู่ในนี้ให้คุณแล้ว
+                    </p>
                   </Transition.Child>
                 </Transition>
-                <div className="md:mb-0 mb-20 rounded-lg border shadow-xl flex flex-col bg-white items-center justify-start">
+                <div className="rounded-lg border shadow-xl flex flex-col bg-white items-center justify-start">
                   {user ? (
                     <>
                       <MultiComponent title="ขั้นตอนสุดท้ายเท่านั้น">
@@ -195,7 +197,7 @@ export default function MainPage(): JSX.Element {
         )}
       </LayoutComponent>
       <PWAPromoComponent show={false} />
-      {!metadata && (
+      {ready && !metadata && (
         <footer className="bottom-0 bg-white bg-opacity-30 text-black text-sm gap-2 flex flex-col justify-center items-center w-full p-8 border-t">
           <div className="flex flex-row justify-center text-center items-center w-full space-x-4">
             <a href="/about" target="_blank" rel="noopener" className="font-normal underline">

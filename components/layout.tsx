@@ -14,7 +14,7 @@ export default function LayoutComponent({ children }: LayoutProps): JSX.Element 
       <MenuBarComponent landing={ready ? metadata === null : false} />
       <main
         className={
-          'mt-20 flex flex-1 w-full ' +
+          'mt-20 md:mb-0 mb-20 flex flex-1 w-full ' +
           (ready &&
             (metadata
               ? 'justify-center flex-col '

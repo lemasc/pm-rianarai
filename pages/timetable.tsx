@@ -23,7 +23,7 @@ export default function TimetablePage() {
             </button>
             <h1 className="pl-4">ตารางสอน</h1>
           </div>
-          <div className="bg-gray-100 p-4 rounded flex-grow">
+          <div className="bg-gray-100 px-8 py-4 rounded">
             <TimetableComponent />
           </div>
         </div>
