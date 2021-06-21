@@ -30,7 +30,7 @@ export default function ModalComponent({
     <Transition show={show} as={Fragment}>
       <Dialog
         as="div"
-        className="fixed inset-0 overflow-y-auto"
+        className="fixed inset-0 overflow-y-auto z-20"
         onClose={onClose}
         initialFocus={closeRef}
       >
