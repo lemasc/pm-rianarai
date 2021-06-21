@@ -17,9 +17,9 @@ export default function SelectBox<T = {}>({ onChange, selected, data }: SelectPr
     <div className="md:w-72 sm:w-64 w-44 my-1">
       <Listbox value={selected} onChange={onChange}>
         <div className="relative mt-1">
-          <Listbox.Button className="cursor-pointer relative w-full py-2 pl-3 pr-10 text-left bg-white rounded-lg shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-opacity-75 focus-visible:ring-white focus-visible:ring-offset-orange-300 focus-visible:ring-offset-2 focus-visible:border-indigo-500 sm:text-sm">
-            <span className="block truncate">{selected.name}</span>
-            <span className="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+          <Listbox.Button className="cursor-pointer flex flex-row w-full py-2 pl-3 text-left bg-white rounded-lg shadow-md focus:outline-none focus-visible:ring-2 focus-visible:ring-opacity-75 focus-visible:ring-white focus-visible:ring-offset-white focus-visible:ring-offset-2 focus-visible:border-apple-500 sm:text-sm">
+            <span className="block truncate flex-grow">{selected.name}</span>
+            <span className="flex items-center pr-2 pointer-events-none">
               <SelectorIcon className="w-5 h-5 text-gray-400" aria-hidden="true" />
             </span>
           </Listbox.Button>
@@ -34,22 +34,23 @@ export default function SelectBox<T = {}>({ onChange, selected, data }: SelectPr
                 <Listbox.Option
                   key={index}
                   className={({ active }) =>
-                    `${active ? 'cursor-pointer text-amber-900 bg-amber-100' : 'text-gray-900'}
-                          cursor-default select-none relative py-2 pl-10 pr-4`
+                    `${active ? 'cursor-pointer' : 'text-gray-900'}
+                          cursor-default select-none relative py-2 pl-10 pr-4 hover:bg-gray-100`
                   }
                   value={item}
                 >
                   {({ selected, active }) => (
                     <>
                       <span
-                        className={`${selected ? 'font-medium' : 'font-normal'} block truncate`}
+                        className={`${
+                          selected ? 'font-medium' : 'font-normal'
+                        } block truncate cursor-pointer`}
                       >
                         {item.name}
                       </span>
                       {selected ? (
                         <span
-                          className={`${active ? 'text-amber-600' : 'text-amber-600'}
-                                absolute inset-y-0 left-0 flex items-center pl-3`}
+                          className={`text-apple-400 absolute inset-y-0 left-0 flex items-center pl-3`}
                         >
                           <CheckIcon className="w-5 h-5" aria-hidden="true" />
                         </span>

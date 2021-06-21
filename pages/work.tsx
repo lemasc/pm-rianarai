@@ -16,12 +16,14 @@ import { ClassroomCourseResult } from './api/classroom/courses'
 import { ClassroomCourseWorkResult } from './api/classroom/courses/[cid]'
 import SingletonRouter, { Router, useRouter } from 'next/router'
 import dayjs from 'dayjs'
+import weekday from 'dayjs/plugin/weekday'
 import SelectBox, { SelectData } from '../components/select'
 import { Disclosure, Transition } from '@headlessui/react'
 import { useWindowWidth } from '@react-hook/window-size/throttled'
 
+dayjs.extend(weekday)
+
 function ClassworkList({ data }: { data: ClassroomCourseWorkResult[] }): JSX.Element {
-  console.log(data)
   data = data
     .sort((prev, next) => (prev.dueDate ? (prev.dueDate > next.dueDate ? 1 : -1) : 0))
     .reverse()
@@ -111,24 +113,35 @@ type TimeRange = {
   endTime: number
 }
 
+export const time: SelectData<TimeRange>[] = [
+  {
+    name: 'สัปดาห์นี้',
+    startTime: dayjs().weekday(0).hour(0).minute(0).second(0).unix(),
+    endTime: dayjs().weekday(7).hour(0).minute(0).second(0).unix(),
+  },
+  {
+    name: 'อีก 7 วัน',
+    startTime: dayjs().hour(0).minute(0).second(0).unix(),
+    endTime: dayjs().add(8, 'days').hour(0).minute(0).second(0).unix(),
+  },
+  {
+    name: 'ก่อนหน้านี้',
+    startTime: dayjs('2021-06-01').unix(),
+    endTime: dayjs().unix(),
+  },
+  {
+    name: 'เดือนนี้',
+    startTime: dayjs().subtract(1, 'month').hour(0).minute(0).second(0).unix(),
+    endTime: dayjs().add(1, 'month').hour(0).minute(0).second(0).unix(),
+  },
+  {
+    name: 'นานกว่านั้น',
+    startTime: dayjs().add(1, 'month').hour(0).minute(0).second(0).unix(),
+    endTime: dayjs('2022-06-01').unix(),
+  },
+]
+
 export default function WorkPage(): JSX.Element {
-  const time: SelectData<TimeRange>[] = [
-    {
-      name: 'อีก 7 วัน',
-      startTime: dayjs().hour(0).minute(0).second(0).unix(),
-      endTime: dayjs().add(8, 'days').hour(0).minute(0).second(0).unix(),
-    },
-    {
-      name: 'ก่อนหน้านี้',
-      startTime: dayjs('2021-06-01').unix(),
-      endTime: dayjs().unix(),
-    },
-    {
-      name: 'เดือนนี้',
-      startTime: dayjs().subtract(1, 'month').hour(0).minute(0).second(0).unix(),
-      endTime: dayjs().add(1, 'month').hour(0).minute(0).second(0).unix(),
-    },
-  ]
   const source: CancelTokenSource = axios.CancelToken.source()
   const router = useRouter()
   const [needsFetch, setFetch] = useState(false)
@@ -254,49 +267,53 @@ export default function WorkPage(): JSX.Element {
             </div>
           )}
 
-          {classroom.length === 0 ? (
-            <div className="pb-20 font-light flex flex-col flex-1 items-center justify-center space-y-4">
-              <span>ยังไม่ได้เชื่อมต่อกับ Google Classroom</span>
-              <button
-                onClick={() => router.push('/api/classroom/authorize')}
-                className="btn text-white px-4 py-2 bg-apple-500 from-apple-500 to-apple-600 ring-apple-500"
-              >
-                เชื่อมต่อกับ Classroom
-              </button>
-            </div>
-          ) : (
-            <>
-              {load && classWork && classWork.length > 0 ? (
-                <>
-                  <div className="pb-20 md:grid md:grid-cols-3 flex flex-col justify-center gap-8">
-                    <WorkDisclosure classWork={classWork} state="">
-                      <div className="items-center flex flex-row rounded-t-lg bg-gradient-to-b from-yellow-400 to-yellow-500 text-white py-3 px-6">
-                        <h4 className="py-2 text-lg font-medium flex-grow">ยังไม่ได้ส่ง</h4>
-                        <AcademicCapIcon className="w-10 h-10" />
-                      </div>
-                    </WorkDisclosure>
-                    <WorkDisclosure classWork={classWork} state="turned-in">
-                      <div className="items-center flex flex-row rounded-t-lg bg-gradient-to-b from-green-400 to-green-500 text-white py-3 px-6">
-                        <h4 className="py-2 text-lg font-medium flex-grow">ส่งแล้ว</h4>
-                        <CheckCircleIcon className="w-10 h-10" />
-                      </div>
-                    </WorkDisclosure>
-                    <WorkDisclosure classWork={classWork} state="missing">
-                      <div className="items-center flex flex-row rounded-t-lg bg-gradient-to-b from-red-400 to-red-500 text-white py-3 px-6">
-                        <h4 className="py-2 text-lg font-medium flex-grow">ขาดส่ง</h4>
-                        <XCircleIcon className="w-10 h-10" />
-                      </div>
-                    </WorkDisclosure>
+          {classroom &&
+            (classroom.length === 0 ? (
+              <div className="pb-20 font-light flex flex-col flex-1 items-center justify-center space-y-4">
+                <span>ยังไม่ได้เชื่อมต่อกับ Google Classroom</span>
+                <button
+                  onClick={() => router.push('/api/classroom/authorize')}
+                  className="btn text-white px-4 py-2 bg-apple-500 from-apple-500 to-apple-600 ring-apple-500"
+                >
+                  เชื่อมต่อกับ Classroom
+                </button>
+              </div>
+            ) : (
+              <>
+                {load && classWork && classroom && classWork.length > 0 ? (
+                  <>
+                    <span className="text-gray-500 block sm:hidden">
+                      คลิกที่ปุ่มแต่ละปุ่มเพื่อดูข้อมูลงาน
+                    </span>
+                    <div className="pb-20 md:grid md:grid-cols-3 flex flex-col justify-center gap-8">
+                      <WorkDisclosure classWork={classWork} state="">
+                        <div className="items-center flex flex-row rounded-t-lg bg-gradient-to-b from-yellow-400 to-yellow-500 text-white py-3 px-6">
+                          <h4 className="py-2 text-lg font-medium flex-grow">ยังไม่ได้ส่ง</h4>
+                          <AcademicCapIcon className="w-10 h-10" />
+                        </div>
+                      </WorkDisclosure>
+                      <WorkDisclosure classWork={classWork} state="turned-in">
+                        <div className="items-center flex flex-row rounded-t-lg bg-gradient-to-b from-green-400 to-green-500 text-white py-3 px-6">
+                          <h4 className="py-2 text-lg font-medium flex-grow">ส่งแล้ว</h4>
+                          <CheckCircleIcon className="w-10 h-10" />
+                        </div>
+                      </WorkDisclosure>
+                      <WorkDisclosure classWork={classWork} state="missing">
+                        <div className="items-center flex flex-row rounded-t-lg bg-gradient-to-b from-red-400 to-red-500 text-white py-3 px-6">
+                          <h4 className="py-2 text-lg font-medium flex-grow">ขาดส่ง</h4>
+                          <XCircleIcon className="w-10 h-10" />
+                        </div>
+                      </WorkDisclosure>
+                    </div>
+                  </>
+                ) : (
+                  <div className="pb-20 font-light flex flex-col flex-1 items-center justify-center space-y-4">
+                    <Loader type="TailSpin" color="#2DBE57" height={80} width={80} />
+                    <span>กำลังโหลดข้อมูลครั้งแรก อาจใช้เวลา 1-2 นาที</span>
                   </div>
-                </>
-              ) : (
-                <div className="pb-20 font-light flex flex-col flex-1 items-center justify-center space-y-4">
-                  <Loader type="TailSpin" color="#2DBE57" height={80} width={80} />
-                  <span>กำลังโหลดข้อมูล อาจใช้เวลา 1-2 นาที</span>
-                </div>
-              )}
-            </>
-          )}
+                )}
+              </>
+            ))}
         </div>
       </LayoutComponent>
     </div>

@@ -34,7 +34,6 @@ export function withAuth(handler: Handler<NextApiRequest, NextApiResponse>) {
       const decodedToken = await auth.verifyIdToken(token)
       if (!decodedToken || !decodedToken.uid) return res.status(401).json({ success: false })
       req.uid = decodedToken.uid
-      console.log(req.uid)
     } catch (error) {
       console.log(error)
       return res.status(500).json({ success: false })
@@ -93,8 +92,6 @@ export async function withRefreshToken<T = any>(
     update
   ) {
     console.log('Update token')
-    console.log(currentToken.access_token)
-    console.log(oAuth2Client.credentials.access_token)
     const newCredentials = {
       access_token: oAuth2Client.credentials.access_token,
       refresh_token: oAuth2Client.credentials.refresh_token,
@@ -110,7 +107,6 @@ export async function withRefreshToken<T = any>(
         .update(newCredentials)
       const tokens: ClassroomCredentials[] = Object.assign([], req.session.get('token'))
       for (let i = 0; i < tokens.length; i++) {
-        console.log(tokens[i])
         if (tokens[i].id === update) {
           tokens[i] = { ...newCredentials, ...tokens[i] }
         }

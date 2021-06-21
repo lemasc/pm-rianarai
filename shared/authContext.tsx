@@ -48,7 +48,7 @@ interface IAuthContext {
   user: User | null
   ready: boolean
   setWelcome: (state: boolean) => Promise<void>
-  classroom: ClassroomSessionResult[]
+  classroom: ClassroomSessionResult[] | null
   remove: () => Promise<boolean>
   announce: Document<Announcement>[]
   markAsRead: (announceId: string) => Promise<void>
@@ -73,7 +73,7 @@ export function useProvideAuth(): IAuthContext {
   const [user, setUser] = useState<User | null>(null)
   const [metadata, setMetadata] = useState<UserMetadata | null>(null)
   const [ready, setReady] = useState<boolean>(false)
-  const [classroom, setClassroom] = useState<ClassroomSessionResult[]>([])
+  const [classroom, setClassroom] = useState<ClassroomSessionResult[] | null>(null)
   const { data: announce } = useCollection<Announcement>(ready ? 'announcement' : null, {
     where: [
       ['enable', '==', true],

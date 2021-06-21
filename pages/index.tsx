@@ -15,6 +15,9 @@ import SignInComponent from '../components/signin'
 import { useMeeting } from '../shared/meetingContext'
 import { getUnreadAnnounce } from '../components/menubar'
 import { useEffect } from 'react'
+import { db } from '../shared/db'
+import { useLiveQuery } from 'dexie-react-hooks'
+import { time } from './work'
 
 const WelcomeComponent = dynamic(() => import('../components/welcome'))
 const MetaDataComponent = dynamic(() => import('../components/meta'))
@@ -54,10 +57,13 @@ function MultiComponent(props: SPAProps): JSX.Element {
 }
 
 export default function MainPage(): JSX.Element {
-  const { ready, user, metadata, announce } = useAuth()
+  const { ready, user, metadata, announce, classroom } = useAuth()
   const { date } = useMeeting()
   const [showAnnounce, setAnnounce] = useState(false)
   const [hero, showHero] = useState(false)
+  const work = useLiveQuery(() =>
+    db.courseWork.where('dueDate').between(time[0].startTime, time[0].endTime).count()
+  )
   useEffect(() => {
     setTimeout(() => showHero(true), 1500)
   }, [])
@@ -132,7 +138,11 @@ export default function MainPage(): JSX.Element {
                         <AcademicCapIcon className="w-10 h-10" />
                       </div>
                       <div className="relative flex flex-col border p-4 rounded-b-lg font-light text-gray-800">
-                        ยังไม่ได้เชื่อมต่อกับ Google Classroom
+                        {classroom
+                          ? classroom.length === 0
+                            ? 'ยังไม่ได้เชื่อมต่อกับ Google Classroom'
+                            : work + ' งานทั้งหมดในสัปดาห์นี้'
+                          : 'กำลังโหลด'}
                         <Link href="/work">
                           <a className="p-2 font-normal text-right sticky bottom-0 text-yellow-500 hover:text-yellow-600 underline">
                             ดูเพิ่มเติม

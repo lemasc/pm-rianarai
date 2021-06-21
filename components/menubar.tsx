@@ -129,7 +129,7 @@ export default function MenuBarComponent({ landing }: MenuBarProps): JSX.Element
   return (
     <>
       <AnnouncementComponent show={showAnnounce} onClose={() => setAnnounce(false)} />
-      <Disclosure as="nav">
+      <Disclosure as="nav" className="z-10">
         {({ open }) => (
           <>
             <div
@@ -185,7 +185,7 @@ export default function MenuBarComponent({ landing }: MenuBarProps): JSX.Element
               )}
             </div>
             <Transition
-              show={open}
+              show={open && width <= 640}
               enter="transition duration-250 ease-in"
               enterFrom="transform scale-95 opacity-0"
               enterTo="transform scale-100 opacity-100"
