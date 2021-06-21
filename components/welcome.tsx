@@ -93,15 +93,15 @@ export default function WelcomeComponent(): JSX.Element {
                 PM-RianArai Support Form
               </a>
             </span>
-            <span className="text-center max-w-m italic">
-              PM-RianArai มี{' '}
+            <span className="text-center font-medium">
+              อัพเดทข่าวสารได้ทาง{' '}
               <a
                 className="underline text-blue-500 hover:text-blue-600"
                 target="_blank"
                 rel="noopener noreferer"
                 href="https://twitter.com/lemascth"
               >
-                Official Twitter Account แล้วจ้า (@lemascth)
+                Official Twitter Account (@lemascth)
               </a>
             </span>
           </div>
