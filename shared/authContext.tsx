@@ -17,6 +17,7 @@ import { ClassroomSessionResult } from './api'
 import { useRouter } from 'next/dist/client/router'
 
 export interface UserMetadata {
+  upgrade?: 'v2'
   class: number | string
   room?: number | string
   name: string
@@ -46,6 +47,7 @@ interface IAuthContext {
   isPWA: () => boolean
   user: User | null
   ready: boolean
+  setWelcome: (state: boolean) => Promise<void>
   classroom: ClassroomSessionResult[]
   remove: () => Promise<boolean>
   announce: Document<Announcement>[]
@@ -246,11 +248,19 @@ export function useProvideAuth(): IAuthContext {
     })
     setMetadata((meta) => ({ ...meta, announceId: Array.from(currentIds) }))
   }
+  const setWelcome = async (state: boolean): Promise<void> => {
+    if (!user) return
+    await updateDoc(doc(db, 'users/' + user.uid), {
+      upgrade: 'v2',
+    })
+    setMetadata((meta) => ({ ...meta, update: 'v2' }))
+  }
   return {
     user,
     announce,
     markAsRead,
     metadata,
+    setWelcome,
     classroom,
     remove,
     ready,

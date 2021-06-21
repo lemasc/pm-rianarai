@@ -139,7 +139,7 @@ export default function MenuBarComponent({ landing }: MenuBarProps): JSX.Element
                     ? 'bg-white blur shadow-md'
                     : 'bg-transparent'
                   : 'bg-white shadow-md') +
-                ' z-10 w-full fixed top-0 left-0 flex flex-row items-center justify-start px-6 py-4 sm:space-x-4 space-x-3 transition duration-300 ease-in-out'
+                ' w-full fixed top-0 left-0 flex flex-row items-center justify-start px-6 py-4 sm:space-x-4 space-x-3 transition duration-300 ease-in-out'
               }
             >
               <div title="PM-RianArai" className="flex flex-row items-center">

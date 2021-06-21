@@ -69,7 +69,7 @@ const MeetingJoin: React.FC<MeetingComponentProps> = ({ showNames, meetings, dis
         }
         key={index}
         disabled={disabled}
-        className="zoom-btn mx-8"
+        className="zoom-btn mx-8 w-72"
         onClick={() => launchMeeting(meeting)}
       >
         {disabled ? 'Not In Time' : 'Launch Meetings'} {showNames && ' : ' + meeting.name}

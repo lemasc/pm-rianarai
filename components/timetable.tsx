@@ -149,7 +149,7 @@ export default function TimetableComponent(): JSX.Element {
             <tbody className="divide-y divide-gray-200 font-light">
               {days.map((day, dayIndex) => (
                 <>
-                  {data[day] && (
+                  {data && data[day] && (
                     <tr>
                       <td className="sticky -left-0.5 bg-gray-50 font-medium border">
                         {daysTH[dayIndex]}

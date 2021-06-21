@@ -2,7 +2,6 @@ import axios, { CancelTokenSource } from 'axios'
 import Loader from 'react-loader-spinner'
 import Head from 'next/head'
 import React, { useState, useEffect } from 'react'
-import { useLiveQuery } from 'dexie-react-hooks'
 import {
   AcademicCapIcon,
   CheckCircleIcon,
@@ -179,6 +178,7 @@ export default function WorkPage(): JSX.Element {
     async function fetchAll(): Promise<void> {
       const accounts = await getCourses()
       // Get all data from the API and update database recursively
+      if (!accounts) return await fetchAll()
       await Promise.all(
         accounts.map(async (courses, i) => {
           await Promise.all(
@@ -237,7 +237,7 @@ export default function WorkPage(): JSX.Element {
       </Head>
       <LayoutComponent>
         <div className={'flex-1 ' + CONTAINER}>
-          <div className={'flex pt-8 flex-row gap-16 items-center'}>
+          <div className={'flex pt-8 flex-row items-center'}>
             <h1 className="text-3xl flex-grow">งานที่ได้รับ</h1>
             {load && classWork && classWork.length > 0 && (
               <>

@@ -3,6 +3,7 @@ import { Transition, Dialog } from '@headlessui/react'
 import { XIcon } from '@heroicons/react/outline'
 
 type ModalComponentProps = {
+  closable?: boolean
   show: boolean
   size: string
   onClose: () => void
@@ -14,6 +15,7 @@ type ModalComponentProps = {
 }
 
 export default function ModalComponent({
+  closable,
   show,
   size,
   children,
@@ -28,7 +30,7 @@ export default function ModalComponent({
     <Transition show={show} as={Fragment}>
       <Dialog
         as="div"
-        className="fixed inset-0 z-10 overflow-y-auto"
+        className="fixed inset-0 overflow-y-auto"
         onClose={onClose}
         initialFocus={closeRef}
       >
@@ -69,7 +71,12 @@ export default function ModalComponent({
                 className={'flex flex-row px-6 py-4 text-lg leading-6 ' + titleClass}
               >
                 <div className="flex flex-grow">{title}</div>
-                <button title="ปิด" className="focus:outline-none" onClick={onClose} ref={closeRef}>
+                <button
+                  title="ปิด"
+                  className={'focus:outline-none' + (!!!closable ? ' hidden' : '')}
+                  onClick={!!closable && onClose}
+                  ref={closeRef}
+                >
                   <XIcon className="h-6 w-6" />
                 </button>
               </Dialog.Title>

@@ -16,6 +16,7 @@ import { useMeeting } from '../shared/meetingContext'
 import { getUnreadAnnounce } from '../components/menubar'
 import { useEffect } from 'react'
 
+const WelcomeComponent = dynamic(() => import('../components/welcome'))
 const MetaDataComponent = dynamic(() => import('../components/meta'))
 const TimeSlotsComponent = dynamic(() => import('../components/timeslots'))
 const PWAPromoComponent = dynamic(() => import('../components/pwa'))
@@ -142,6 +143,7 @@ export default function MainPage(): JSX.Element {
                   </div>
                 </div>
                 <AnnouncementComponent show={showAnnounce} onClose={() => setAnnounce(false)} />
+                {!metadata.upgrade && <WelcomeComponent />}
               </>
             ) : (
               <>
