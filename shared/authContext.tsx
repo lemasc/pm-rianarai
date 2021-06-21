@@ -1,3 +1,4 @@
+import axios from 'axios'
 import {
   createUserWithEmailAndPassword,
   FacebookAuthProvider,
@@ -12,6 +13,8 @@ import LogRocket from 'logrocket'
 import { useState, useEffect, useContext, createContext } from 'react'
 import { useCollection, Document } from 'swr-firestore-v9'
 import { auth, db } from './firebase'
+import { ClassroomSessionResult } from './api'
+import { useRouter } from 'next/dist/client/router'
 
 export interface UserMetadata {
   class: number | string
@@ -43,6 +46,7 @@ interface IAuthContext {
   isPWA: () => boolean
   user: User | null
   ready: boolean
+  classroom: ClassroomSessionResult[]
   remove: () => Promise<boolean>
   announce: Document<Announcement>[]
   markAsRead: (announceId: string) => Promise<void>
@@ -63,9 +67,11 @@ export const useAuth = (): IAuthContext | undefined => {
 
 // Provider hook that creates auth object and handles state
 export function useProvideAuth(): IAuthContext {
+  const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
   const [metadata, setMetadata] = useState<UserMetadata | null>(null)
   const [ready, setReady] = useState<boolean>(false)
+  const [classroom, setClassroom] = useState<ClassroomSessionResult[]>([])
   const { data: announce } = useCollection<Announcement>(ready ? 'announcement' : null, {
     where: [
       ['enable', '==', true],
@@ -168,35 +174,68 @@ export function useProvideAuth(): IAuthContext {
   useEffect(() => {
     let _isMounted = true
     let authReady = null
-    return auth.onIdTokenChanged(async (user) => {
+
+    async function checkClassroom(token: string): Promise<void> {
+      try {
+        const api = await axios.get('/api/classroom/session', {
+          headers: {
+            Authorization: 'Bearer ' + token,
+          },
+        })
+        setClassroom(api.data.data)
+      } catch (err) {
+        console.error(err)
+        setClassroom([])
+      }
+    }
+
+    return auth.onIdTokenChanged(async (curUser) => {
       if (!_isMounted) return
       if (authReady) clearTimeout(authReady)
-      if (user) {
-        authReady = setTimeout(() => setReady(false), 1000)
+      if (curUser) {
+        // Check previous state if user exists
+        if (curUser !== user) {
+          setReady(false)
+        } else {
+          authReady = setTimeout(() => setReady(false), 1000)
+        }
         // Check if user metadata exists.
-        LogRocket.identify(user.uid, {
-          name: user.displayName,
-          email: user.email,
+        LogRocket.identify(curUser.uid, {
+          name: curUser.displayName,
+          email: curUser.email,
           pwa: isPWA(),
         })
-        const meta = await getDoc(doc(db, 'users/' + user.uid))
+        const meta = await getDoc(doc(db, 'users/' + curUser.uid))
         if (meta.exists) {
           setMetadata(meta.data() as UserMetadata)
+          checkClassroom(await curUser.getIdToken())
         } else {
           setMetadata(null)
         }
-        setUser(user)
+        setUser(curUser)
         clearTimeout(authReady)
+        const url = sessionStorage.getItem('url')
+        if (url && router.pathname !== url) {
+          return router.push(url)
+        }
+        sessionStorage.removeItem('url')
         setReady(true)
       } else {
-        authReady = setTimeout(() => setReady(true), 1000)
+        authReady = setTimeout(() => {
+          if (router.pathname !== '/' && !user) {
+            sessionStorage.setItem('url', router.pathname)
+            router.replace('/')
+          } else {
+            setReady(true)
+          }
+        }, 1000)
         setUser(null)
       }
       return () => {
         _isMounted = false
       }
     })
-  }, [])
+  }, [router, user])
 
   const markAsRead = async (announceId: string): Promise<void> => {
     if (!user) return
@@ -212,6 +251,7 @@ export function useProvideAuth(): IAuthContext {
     announce,
     markAsRead,
     metadata,
+    classroom,
     remove,
     ready,
     isPWA,

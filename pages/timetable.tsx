@@ -4,7 +4,7 @@ import Head from 'next/head'
 import LayoutComponent, { CONTAINER, HEADER } from '../components/layout'
 import TimetableComponent from '../components/timetable'
 
-export default function TimetablePage() {
+export default function TimetablePage(): JSX.Element {
   const router = useRouter()
   return (
     <div className="overflow-hidden min-h-screen flex flex-col dark:bg-gray-900 dark:text-white items-center justify-center">

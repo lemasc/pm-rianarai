@@ -5,14 +5,14 @@ export default function AuthSpinner(): JSX.Element {
   const auth = useAuth()
   return (
     <Transition
-      show={auth && auth.ready ? false : true}
+      show={!auth.ready}
       enter="ease-out duration-300"
       enterFrom="opacity-0"
       enterTo="opacity-100"
       leave="ease-in duration-200"
       leaveFrom="opactity-100"
       leaveTo="opacity-0"
-      className="fixed z-10 inset-0 overflow-y-auto"
+      className="fixed z-20 inset-0 overflow-y-auto"
       role="dialog"
       aria-modal="true"
     >
@@ -24,7 +24,7 @@ export default function AuthSpinner(): JSX.Element {
         <span className="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">
           &#8203;
         </span>
-        <div className="z-20 opacity-75">
+        <div className="opacity-75">
           <Loader type="ThreeDots" color="#FFFFFF" height={80} width={80} />
         </div>
       </div>

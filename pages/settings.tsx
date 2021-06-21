@@ -11,17 +11,10 @@ export default function SettingsPage(): JSX.Element {
       <LayoutComponent>
         <div className={CONTAINER}>
           <h1 className={HEADER}>การตั้งค่า</h1>
-          <div className="grid md:grid-cols-2">
+          <div className="grid">
             <div className="p-4 md:mx-8 border rounded">
               <h2 className="text-2xl font-medium p-8">ข้อมูลส่วนตัว</h2>
               <MetadataComponent />
-            </div>
-            <div className="p-4 md:mx-8 border rounded">
-              <h2 className="text-2xl font-medium p-8">เชื่อมต่อบัญชี</h2>
-              <p className="px-8 font-light text-center">
-                จัดการการเชื่อมต่อบัญชี Google/Facebook และอีเมล ได้จากทีนี่
-                <br /> เร็ว ๆ นี้
-              </p>
             </div>
           </div>
         </div>

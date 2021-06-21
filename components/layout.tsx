@@ -15,10 +15,9 @@ export default function LayoutComponent({ children }: LayoutProps): JSX.Element 
       <main
         className={
           'mt-20 md:mb-0 mb-20 flex flex-1 w-full ' +
-          (ready &&
-            (metadata
-              ? 'justify-center flex-col '
-              : 'relative md:flex-row flex-col md:justify-end items-center justify-center md:px-20'))
+          (metadata
+            ? 'justify-center flex-col '
+            : 'relative md:flex-row flex-col md:justify-end items-center justify-center md:px-20')
         }
       >
         {ready && children}

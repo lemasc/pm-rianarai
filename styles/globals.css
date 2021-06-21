@@ -161,3 +161,7 @@ table tbody {
 .strength-Strong::-webkit-progress-value {
   background-color: #70c1b3;
 }
+
+button {
+  @apply focus:outline-none;
+}
