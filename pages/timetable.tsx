@@ -23,7 +23,7 @@ export default function TimetablePage(): JSX.Element {
             </button>
             <h1 className="pl-4">ตารางสอน</h1>
           </div>
-          <div className="bg-gray-100 px-8 py-4 rounded">
+          <div className="bg-gray-100 sm:px-8 py-4 rounded">
             <TimetableComponent />
           </div>
         </div>

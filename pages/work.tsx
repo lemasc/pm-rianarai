@@ -146,13 +146,12 @@ export default function WorkPage(): JSX.Element {
   const router = useRouter()
   const [needsFetch, setFetch] = useState(false)
   const [load, setLoad] = useState(false)
-
+  const [fetching, setFetching] = useState(false)
   const [selectedTime, setTime] = useState<SelectData<TimeRange>>(time[0])
   const { classroom } = useAuth()
   const [classWork, setClassWork] = useState<ClassroomCourseWorkResult[]>([])
   // Main Fetcher hook
   useEffect(() => {
-    if (!needsFetch) return
     async function getCourses(): Promise<ClassroomCourseResult[][]> {
       try {
         const courses = await axios.get<APIResponse<ClassroomCourseResult[][]>>(
@@ -189,9 +188,10 @@ export default function WorkPage(): JSX.Element {
       }
     }
     async function fetchAll(): Promise<void> {
+      setFetching(true)
       const accounts = await getCourses()
       // Get all data from the API and update database recursively
-      if (!accounts) return await fetchAll()
+      if (accounts.length === 0) return await fetchAll()
       await Promise.all(
         accounts.map(async (courses, i) => {
           await Promise.all(
@@ -206,10 +206,11 @@ export default function WorkPage(): JSX.Element {
         })
       )
       setFetch(false)
+      setFetching(false)
     }
 
-    fetchAll()
-  }, [needsFetch])
+    if (needsFetch && !fetching) fetchAll()
+  }, [needsFetch, fetching])
   useEffect(() => {
     ;(async () => {
       const data = await db.courseWork
@@ -217,10 +218,10 @@ export default function WorkPage(): JSX.Element {
         .between(selectedTime.startTime, selectedTime.endTime)
         .toArray()
       setClassWork(data)
-      setFetch(true)
+      if (!load) setFetch(true)
       setLoad(true)
     })()
-  }, [needsFetch, selectedTime])
+  }, [load, selectedTime])
   // Cancel on navigation
   useEffect(() => {
     function beforeunload(e) {

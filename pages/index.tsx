@@ -58,15 +58,16 @@ function MultiComponent(props: SPAProps): JSX.Element {
 
 export default function MainPage(): JSX.Element {
   const { ready, user, metadata, announce, classroom } = useAuth()
-  const { date } = useMeeting()
+  const { date, schedule, curDay } = useMeeting()
   const [showAnnounce, setAnnounce] = useState(false)
   const [hero, showHero] = useState(false)
   const work = useLiveQuery(() =>
     db.courseWork.where('dueDate').between(time[0].startTime, time[0].endTime).count()
   )
   useEffect(() => {
+    if (!ready || user) return
     setTimeout(() => showHero(true), 1500)
-  }, [])
+  }, [ready, user])
   return (
     <div
       className={
@@ -113,7 +114,12 @@ export default function MainPage(): JSX.Element {
                           >
                             <div className="flex flex-col flex-grow items-start">
                               <h4 className="py-2 text-2xl font-medium">ตารางสอน</h4>
-                              <span className="py-2 text-sm sarabun-font">7 คาบเรียนวันนี้</span>
+                              <span className="py-2 text-sm sarabun-font">
+                                {schedule && schedule[curDay] && schedule[curDay].length
+                                  ? schedule[curDay].length
+                                  : 0}{' '}
+                                คาบเรียนวันนี้
+                              </span>
                             </div>
                             <BookOpenIcon className="md:h-12 md:w-12 w-10 h-10" />
                           </a>

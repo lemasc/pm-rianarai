@@ -80,7 +80,11 @@ const listWorks = async (
       },
       token.id
     )
-    if (!api.result.data.courseWork) return res.status(404).json({ success: false })
+    if (!api.result.data.courseWork)
+      return res.status(200).json({
+        success: true,
+        data: [],
+      })
     const work: ClassroomCourseWorkResult[] = await Promise.all(
       api.result.data.courseWork.map(async (w) => {
         const workApi = await withRefreshToken<classroom_v1.Schema$ListStudentSubmissionsResponse>(
