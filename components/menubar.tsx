@@ -97,7 +97,7 @@ function Pages(): JSX.Element {
       "cursor-pointer rounded-lg sm:px-8 px-4 py-2 text-sm " +
       (route == router.pathname
         ? "font-medium bg-gray-200 text-black"
-        : "hover:bg-gray-100 dark:hover:text-gray-900")
+        : "hover:bg-gray-100 dark:hover:bg-gray-700")
     );
   }
   return (
@@ -196,7 +196,7 @@ export default function MenuBarComponent({
                   }
                 >
                   {/* Mobile menu button*/}
-                  <Disclosure.Button className="text-gray-600 hover:text-black focus:outline-none">
+                  <Disclosure.Button className="text-gray-600 dark:text-gray-300 hover:text-black dark:hover:text-gray-600 focus:outline-none">
                     <span className="sr-only hidden">Open main menu</span>
                     {open ? (
                       <XIcon className="block h-8 w-8" aria-hidden="true" />
@@ -229,7 +229,7 @@ export default function MenuBarComponent({
               className="absolute inset-0 mt-20 w-full"
             >
               <Disclosure.Panel static>
-                <div className="p-4 flex flex-col space-y-2 bg-gray-50 rounded-b-lg w-full shadow-lg">
+                <div className="p-4 flex flex-col space-y-2 bg-gray-50 dark:bg-gray-800 rounded-b-lg w-full shadow-lg">
                   <Pages />
                   <div className="flex justify-center flex-row space-x-16 pb-4">
                     <Toolbar setAnnounce={setAnnounce} />

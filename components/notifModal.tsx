@@ -1,15 +1,15 @@
-import dynamic from 'next/dynamic'
-import { useEffect, useState, useRef } from 'react'
-import { app as firebase } from '../shared/firebase'
-const ModalComponent = dynamic(() => import('./modal'))
+import dynamic from "next/dynamic";
+import { useEffect, useState, useRef } from "react";
+import { app as firebase } from "../shared/firebase";
+const ModalComponent = dynamic(() => import("./modal"));
 
 export default function NotifModal(): JSX.Element {
-  const [notiPrompt, setNotiPrompt] = useState(false)
-  const completeButtonRef = useRef<HTMLButtonElement>(null)
+  const [notiPrompt, setNotiPrompt] = useState(false);
+  const completeButtonRef = useRef<HTMLButtonElement>(null);
 
   useEffect(() => {
-    setTimeout(() => setNotiPrompt(true), 5000)
-  }, [])
+    setTimeout(() => setNotiPrompt(true), 5000);
+  }, []);
   async function requestNotification(): Promise<boolean> {
     /* await Notification.requestPermission()
     const messaging = firebase.messaging()
@@ -18,10 +18,11 @@ export default function NotifModal(): JSX.Element {
     const token = await messaging.getToken({ vapidKey: process.env.NEXT_PUBLIC_FIREBASE_VAPID_KEY })
     if (!token) return false
     console.log(token)*/
-    return true
+    return true;
   }
   return (
     <ModalComponent
+      closable={true}
       size="max-w-md"
       title="อนุญาตการเข้าถึงการแจ้งเตือน"
       show={notiPrompt}
@@ -50,5 +51,5 @@ export default function NotifModal(): JSX.Element {
         </button>
       </div>
     </ModalComponent>
-  )
+  );
 }
