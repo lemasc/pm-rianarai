@@ -92,7 +92,7 @@ body {
 }
 
 .timetable {
-  @apply border overflow-y-hidden divide-y divide-gray-200 text-sm border-collapse;
+  @apply border overflow-y-hidden divide-y divide-gray-200 text-sm border-collapse dark:border-gray-600 dark:bg-gray-700;
 }
 table {
   display: block;

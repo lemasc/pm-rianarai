@@ -20,7 +20,9 @@
     "dexie-react-hooks": "^1.0.6",
     "firebase": "9.0.0-beta.2",
     "firebase-admin": "^9.9.0",
+    "fuse.js": "^6.4.6",
     "googleapis": "^77.0.0",
+    "jsdom": "^16.6.0",
     "logrocket": "^1.2.2",
     "nanoid": "^3.1.23",
     "next": "10.2.3",
@@ -36,6 +38,7 @@
     "react-svg": "^13.0.6",
     "react-tabs": "^3.2.2",
     "remark-gfm": "^1.0.0",
+    "swr": "^0.5.6",
     "swr-firestore-v9": "^0.20.0",
     "tailwindcss": "^2.1.2",
     "zxcvbn": "^4.4.2"
