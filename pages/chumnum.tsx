@@ -82,7 +82,7 @@ const filterSet: SelectData<ChumnumFilter>[] = [
     target: [4, 5, 6],
   },
 ]
-const autoRefresh = false
+const autoRefresh = true
 
 export default function ChumnumPage(): JSX.Element {
   const router = useRouter()
@@ -95,7 +95,7 @@ export default function ChumnumPage(): JSX.Element {
   const [filter, setFilter] = useState<SelectData<ChumnumFilter>>(filterSet[1])
   // We still need to preserve the chumnum api because we will update it constantly.
   const { data: autoFetch, error: autoFetchError } = useSWR('/api/chumnum', fetcher, {
-    refreshInterval: autoRefresh ? 30000 : undefined,
+    refreshInterval: autoRefresh ? 60000 : undefined,
   })
 
   const { data, error } = useCollection<ChumnumData>('chumnum', {
@@ -172,7 +172,7 @@ export default function ChumnumPage(): JSX.Element {
                 : 'ออฟไลน์'}
               {autoRefresh && (
                 <span className="text-xs text-gray-400 kanot-font font-normal py-1.5">
-                  อัพเดทข้อมูลอัตโนมัติทุก 30 วินาที
+                  อัพเดทข้อมูลอัตโนมัติทุก 60 วินาที
                 </span>
               )}
             </div>
@@ -200,83 +200,11 @@ export default function ChumnumPage(): JSX.Element {
           </div>
           <Tabs>
             <TabList>
-              <Tab>รายละเอียดการลงทะเบียน</Tab>
               <Tab>รายชื่อชุมนุม</Tab>
+              <Tab>รายละเอียดการลงทะเบียน</Tab>
               <Tab>ขั้นตอนการลงทะเบียน</Tab>
             </TabList>
-            <TabPanel>
-              <div className="px-4">
-                <h2 className="text-xl creative-font font-bold flex-grow py-1">
-                  หลักการลงทะเบียนชุมนุม
-                </h2>
-                <span className="italic sarabun-font text-sm">
-                  อ้างอิงจาก{' '}
-                  <a
-                    title="คำชี้แจงในการเลือกชุมนุม"
-                    href="https://www.instagram.com/p/CQfRLAujozh/"
-                    className="text-blue-500 underline"
-                  >
-                    โพสต์ Instagram ของโรงเรียน
-                  </a>
-                </span>
-                <ul className="list-disc pl-4 pt-4 leading-8 max-w-2xl">
-                  <li>นักเรียนทุกคนต้องมีชุมนุมประจำ 1 ชุมนุม โดยเรียนตลอดปีการศึกษา 2564</li>
-                  <li>กรุณาตรวจสอบกิจกรรมชุมนุมและขั้นตอนการลงทะเบียนจากหน้านี้ให้เรียบร้อย</li>
-                  <li>
-                    นักเรียนสามารถเลือกลงชุมนุมได้เพียง 1 ชุมนุมเท่านั้น
-                    หากชุมนุมใดเต็มให้เลือกชุมนุมที่ว่างอยู่
-                  </li>
-                  <li>
-                    ในการลงทะเบียนนักเรียนควรมีตัวเลือกในใจประมาณ 3 ชุมนุมเนื่องจากอาจลงไม่ทัน
-                  </li>
-                  <li>
-                    หากนักเรียนคนใดไม่มีชุมนุมจะได้รับผลการเรียน "ไม่ผ่าน/มผ."
-                    ซึ่งจะทำให้ไม่จบการศึกษา
-                  </li>
-                </ul>
-              </div>
-              <div className="p-4">
-                <h2 className="text-xl creative-font font-bold flex-grow py-1">
-                  กำหนดการลงทะเบียนชุมนุม ประจำปีการศึกษา 2564
-                </h2>
-                <span className="italic sarabun-font text-sm">
-                  อ้างอิงจาก{' '}
-                  <a
-                    title="คำชี้แจงในการเลือกชุมนุม"
-                    href="https://www.instagram.com/p/CQfRLAujozh"
-                    className="text-blue-500 underline"
-                  >
-                    โพสต์ Instagram ของโรงเรียน
-                  </a>
-                </span>
-                <ul className="list-disc pl-4 pt-4 leading-5 max-w-2xl">
-                  <li>
-                    <b>รอบที่ 1 วันที่ 25 มิถุนายน 2564 เวลา 12.00 - 13.00 น.</b>
-                    <ol className="list-decimal pl-4 py-4 leading-7">
-                      <li>
-                        ชุมนุมที่รับสมัครนักเรียนเดิมต่อเนื่องเพราะนักเรียนต้องมีการพัฒนาทักษะอย่างสม่ำเสมอ
-                        เช่น ชุมนุมวงโยธวาทิต ชุมนุมดนตรีไทย ชุมนุมนาฎศิลป์ไทย ชุมนุมสื่อสารมวลชน
-                        เป็นต้น
-                      </li>
-                      <li>
-                        ชุมนุมที่นักเรียนรวมกันก่อตั้ง เช่น ชุมนุม GAT for TCAS ชุมนุมนวนิยายที่รัก
-                        เป็นต้น
-                      </li>
-                    </ol>
-                  </li>
-                  <li>
-                    <b>รอบที่ 2 วันที่ 28 - 30 มิถุนายน 2564 เวลา 08.00 น. เป็นต้นไป</b>
-                    <ol className="list-decimal pl-4 py-4 leading-7">
-                      <li>ลงทะเบียนเพิ่มเติมจากรอบแรก</li>
-                      <li>ลงทะเบียนในชุมนุมอื่นตามความถนัดและความสนใจ สอบถามรายละเอียดเพิ่มเต็ม</li>
-                    </ol>
-                  </li>
-                </ul>
-                <span className="italic sarabun-font text-sm py-1">
-                  หากมีข้อสงสัยเพิ่มเติมกรุณาติดต่ออาจารย์กมณรัตน์ นทีสินทรัพย์
-                </span>
-              </div>
-            </TabPanel>
+
             <TabPanel>
               <div className="flex flex-col xl:grid-cols-4 sm:grid-cols-2 sm:grid rounded bg-gray-100 dark:bg-gray-600 md:p-8 p-4 gap-4 md:gap-8 font-medium items-center justify-center">
                 <div className="flex w-full flex-col gap-2">
@@ -367,6 +295,79 @@ export default function ChumnumPage(): JSX.Element {
                 {filteredData && filteredData.length === 0 && (
                   <div className="flex items-center justify-center h-32 w-full">ไม่มีข้อมูล</div>
                 )}
+              </div>
+            </TabPanel>
+            <TabPanel>
+              <div className="px-4">
+                <h2 className="text-xl creative-font font-bold flex-grow py-1">
+                  หลักการลงทะเบียนชุมนุม
+                </h2>
+                <span className="italic sarabun-font text-sm">
+                  อ้างอิงจาก{' '}
+                  <a
+                    title="คำชี้แจงในการเลือกชุมนุม"
+                    href="https://www.instagram.com/p/CQfRLAujozh/"
+                    className="text-blue-500 underline"
+                  >
+                    โพสต์ Instagram ของโรงเรียน
+                  </a>
+                </span>
+                <ul className="list-disc pl-4 pt-4 leading-8 max-w-2xl">
+                  <li>นักเรียนทุกคนต้องมีชุมนุมประจำ 1 ชุมนุม โดยเรียนตลอดปีการศึกษา 2564</li>
+                  <li>กรุณาตรวจสอบกิจกรรมชุมนุมและขั้นตอนการลงทะเบียนจากหน้านี้ให้เรียบร้อย</li>
+                  <li>
+                    นักเรียนสามารถเลือกลงชุมนุมได้เพียง 1 ชุมนุมเท่านั้น
+                    หากชุมนุมใดเต็มให้เลือกชุมนุมที่ว่างอยู่
+                  </li>
+                  <li>
+                    ในการลงทะเบียนนักเรียนควรมีตัวเลือกในใจประมาณ 3 ชุมนุมเนื่องจากอาจลงไม่ทัน
+                  </li>
+                  <li>
+                    หากนักเรียนคนใดไม่มีชุมนุมจะได้รับผลการเรียน "ไม่ผ่าน/มผ."
+                    ซึ่งจะทำให้ไม่จบการศึกษา
+                  </li>
+                </ul>
+              </div>
+              <div className="p-4">
+                <h2 className="text-xl creative-font font-bold flex-grow py-1">
+                  กำหนดการลงทะเบียนชุมนุม ประจำปีการศึกษา 2564
+                </h2>
+                <span className="italic sarabun-font text-sm">
+                  อ้างอิงจาก{' '}
+                  <a
+                    title="คำชี้แจงในการเลือกชุมนุม"
+                    href="https://www.instagram.com/p/CQfRLAujozh"
+                    className="text-blue-500 underline"
+                  >
+                    โพสต์ Instagram ของโรงเรียน
+                  </a>
+                </span>
+                <ul className="list-disc pl-4 pt-4 leading-5 max-w-2xl">
+                  <li>
+                    <b>รอบที่ 1 วันที่ 25 มิถุนายน 2564 เวลา 12.00 - 13.00 น.</b>
+                    <ol className="list-decimal pl-4 py-4 leading-7">
+                      <li>
+                        ชุมนุมที่รับสมัครนักเรียนเดิมต่อเนื่องเพราะนักเรียนต้องมีการพัฒนาทักษะอย่างสม่ำเสมอ
+                        เช่น ชุมนุมวงโยธวาทิต ชุมนุมดนตรีไทย ชุมนุมนาฎศิลป์ไทย ชุมนุมสื่อสารมวลชน
+                        เป็นต้น
+                      </li>
+                      <li>
+                        ชุมนุมที่นักเรียนรวมกันก่อตั้ง เช่น ชุมนุม GAT for TCAS ชุมนุมนวนิยายที่รัก
+                        เป็นต้น
+                      </li>
+                    </ol>
+                  </li>
+                  <li>
+                    <b>รอบที่ 2 วันที่ 28 - 30 มิถุนายน 2564 เวลา 08.00 น. เป็นต้นไป</b>
+                    <ol className="list-decimal pl-4 py-4 leading-7">
+                      <li>ลงทะเบียนเพิ่มเติมจากรอบแรก</li>
+                      <li>ลงทะเบียนในชุมนุมอื่นตามความถนัดและความสนใจ สอบถามรายละเอียดเพิ่มเต็ม</li>
+                    </ol>
+                  </li>
+                </ul>
+                <span className="italic sarabun-font text-sm py-1">
+                  หากมีข้อสงสัยเพิ่มเติมกรุณาติดต่ออาจารย์กมณรัตน์ นทีสินทรัพย์
+                </span>
               </div>
             </TabPanel>
             <TabPanel>
