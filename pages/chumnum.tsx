@@ -267,7 +267,7 @@ export default function TimetablePage(): JSX.Element {
                   </li>
                 </ul>
                 <span className="italic sarabun-font text-sm py-1">
-                  หากมีข้อสงสัยเพิ่มเติมกรุณาติดต่ออาจารย์กมณรัดน์ นทีสินทรัพย์
+                  หากมีข้อสงสัยเพิ่มเติมกรุณาติดต่ออาจารย์กมณรัตน์ นทีสินทรัพย์
                 </span>
               </div>
             </TabPanel>
