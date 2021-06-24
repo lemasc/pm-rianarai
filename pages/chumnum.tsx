@@ -387,7 +387,7 @@ export default function TimetablePage(): JSX.Element {
                     href="https://www.instagram.com/p/CQacgSUD9OU/"
                     className="text-blue-500 underline"
                   >
-                    โพสต์ Instagram ของคณะกรรมการกิจกรรมนักเรียน
+                    โพสต์ Instagram ของคณะกรรมการกิจการนักเรียน
                   </a>
                 </span>
                 <ol className="list-decimal pl-4 py-4 leading-8">
