@@ -52,7 +52,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<ChumnumResult>):
         teacher,
         name: info[0],
         room: info[1],
-        notice: info[2],
+        //notice: info[2],
         target: Array.from(target),
         current: parseInt(cells.item(cells.length - 1).textContent),
         all: parseInt(cells.item(cells.length - 2).textContent),
