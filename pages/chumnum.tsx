@@ -1,5 +1,6 @@
 import { useRouter } from 'next/dist/client/router'
 import Head from 'next/head'
+import dynamic from 'next/dynamic'
 import { Tabs, TabList, Tab, TabPanel } from 'react-tabs'
 import { useAuth } from '../shared/authContext'
 import { useState } from 'react'
@@ -20,14 +21,16 @@ import LayoutComponent, { CONTAINER, HEADER } from '../components/layout'
 import SelectBox, { SelectData } from '../components/select'
 import dayjs from 'dayjs'
 import weekday from 'dayjs/plugin/weekday'
-import ModalComponent from '../components/modal'
-import MarkDownComponent from '../components/markdown'
+const ModalComponent = dynamic(() => import('../components/modal'))
+const MarkDownComponent = dynamic(() => import('../components/markdown'))
+import { useCollection } from 'swr-firestore-v9'
+
 dayjs.extend(weekday)
 type ChumnumFilter = {
   target: number[]
 }
 
-const fetcher = (url) => axios.get<ChumnumResult>(url).then((res) => res.data.result)
+const fetcher = (url) => axios.get<ChumnumResult>(url).then((res) => res.data)
 type TimeRange = {
   startTime: number
   endTime: number
@@ -81,7 +84,7 @@ const filterSet: SelectData<ChumnumFilter>[] = [
 ]
 const autoRefresh = false
 
-export default function TimetablePage(): JSX.Element {
+export default function ChumnumPage(): JSX.Element {
   const router = useRouter()
   const width = useWindowWidth()
   const { metadata } = useAuth()
@@ -90,12 +93,18 @@ export default function TimetablePage(): JSX.Element {
   const [detail, setDetail] = useState<ChumnumData | null>(null)
   const [filteredData, setFiltered] = useState<ChumnumData[] | null>(null)
   const [filter, setFilter] = useState<SelectData<ChumnumFilter>>(filterSet[1])
-  const { data, error } = useSWR('/api/chumnum', fetcher, {
+  // We still need to preserve the chumnum api because we will update it constantly.
+  const { data: autoFetch, error: autoFetchError } = useSWR('/api/chumnum', fetcher, {
     refreshInterval: autoRefresh ? 30000 : undefined,
+  })
+
+  const { data, error } = useCollection<ChumnumData>('chumnum', {
+    listen: true,
   })
   useEffect(() => {
     if (metadata) setFilter(filterSet[0])
   }, [metadata])
+
   useEffect(() => {
     ;(async () => {
       if (!data) return
@@ -117,18 +126,6 @@ export default function TimetablePage(): JSX.Element {
       )
     })()
   }, [data, search, filter, metadata])
-  useEffect(() => {
-    if (detail === null) return
-    ;(async () => {
-      try {
-        const detailApi = await axios.get<ChumnumResult>('/api/chumnum/' + detail.id)
-        if (detail && !detail.description) setDetail(detailApi.data.result[0])
-      } catch (err) {
-        console.error(err)
-        setDetail((d) => ({ description: 'ไม่สามารถโหลดรายละเอียดได้', ...d }))
-      }
-    })()
-  }, [detail])
 
   function generateClass(target: number[]): string {
     if (target.length === 1) return 'ม.' + target[0]
@@ -166,7 +163,13 @@ export default function TimetablePage(): JSX.Element {
               <span className="text-sm text-gray-600 dark:text-gray-300 kanot-font font-normal py-1.5">
                 สถานะของระบบลงทะเบียน
               </span>
-              {!error ? (data ? 'ยังไม่ถึงเวลา' : 'กำลังโหลด') : 'ออฟไลน์'}
+              {!autoFetchError
+                ? autoFetch
+                  ? autoFetch.status === 'intime'
+                    ? 'ออนไลน์'
+                    : 'ยังไม่ถึงเวลา'
+                  : 'กำลังโหลด'
+                : 'ออฟไลน์'}
               {autoRefresh && (
                 <span className="text-xs text-gray-400 kanot-font font-normal py-1.5">
                   อัพเดทข้อมูลอัตโนมัติทุก 30 วินาที
@@ -177,7 +180,10 @@ export default function TimetablePage(): JSX.Element {
           <div className="p-4 flex md:flex-row flex-col items-center gap-4 justify-start bg-green-200 text-green-700 rounded-lg sarabun-font font-light">
             <span className="flex flex-col md:flex-grow px-2 text-center md:text-left">
               <b className="font-bold md:py-1 py-2">
-                ระบบลงทะเบียนชุมนุมรอบที่ 1 จะเปิดในวันที่ 25 มิถุนายน 2564 เวลา 12:00 - 13.00 น.
+                ระบบลงทะเบียนชุมนุม
+                {dayjs().unix() > dayjs('2021/06/25 13:00:00').unix()
+                  ? 'รอบที่ 2 จะเปิดในวันที่ 28 - 30 มิถุนายน 2564 เวลา 08:00 เป็นต้นไป'
+                  : 'รอบที่ 1 จะเปิดในวันที่ 25 มิถุนายน 2564 เวลา 12:00 - 13.00 น.'}
               </b>
               เว็บไซต์ PM-RianArai ไม่ได้ให้บริการลงทะเบียนโดยตรง
               ข้อมูลในหน้านี้จัดทำขี้นเพื่อใช้ในการอ้างอิงเท่านั้น
@@ -215,7 +221,7 @@ export default function TimetablePage(): JSX.Element {
                 </span>
                 <ul className="list-disc pl-4 pt-4 leading-8 max-w-2xl">
                   <li>นักเรียนทุกคนต้องมีชุมนุมประจำ 1 ชุมนุม โดยเรียนตลอดปีการศึกษา 2564</li>
-                  <li>กรุณาตรวจสอบกิจกรรมชุมนุมและขั้นตอนการลงทะเบียนจากหน้านี่ให้เรียบร้อย</li>
+                  <li>กรุณาตรวจสอบกิจกรรมชุมนุมและขั้นตอนการลงทะเบียนจากหน้านี้ให้เรียบร้อย</li>
                   <li>
                     นักเรียนสามารถเลือกลงชุมนุมได้เพียง 1 ชุมนุมเท่านั้น
                     หากชุมนุมใดเต็มให้เลือกชุมนุมที่ว่างอยู่
@@ -328,22 +334,33 @@ export default function TimetablePage(): JSX.Element {
                     <button
                       onClick={() => setDetail(d)}
                       key={d.name}
-                      className="focus:outline-none border dark:border-gray-600 shadow-md rounded p-4 bg-white dark:bg-gray-700 dark:hover:bg-gray-800 hover:bg-gray-100 cursor-pointer flex flex-row justify-start items-center"
+                      className="focus:outline-none border dark:border-gray-600 shadow-md rounded p-4 bg-white dark:bg-gray-700 dark:hover:bg-gray-800 hover:bg-gray-100 cursor-pointer flex flex-col justify-center space-y-2"
                     >
-                      <div className="flex flex-col space-y-2 pr-2 text-sm flex-grow">
-                        <h3 className="text-lg sarabun-font font-bold">{d.name}</h3>
-                        <span className="font-medium text-blue-500">
-                          ระดับชั้น: {generateClass(d.target)}
-                        </span>
+                      <div className="flex w-full flex-row">
+                        <div className="flex flex-col space-y-2 pr-2 text-sm flex-grow items-start">
+                          <h3 className="text-xl sarabun-font font-bold">{d.name}</h3>
+                          <span className="font-medium text-blue-500">
+                            ระดับชั้น: {generateClass(d.target)}
+                          </span>
+                        </div>
+                        <div className="flex flex-shrink-0 flex-col space-y-2 text-sm items-end font-bold">
+                          <b
+                            className={
+                              'text-3xl ' +
+                              (d.all - d.current === 0 ? 'text-red-500' : 'text-green-500')
+                            }
+                          >
+                            {d.all - d.current}
+                          </b>
+                          <span className="sarabun-font">ที่ว่างอยู่</span>
+                        </div>
+                      </div>
+                      <div className="flex w-full flex-col items-start space-y-1">
                         <span className="font-light">{d.room}</span>
-                        <span className="dark:text-gray-400 text-gray-600">
+                        <span className="dark:text-gray-400 text-gray-600 text-left">
                           โดย {d.teacher.join(', ')}
                         </span>
-                        <span className="text-red-500">คลิกเพื่อดูรายละเอียดเพิ่มเติม</span>
-                      </div>
-                      <div className="flex flex-shrink-0 flex-col space-y-2 text-sm items-end font-bold">
-                        <b className="text-3xl text-green-500">{d.all - d.current}</b>
-                        <span className="sarabun-font">ที่ว่างอยู่</span>
+                        <span className="text-red-500 py-2">คลิกเพื่อดูรายละเอียดเพิ่มเติม</span>
                       </div>
                     </button>
                   ))}
@@ -354,7 +371,7 @@ export default function TimetablePage(): JSX.Element {
             </TabPanel>
             <TabPanel>
               <div className="p-4">
-                <div className="flex flex-row items-center py-1">
+                <div className="flex sm:flex-row flex-col sm:items-center sm:gap-0 gap-4 py-1">
                   <h2 className="text-xl creative-font font-bold flex-grow">
                     ขั้นตอนการลงทะเบียนผ่านเว็บไซต์
                   </h2>
@@ -475,16 +492,33 @@ export default function TimetablePage(): JSX.Element {
             <div className="p-4 h-72 flex flex-col gap-2 dark:bg-gray-700 dark:text-gray-100 overflow-y-auto">
               {detail && (
                 <>
-                  <h1 className="text-2xl sarabun-font font-bold">{detail.name}</h1>
-                  <p className="flex flex-col">
-                    <span className="font-medium text-lg text-blue-500">
-                      ระดับชั้น: {generateClass(detail.target)}
-                    </span>
+                  <div className="flex flex-row">
+                    <div className="flex flex-col flex-grow space-y-2">
+                      <h1 className="text-2xl sarabun-font font-bold">{detail.name}</h1>
+                      <span className="font-medium text-lg text-blue-500">
+                        ระดับชั้น: {generateClass(detail.target)}
+                      </span>
+                    </div>
+                    <div className="flex flex-col flex-shrink-0 items-end text-sm font-light">
+                      ลงทะเบียนแล้ว
+                      <b className="text-2xl text-gray-600 dark:text-gray-300 font-medium">
+                        <span
+                          className={
+                            detail.current === detail.all ? 'text-red-500' : 'text-green-500'
+                          }
+                        >
+                          {detail.current}
+                        </span>
+                        /{detail.all}
+                      </b>
+                    </div>
+                  </div>
+                  <div className="flex flex-col space-y-1 font-light">
                     <span>สถานที่เรียน: {detail.room}</span>
                     <span className="dark:text-gray-400 text-gray-600">
                       โดย {detail.teacher.join(', ')}
                     </span>
-                  </p>
+                  </div>
 
                   <h2 className="font-medium text-lg">วัตถุประสงค์ของชุมนุม</h2>
                   <div className="font-light">

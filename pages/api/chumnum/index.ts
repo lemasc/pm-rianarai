@@ -8,21 +8,24 @@
 import axios from 'axios'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { JSDOM } from 'jsdom'
+import admin from '../../../shared/firebase-admin'
+
+export type ChumnumStatus = 'online' | 'intime'
 
 export type ChumnumData = {
   id: number
   name: string
-  teacher: string[]
-  room: string
-  notice?: string
+  teacher?: string[]
+  room?: string
   current: number
   all: number
-  target: number[]
+  target?: number[]
   description?: string
 }
 
 export type ChumnumResult = {
   success: boolean
+  status?: ChumnumStatus
   result?: ChumnumData[]
 }
 
@@ -36,6 +39,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<ChumnumResult>):
     const dom = new JSDOM(html.data.replace(/\t/g, '').replace(/ {2}/g, ' '))
     const doc = (dom.window as unknown as Window).document
     const tbody = doc.querySelector('tbody')
+    const db = admin.firestore()
     const result: ChumnumData[] = []
     for (let i = 0; i < tbody.rows.length; i++) {
       const row = tbody.rows.item(i)
@@ -67,18 +71,23 @@ export default async (req: NextApiRequest, res: NextApiResponse<ChumnumResult>):
       const id = parseInt(cells.item(0).textContent)
       const data = {
         id,
-        teacher,
         name: info[0],
-        room: info[1],
-        //notice: info[2],
-        target: Array.from(target),
         current: parseInt(cells.item(cells.length - 1).textContent),
         all: parseInt(cells.item(cells.length - 2).textContent),
-        //description: doc.querySelector('#ModalShowDetail' + id + ' .modal-body').textContent.trim(),
       }
       result.push(data)
     }
-    return res.status(200).json({ success: true, result })
+    await Promise.all(
+      result.map(async (r) => {
+        await db.collection('chumnum').doc(r.id.toString()).update(r)
+      })
+    )
+
+    let status: ChumnumStatus = 'online'
+    if (doc.querySelector('.info label').textContent.split(' : ')[1] === 'เปิดให้ลงทะเบียน') {
+      status = 'intime'
+    }
+    return res.status(200).json({ success: true, status })
   } catch (err) {
     console.error(err)
     return res.status(500).json({ success: false })
