@@ -6,6 +6,7 @@
 .react-tabs__tab-list {
   margin: 0 0 10px;
   padding: 0;
+  @apply md:space-x-2 md:space-y-0 space-y-2;
 }
 
 .react-tabs__tab {
@@ -15,7 +16,7 @@
   list-style: none;
   padding: 6px 12px;
   cursor: pointer;
-  @apply text-gray-400 font-bold hover:bg-gray-300 hover:text-gray-900 rounded;
+  @apply text-gray-400 font-bold hover:bg-gray-300 hover:text-gray-900 rounded select-none;
   font-family: 'Kodchasan', -apple-system, BlinkMacSystemFont, Segoe UI, Roboto, Oxygen, Ubuntu,
     Cantarell, Fira Sans, Droid Sans, Helvetica Neue, sans-serif;
 }

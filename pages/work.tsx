@@ -226,8 +226,8 @@ export default function WorkPage(): JSX.Element {
           );
         })
       );
-      setFetch(false);
       setFetching(false);
+      setFetch(false);
     }
 
     if (needsFetch && !fetching) fetchAll();

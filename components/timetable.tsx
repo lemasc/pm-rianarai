@@ -175,7 +175,14 @@ export default function TimetableComponent(): JSX.Element {
                 <>
                   {data && data[day] && (
                     <tr>
-                      <td className="sticky -left-0.5 bg-gray-50 dark:bg-gray-900 font-medium border">
+                      <td
+                        className={
+                          "sticky -left-0.5 font-medium border " +
+                          (dayIndex === curDay
+                            ? "bg-bright-sun-400 text-gray-900"
+                            : "bg-gray-50 dark:bg-gray-900")
+                        }
+                      >
                         {daysTH[dayIndex]}
                       </td>
                       {data[day] &&

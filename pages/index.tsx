@@ -9,6 +9,7 @@ import {
   ClockIcon,
   SpeakerphoneIcon,
   BookOpenIcon,
+  IdentificationIcon,
 } from "@heroicons/react/outline";
 import LayoutComponent, { CONTAINER, HEADER } from "../components/layout";
 import SignInComponent from "../components/signin";
@@ -125,7 +126,7 @@ export default function MainPage(): JSX.Element {
                       <div className="flex flex-grow shadow-md rounded bg-gray-100 dark:bg-gray-800 p-4">
                         <TimeSlotsComponent />
                       </div>
-                      <div className="grid md:grid-cols-2 md:pb-10 md:gap-16 pb-6">
+                      <div className="grid md:grid-cols-2 md:pb-10 md:gap-10 pb-6">
                         <Link href="/timetable">
                           <a
                             title="ตารางสอน"
@@ -164,24 +165,42 @@ export default function MainPage(): JSX.Element {
                         </div>
                       </div>
                     </div>
-                    <div className="md:w-72 w-full">
-                      <div className="items-center flex flex-row rounded-t-lg hover:bg-yellow-500 bg-gradient-to-b from-yellow-400 to-yellow-500 text-white py-3 px-6">
-                        <h4 className="py-2 text-lg font-medium flex-grow">
-                          งานที่ได้รับ
-                        </h4>
-                        <AcademicCapIcon className="w-10 h-10" />
-                      </div>
-                      <div className="relative flex flex-col border p-4 rounded-b-lg font-light text-gray-800 dark:text-gray-100 bg-gray-100 dark:bg-gray-800">
-                        {classroom
-                          ? classroom.length === 0
-                            ? "ยังไม่ได้เชื่อมต่อกับ Google Classroom"
-                            : work + " งานทั้งหมดในสัปดาห์นี้"
-                          : "กำลังโหลด..."}
-                        <Link href="/work">
-                          <a className="p-2 font-normal text-right sticky bottom-0 text-yellow-500 hover:text-yellow-600 underline">
-                            ดูเพิ่มเติม
-                          </a>
-                        </Link>
+                    <div className="md:w-72 w-full gap-8 flex flex-col">
+                      <Link href="/chumnum">
+                        <a
+                          title="ชุมนุม"
+                          className="items-center flex flex-row shadow-md rounded bg-purple-500 hover:bg-gradient-to-b from-purple-500 to-purple-600 text-white p-6"
+                        >
+                          <div className="flex flex-col flex-grow items-start">
+                            <h4 className="py-2 text-2xl font-medium">
+                              ลงทะเบียนชุมนุม
+                            </h4>
+                            <span className="py-2 text-sm sarabun-font">
+                              ตรวจสอบข้อมูลการลงทะเบียน
+                            </span>
+                          </div>
+                          <IdentificationIcon className="md:h-12 md:w-12 w-10 h-10" />
+                        </a>
+                      </Link>
+                      <div>
+                        <div className="items-center flex flex-row rounded-t-lg hover:bg-yellow-500 bg-gradient-to-b from-yellow-400 to-yellow-500 text-white py-3 px-6">
+                          <h4 className="py-2 text-lg font-medium flex-grow">
+                            งานที่ได้รับ
+                          </h4>
+                          <AcademicCapIcon className="w-10 h-10" />
+                        </div>
+                        <div className="relative flex flex-col border p-4 rounded-b-lg font-light text-gray-800 dark:text-gray-100 dark:bg-gray-800">
+                          {classroom
+                            ? classroom.length === 0
+                              ? "ยังไม่ได้เชื่อมต่อกับ Google Classroom"
+                              : work + " งานทั้งหมดในสัปดาห์นี้"
+                            : "กำลังโหลด..."}
+                          <Link href="/work">
+                            <a className="p-2 font-normal text-right sticky bottom-0 text-yellow-500 hover:text-yellow-600 underline">
+                              ดูเพิ่มเติม
+                            </a>
+                          </Link>
+                        </div>
                       </div>
                     </div>
                   </div>
