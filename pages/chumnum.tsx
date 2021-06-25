@@ -142,7 +142,7 @@ export default function ChumnumPage(): JSX.Element {
         <meta property="og:description" content="เข้าเรียนทุกวิชาได้จากทีนี่ที่เดียว" />
       </Head>
       <LayoutComponent>
-        <div className={CONTAINER + ' mb-20'}>
+        <div className={CONTAINER + 'space-y-6 mb-20'}>
           <div
             className={
               (width >= 350 ? 'flex-row' : 'flex-col') + ' flex justify-center gap-4 ' + HEADER
@@ -198,13 +198,15 @@ export default function ChumnumPage(): JSX.Element {
               เข้าสู่เว็บลงทะเบียน <ExternalLinkIcon className="h-6 w-6 inline -mt-1 ml-2" />
             </a>
           </div>
+          <span className="italic px-4 text-gray-600 dark:text-gray-400">
+            คลิกที่ปุ่มด้านล่างเพื่อสลับเมนูที่ต้องการ
+          </span>
           <Tabs>
             <TabList>
               <Tab>รายชื่อชุมนุม</Tab>
               <Tab>รายละเอียดการลงทะเบียน</Tab>
               <Tab>ขั้นตอนการลงทะเบียน</Tab>
             </TabList>
-
             <TabPanel>
               <div className="flex flex-col xl:grid-cols-4 sm:grid-cols-2 sm:grid rounded bg-gray-100 dark:bg-gray-600 md:p-8 p-4 gap-4 md:gap-8 font-medium items-center justify-center">
                 <div className="flex w-full flex-col gap-2">
@@ -266,7 +268,7 @@ export default function ChumnumPage(): JSX.Element {
                     >
                       <div className="flex w-full flex-row">
                         <div className="flex flex-col space-y-2 pr-2 text-sm flex-grow items-start">
-                          <h3 className="text-xl sarabun-font font-bold">{d.name}</h3>
+                          <h3 className="text-xl sarabun-font font-bold text-left">{d.name}</h3>
                           <span className="font-medium text-blue-500">
                             ระดับชั้น: {generateClass(d.target)}
                           </span>

@@ -1,6 +1,6 @@
 import { useAuth } from '../shared/authContext'
 import MenuBarComponent from '../components/menubar'
-export const CONTAINER = 'flex flex-1 flex-col sm:px-16 px-6 sm:space-y-10 space-y-8'
+export const CONTAINER = 'flex flex-1 flex-col sm:px-16 px-6 '
 export const HEADER = 'pt-8 text-3xl'
 
 type LayoutProps = {

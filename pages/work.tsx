@@ -1,58 +1,48 @@
-import axios, { CancelTokenSource } from "axios";
-import Loader from "react-loader-spinner";
-import Head from "next/head";
-import React, { useState, useEffect } from "react";
+import axios, { CancelTokenSource } from 'axios'
+import Loader from 'react-loader-spinner'
+import Head from 'next/head'
+import React, { useState, useEffect } from 'react'
 import {
   AcademicCapIcon,
   CheckCircleIcon,
   ExternalLinkIcon,
   XCircleIcon,
-} from "@heroicons/react/outline";
-import LayoutComponent, { CONTAINER, HEADER } from "../components/layout";
-import { APIResponse } from "../shared/api";
-import { useAuth } from "../shared/authContext";
-import { db } from "../shared/db";
-import { ClassroomCourseResult } from "./api/classroom/courses";
-import { ClassroomCourseWorkResult } from "./api/classroom/courses/[cid]";
-import SingletonRouter, { Router, useRouter } from "next/router";
-import dayjs from "dayjs";
-import weekday from "dayjs/plugin/weekday";
-import SelectBox, { SelectData } from "../components/select";
-import { Disclosure, Transition } from "@headlessui/react";
-import { useWindowWidth } from "@react-hook/window-size/throttled";
+} from '@heroicons/react/outline'
+import LayoutComponent, { CONTAINER, HEADER } from '../components/layout'
+import { APIResponse } from '../shared/api'
+import { useAuth } from '../shared/authContext'
+import { db } from '../shared/db'
+import { ClassroomCourseResult } from './api/classroom/courses'
+import { ClassroomCourseWorkResult } from './api/classroom/courses/[cid]'
+import SingletonRouter, { Router, useRouter } from 'next/router'
+import dayjs from 'dayjs'
+import weekday from 'dayjs/plugin/weekday'
+import SelectBox, { SelectData } from '../components/select'
+import { Disclosure, Transition } from '@headlessui/react'
+import { useWindowWidth } from '@react-hook/window-size/throttled'
 
-dayjs.extend(weekday);
+dayjs.extend(weekday)
 
-function ClassworkList({
-  data,
-}: {
-  data: ClassroomCourseWorkResult[];
-}): JSX.Element {
-  data = data.sort((prev, next) =>
-    prev.dueDate ? (prev.dueDate > next.dueDate ? 1 : -1) : 0
-  );
+function ClassworkList({ data }: { data: ClassroomCourseWorkResult[] }): JSX.Element {
+  data = data.sort((prev, next) => (prev.dueDate ? (prev.dueDate > next.dueDate ? 1 : -1) : 0))
   const baseClass =
-    "border dark:border-gray-600 p-4 hover:bg-gray-100 dark:hover:bg-gray-900 cursor-pointer font-light ";
+    'border dark:border-gray-600 p-4 hover:bg-gray-100 dark:hover:bg-gray-900 cursor-pointer font-light '
   return (
     <div className="bg-gray-50 dark:bg-gray-700 border border-collapse overflow-y-auto h-72">
       {data.length > 0 ? (
         data.map((d) => (
           <a
-            href={"https://classroom.google.com/c/" + d.slug + "/details"}
+            href={'https://classroom.google.com/c/' + d.slug + '/details'}
             key={d.id}
             target="_blank"
             rel="noreferer noopener"
-            className={baseClass + "border flex flex-row"}
+            className={baseClass + 'border flex flex-row'}
           >
             <div className="flex flex-col flex-grow">
               <b>{d.title}</b>
               <span className="pt-2 text-sm">
                 {d.dueDate ? (
-                  <>
-                    {" "}
-                    ส่งวันที่{" "}
-                    {dayjs.unix(d.dueDate).format("DD/MM/YYYY HH:mm น.")}
-                  </>
+                  <> ส่งวันที่ {dayjs.unix(d.dueDate).format('DD/MM/YYYY HH:mm น.')}</>
                 ) : (
                   <>ไม่มีกำหนดส่ง</>
                 )}
@@ -64,49 +54,39 @@ function ClassworkList({
           </a>
         ))
       ) : (
-        <div
-          className={
-            baseClass +
-            "flex-grow h-full flex flex-col items-center justify-center"
-          }
-        >
+        <div className={baseClass + 'flex-grow h-full flex flex-col items-center justify-center'}>
           ไม่มีข้อมูล
         </div>
       )}
     </div>
-  );
+  )
 }
 
 type DisclosureProps = {
-  classWork: ClassroomCourseWorkResult[];
-  state: "turned-in" | "missing" | "";
-  children: JSX.Element;
-};
+  classWork: ClassroomCourseWorkResult[]
+  state: 'turned-in' | 'missing' | ''
+  children: JSX.Element
+}
 
-export function WorkDisclosure({
-  classWork,
-  state,
-  children,
-}: DisclosureProps) {
-  const width = useWindowWidth();
+export function WorkDisclosure({ classWork, state, children }: DisclosureProps) {
+  const width = useWindowWidth()
   function filterWork(c: ClassroomCourseWorkResult) {
-    if (state === "turned-in")
-      return c.state === "TURNED_IN" || c.state === "RETURNED";
+    if (state === 'turned-in') return c.state === 'TURNED_IN' || c.state === 'RETURNED'
     return (
-      c.state !== "TURNED_IN" &&
-      c.state !== "RETURNED" &&
-      (state === "" ? !checkDuedate(c.dueDate) : checkDuedate(c.dueDate))
-    );
+      c.state !== 'TURNED_IN' &&
+      c.state !== 'RETURNED' &&
+      (state === '' ? !checkDuedate(c.dueDate) : checkDuedate(c.dueDate))
+    )
   }
   function checkDuedate(date: number): boolean {
-    if (!date) return false;
-    return dayjs().unix() > date;
+    if (!date) return false
+    return dayjs().unix() > date
   }
   return (
     <Disclosure as="div">
       {({ open }) => (
         <>
-          <Disclosure.Button className={"w-full" + (!open ? " rounded" : "")}>
+          <Disclosure.Button className={'w-full' + (!open ? ' rounded' : '')}>
             {children}
           </Disclosure.Button>
           <Transition
@@ -125,63 +105,63 @@ export function WorkDisclosure({
         </>
       )}
     </Disclosure>
-  );
+  )
 }
 
 type TimeRange = {
-  startTime: number;
-  endTime: number;
-};
+  startTime: number
+  endTime: number
+}
 
 export const time: SelectData<TimeRange>[] = [
   {
-    name: "สัปดาห์นี้",
+    name: 'สัปดาห์นี้',
     startTime: dayjs().weekday(0).hour(0).minute(0).second(0).unix(),
     endTime: dayjs().weekday(7).hour(0).minute(0).second(0).unix(),
   },
   {
-    name: "อีก 7 วัน",
+    name: 'อีก 7 วัน',
     startTime: dayjs().hour(0).minute(0).second(0).unix(),
-    endTime: dayjs().add(8, "days").hour(0).minute(0).second(0).unix(),
+    endTime: dayjs().add(8, 'days').hour(0).minute(0).second(0).unix(),
   },
   {
-    name: "ก่อนหน้านี้",
-    startTime: dayjs("2021-06-01").unix(),
+    name: 'ก่อนหน้านี้',
+    startTime: dayjs('2021-06-01').unix(),
     endTime: dayjs().unix(),
   },
   {
-    name: "อีก 30 วัน",
-    startTime: dayjs().subtract(1, "month").hour(0).minute(0).second(0).unix(),
-    endTime: dayjs().add(1, "month").hour(0).minute(0).second(0).unix(),
+    name: 'อีก 30 วัน',
+    startTime: dayjs().subtract(1, 'month').hour(0).minute(0).second(0).unix(),
+    endTime: dayjs().add(1, 'month').hour(0).minute(0).second(0).unix(),
   },
   {
-    name: "นานกว่านั้น",
-    startTime: dayjs().add(1, "month").hour(0).minute(0).second(0).unix(),
-    endTime: dayjs("2022-06-01").unix(),
+    name: 'นานกว่านั้น',
+    startTime: dayjs().add(1, 'month').hour(0).minute(0).second(0).unix(),
+    endTime: dayjs('2022-06-01').unix(),
   },
-];
+]
 
 export default function WorkPage(): JSX.Element {
-  const source: CancelTokenSource = axios.CancelToken.source();
-  const router = useRouter();
-  const [needsFetch, setFetch] = useState(false);
-  const [load, setLoad] = useState(false);
-  const [fetching, setFetching] = useState(false);
-  const [selectedTime, setTime] = useState<SelectData<TimeRange>>(time[0]);
-  const { classroom } = useAuth();
-  const [classWork, setClassWork] = useState<ClassroomCourseWorkResult[]>([]);
-  const [noDueDate, allowNoDueDate] = useState(true);
+  const source: CancelTokenSource = axios.CancelToken.source()
+  const router = useRouter()
+  const [needsFetch, setFetch] = useState(false)
+  const [load, setLoad] = useState(false)
+  const [fetching, setFetching] = useState(false)
+  const [selectedTime, setTime] = useState<SelectData<TimeRange>>(time[0])
+  const { classroom } = useAuth()
+  const [classWork, setClassWork] = useState<ClassroomCourseWorkResult[]>([])
+  const [noDueDate, allowNoDueDate] = useState(true)
   // Main Fetcher hook
   useEffect(() => {
     async function getCourses(): Promise<ClassroomCourseResult[][]> {
       try {
         const courses = await axios.get<APIResponse<ClassroomCourseResult[][]>>(
-          "/api/classroom/courses",
+          '/api/classroom/courses',
           { cancelToken: source.token }
-        );
-        return courses.data.data;
+        )
+        return courses.data.data
       } catch (err) {
-        return [];
+        return []
       }
     }
     async function getWork(
@@ -190,29 +170,29 @@ export default function WorkPage(): JSX.Element {
     ): Promise<ClassroomCourseWorkResult[]> {
       try {
         const work = await axios.get<APIResponse<ClassroomCourseWorkResult[]>>(
-          "/api/classroom/courses/" + courseId,
+          '/api/classroom/courses/' + courseId,
           {
             params: {
               account: accountId,
             },
             cancelToken: source.token,
           }
-        );
+        )
         work.data.data.map((d) => {
           db.courseWork.put({
             courseId,
             ...d,
-          });
-        });
+          })
+        })
       } catch (err) {
-        return [];
+        return []
       }
     }
     async function fetchAll(): Promise<void> {
-      setFetching(true);
-      const accounts = await getCourses();
+      setFetching(true)
+      const accounts = await getCourses()
       // Get all data from the API and update database recursively
-      if (accounts.length === 0) return await fetchAll();
+      if (accounts.length === 0) return await fetchAll()
       await Promise.all(
         accounts.map(async (courses, i) => {
           await Promise.all(
@@ -220,55 +200,52 @@ export default function WorkPage(): JSX.Element {
               db.courses.put({
                 accountId: i,
                 ...course,
-              });
-              await getWork(course.id, i);
+              })
+              await getWork(course.id, i)
             })
-          );
+          )
         })
-      );
-      setFetching(false);
-      setFetch(false);
+      )
+      setFetch(false)
+      setFetching(false)
     }
 
-    if (needsFetch && !fetching) fetchAll();
-  }, [needsFetch, fetching]);
+    if (needsFetch && !fetching) fetchAll()
+  }, [needsFetch, fetching])
   useEffect(() => {
-    (async () => {
+    ;(async () => {
       const data = await db.courseWork
         .filter((d) => {
-          if (!d.dueDate) return noDueDate;
-          return (
-            d.dueDate >= selectedTime.startTime &&
-            d.dueDate <= selectedTime.endTime
-          );
+          if (!d.dueDate) return noDueDate
+          return d.dueDate >= selectedTime.startTime && d.dueDate <= selectedTime.endTime
         })
-        .toArray();
-      setClassWork(data);
-      if (!load) setFetch(true);
-      setLoad(true);
-    })();
-  }, [load, selectedTime, noDueDate]);
+        .toArray()
+      setClassWork(data)
+      if (!load) setFetch(true)
+      setLoad(true)
+    })()
+  }, [load, selectedTime, noDueDate])
   // Cancel on navigation
   useEffect(() => {
     function beforeunload(e) {
-      source.cancel();
-      setFetch(false);
+      source.cancel()
+      setFetch(false)
     }
     // @ts-ignore This is a hack for override navigation
     SingletonRouter.router.change = (...args) => {
-      source.cancel();
-      setFetch(false);
+      source.cancel()
+      setFetch(false)
       // @ts-expect-error Readonly Router
-      Router.prototype.change.apply(SingletonRouter.router, args);
-    };
+      Router.prototype.change.apply(SingletonRouter.router, args)
+    }
 
-    window.addEventListener("beforeunload", beforeunload);
+    window.addEventListener('beforeunload', beforeunload)
     return () => {
       // @ts-expect-error Readonly Router
-      delete SingletonRouter.router.change;
-      window.removeEventListener("beforeunload", beforeunload);
-    };
-  }, []);
+      delete SingletonRouter.router.change
+      window.removeEventListener('beforeunload', beforeunload)
+    }
+  }, [])
 
   return (
     <div className="overflow-hidden min-h-screen flex flex-col dark:bg-gray-900 dark:text-white items-center justify-center">
@@ -276,8 +253,8 @@ export default function WorkPage(): JSX.Element {
         <title>งานที่ได้รับ : PM-RianArai</title>
       </Head>
       <LayoutComponent>
-        <div className={"flex-1 " + CONTAINER}>
-          <div className={"flex pt-8 flex-row items-center"}>
+        <div className={CONTAINER + 'flex-1 sm:space-y-10 space-y-8'}>
+          <div className={'flex pt-8 flex-row items-center'}>
             <h1 className="text-3xl flex-grow">งานที่ได้รับ</h1>
             {load && classWork && classWork.length > 0 && (
               <>
@@ -295,7 +272,7 @@ export default function WorkPage(): JSX.Element {
                       type="checkbox"
                       checked={noDueDate}
                       onChange={(e) => allowNoDueDate(e.target.checked)}
-                    />{" "}
+                    />{' '}
                     <label
                       htmlFor="noDueDate"
                       className="px-2 text-sm font-light select-none"
@@ -319,7 +296,7 @@ export default function WorkPage(): JSX.Element {
               <div className="pb-20 font-light flex flex-col flex-1 items-center justify-center space-y-4">
                 <span>ยังไม่ได้เชื่อมต่อกับ Google Classroom</span>
                 <button
-                  onClick={() => router.push("/api/classroom/authorize")}
+                  onClick={() => router.push('/api/classroom/authorize')}
                   className="btn text-white px-4 py-2 bg-apple-500 from-apple-500 to-apple-600 ring-apple-500"
                 >
                   เชื่อมต่อกับ Classroom
@@ -335,25 +312,19 @@ export default function WorkPage(): JSX.Element {
                     <div className="pb-20 md:grid md:grid-cols-3 flex flex-col justify-center gap-8">
                       <WorkDisclosure classWork={classWork} state="">
                         <div className="items-center flex flex-row rounded-t-lg bg-gradient-to-b from-yellow-400 to-yellow-500 text-white py-3 px-6">
-                          <h4 className="py-2 text-lg font-medium flex-grow">
-                            ยังไม่ได้ส่ง
-                          </h4>
+                          <h4 className="py-2 text-lg font-medium flex-grow">ยังไม่ได้ส่ง</h4>
                           <AcademicCapIcon className="w-10 h-10" />
                         </div>
                       </WorkDisclosure>
                       <WorkDisclosure classWork={classWork} state="turned-in">
                         <div className="items-center flex flex-row rounded-t-lg bg-gradient-to-b from-green-400 to-green-500 text-white py-3 px-6">
-                          <h4 className="py-2 text-lg font-medium flex-grow">
-                            ส่งแล้ว
-                          </h4>
+                          <h4 className="py-2 text-lg font-medium flex-grow">ส่งแล้ว</h4>
                           <CheckCircleIcon className="w-10 h-10" />
                         </div>
                       </WorkDisclosure>
                       <WorkDisclosure classWork={classWork} state="missing">
                         <div className="items-center flex flex-row rounded-t-lg bg-gradient-to-b from-red-400 to-red-500 text-white py-3 px-6">
-                          <h4 className="py-2 text-lg font-medium flex-grow">
-                            ขาดส่ง
-                          </h4>
+                          <h4 className="py-2 text-lg font-medium flex-grow">ขาดส่ง</h4>
                           <XCircleIcon className="w-10 h-10" />
                         </div>
                       </WorkDisclosure>
@@ -361,12 +332,7 @@ export default function WorkPage(): JSX.Element {
                   </>
                 ) : (
                   <div className="pb-20 font-light flex flex-col flex-1 items-center justify-center space-y-4">
-                    <Loader
-                      type="TailSpin"
-                      color="#2DBE57"
-                      height={80}
-                      width={80}
-                    />
+                    <Loader type="TailSpin" color="#2DBE57" height={80} width={80} />
                     <span>กำลังโหลดข้อมูลครั้งแรก อาจใช้เวลา 1-2 นาที</span>
                   </div>
                 )}
@@ -375,5 +341,5 @@ export default function WorkPage(): JSX.Element {
         </div>
       </LayoutComponent>
     </div>
-  );
+  )
 }

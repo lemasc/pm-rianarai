@@ -95,7 +95,7 @@ export default function MainPage(): JSX.Element {
           <>
             {user && metadata ? (
               <>
-                <div className={CONTAINER}>
+                <div className={CONTAINER + 'sm:space-y-10 space-y-8'}>
                   <div className={'flex ' + HEADER}>
                     <h2 className="flex-grow">สวัสดี {metadata.displayName}</h2>
                     <span className="text-2xl md:flex hidden items-center creative-font text-gray-500 select-none">

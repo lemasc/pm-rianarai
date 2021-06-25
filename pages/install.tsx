@@ -295,18 +295,18 @@ export default function Install(): JSX.Element {
                 สำหรับอุปกรณ์ iOS/iPadOS จะมีบางฟีเจอร์ที่ขาดหายไป (เนื่องจากข้อจำกัดทางเทคนิค)
                 แต่ยังคงสามารถเพิ่มแอพพลิเคชั่นไปยังหน้าจอหลักได้ โดยดูจากคลิปวิดิโอต่อไปนี้
               </p>
-              <div className="flex items-center justify-center py-4">
-                <div className="mx-auto max-w-sm ">
-                  <iframe
-                    title="iOS PWA Guide"
-                    src="https://player.vimeo.com/video/562619344?autoplay=1&loop=1&&muted=1autopause=0"
-                    width="640"
-                    height="564"
-                    frameBorder="0"
-                    allow="autoplay; fullscreen"
-                    allowFullScreen
-                  ></iframe>
-                </div>
+
+              <div className="mx-auto p-4">
+                <iframe
+                  className="w-full"
+                  title="iOS PWA Guide"
+                  src="https://player.vimeo.com/video/562619344?autoplay=1&loop=1&&muted=1autopause=0"
+                  width="640"
+                  height="564"
+                  frameBorder="0"
+                  allow="autoplay; fullscreen"
+                  allowFullScreen
+                ></iframe>
               </div>
               <h2 className="font-medium text-2xl py-1" id="open">
                 การเข้าใช้งาน
