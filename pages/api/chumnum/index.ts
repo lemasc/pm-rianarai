@@ -83,7 +83,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<ChumnumResult>):
       })
     )
 
-    let status: ChumnumStatus = 'online'
+    let status: ChumnumStatus = 'intime'
     if (doc.querySelector('.info label').textContent.split(' : ')[1] === 'เปิดให้ลงทะเบียน') {
       status = 'intime'
     }
