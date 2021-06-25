@@ -25,7 +25,7 @@ export type ChumnumData = {
 
 export type ChumnumResult = {
   success: boolean
-  status?: ChumnumStatus
+  status?: ChumnumStatus | string
   result?: ChumnumData[]
 }
 
@@ -71,9 +71,14 @@ export default async (req: NextApiRequest, res: NextApiResponse<ChumnumResult>):
       const id = parseInt(cells.item(0).textContent)
       const data = {
         id,
+        //teacher,
         name: info[0],
+        room: info[1],
+        //notice: info[2],
+        //target: Array.from(target),
         current: parseInt(cells.item(cells.length - 1).textContent),
         all: parseInt(cells.item(cells.length - 2).textContent),
+        //description: doc.querySelector('#ModalShowDetail' + id + ' .modal-body').textContent.trim(),
       }
       result.push(data)
     }
@@ -83,7 +88,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<ChumnumResult>):
       })
     )
 
-    let status: ChumnumStatus = 'intime'
+    let status: ChumnumStatus = 'online'
     if (doc.querySelector('.info label').textContent.split(' : ')[1] === 'เปิดให้ลงทะเบียน') {
       status = 'intime'
     }
