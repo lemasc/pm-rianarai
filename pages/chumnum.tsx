@@ -163,13 +163,7 @@ export default function ChumnumPage(): JSX.Element {
               <span className="text-sm text-gray-600 dark:text-gray-300 kanot-font font-normal py-1.5">
                 สถานะของระบบลงทะเบียน
               </span>
-              {!autoFetchError
-                ? autoFetch
-                  ? autoFetch.status === 'intime'
-                    ? 'ออนไลน์'
-                    : 'ยังไม่ถึงเวลา'
-                  : 'กำลังโหลด'
-                : 'ออฟไลน์'}
+              {!autoFetchError ? (autoFetch ? 'ออนไลน์' : 'กำลังโหลด') : 'ออฟไลน์'}
               {autoRefresh && (
                 <span className="text-xs text-gray-400 kanot-font font-normal py-1.5">
                   อัพเดทข้อมูลอัตโนมัติทุก 60 วินาที
@@ -262,7 +256,10 @@ export default function ChumnumPage(): JSX.Element {
                 {filteredData &&
                   filteredData.map((d) => (
                     <button
-                      onClick={() => setDetail(d)}
+                      onClick={() => {
+                        console.log(d)
+                        setDetail(d)
+                      }}
                       key={d.name}
                       className="focus:outline-none border dark:border-gray-600 shadow-md rounded p-4 bg-white dark:bg-gray-700 dark:hover:bg-gray-800 hover:bg-gray-100 cursor-pointer flex flex-col justify-center space-y-2"
                     >
