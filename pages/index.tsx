@@ -66,9 +66,9 @@ export default function MainPage(): JSX.Element {
     db.courseWork.where('dueDate').between(time[0].startTime, time[0].endTime).count()
   )
   useEffect(() => {
-    if (!ready || user) return
+    if (!ready || metadata) return
     setTimeout(() => showHero(true), 1500)
-  }, [ready, user])
+  }, [ready, metadata])
   return (
     <div
       className={
@@ -206,16 +206,16 @@ export default function MainPage(): JSX.Element {
                       คุณก็สามารถเริ่มต้นเข้าเรียนออนไลน์ ดูตารางสอน จัดการงานที่ได้รับมอบหมาย
                       ได้ทุกวิชา ทุกระดับชั้น และทุกอุปกรณ์
                     </p>
-                    <p className="text-center lg:text-white md:text-gray-900 text-white font-medium">
+                    <p className="text-center text-white font-medium">
                       และใช่ ทั้งหมดนั่นรวมอยู่ในนี้ให้คุณแล้ว
                     </p>
                   </Transition.Child>
                 </Transition>
-                <div className="rounded-lg border shadow-xl flex flex-col bg-white text-black items-center justify-start">
+                <div className="my-16 rounded-lg border shadow-xl flex flex-col bg-white text-black items-center justify-start">
                   {user ? (
                     <>
                       <MultiComponent title="ขั้นตอนสุดท้ายเท่านั้น">
-                        <MetaDataComponent />
+                        <MetaDataComponent minUI={true} />
                       </MultiComponent>
                     </>
                   ) : (
@@ -232,7 +232,7 @@ export default function MainPage(): JSX.Element {
           </>
         )}
       </LayoutComponent>
-      <PWAPromoComponent show={ready && metadata !== null} />
+      <PWAPromoComponent show={ready && !metadata} />
       {ready && !metadata && (
         <footer className="bottom-0 bg-white bg-opacity-30 text-black text-sm gap-2 flex flex-col justify-center items-center w-full p-8 border-t">
           <div className="flex flex-row justify-center text-center items-center w-full space-x-4">

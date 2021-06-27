@@ -51,7 +51,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<ChumnumResult>):
         .replace('\n', '')
         .trim()
         .split(' : ')
-      const teacher = []
+      /*const teacher = []
       const rawTeacher = cells.item(2).textContent.replace('\n', '')
       const listNo = rawTeacher.match(/[0-9]./g)
       for (let i = 0; i < listNo.length; i++) {
@@ -67,18 +67,20 @@ export default async (req: NextApiRequest, res: NextApiResponse<ChumnumResult>):
       const target: Set<number> = new Set()
       for (let i = 3; i < cells.length - 2; i++) {
         if (!cells.item(i).textContent) target.add(i - 2)
-      }
+      }*/
       const id = parseInt(cells.item(0).textContent)
       const data = {
         id,
-        //teacher,
         name: info[0],
-        room: info[1],
-        //notice: info[2],
-        //target: Array.from(target),
         current: parseInt(cells.item(cells.length - 1).textContent),
         all: parseInt(cells.item(cells.length - 2).textContent),
-        //description: doc.querySelector('#ModalShowDetail' + id + ' .modal-body').textContent.trim(),
+        /*
+        teacher,
+        room: info[1],
+        notice: info[2],
+        target: Array.from(target),
+        description: doc.querySelector('#ModalShowDetail' + id + ' .modal-body').textContent.trim(),
+        */
       }
       result.push(data)
     }

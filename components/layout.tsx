@@ -11,7 +11,7 @@ export default function LayoutComponent({ children }: LayoutProps): JSX.Element 
   const { ready, metadata } = useAuth()
   return (
     <>
-      <MenuBarComponent landing={ready ? metadata === null : false} />
+      <MenuBarComponent landing={ready ? metadata === undefined : false} />
       <main
         className={
           'mt-20 md:mb-0 mb-20 flex flex-1 w-full ' +

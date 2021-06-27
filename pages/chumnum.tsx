@@ -156,14 +156,24 @@ export default function ChumnumPage(): JSX.Element {
             </div>
             <div
               className={
-                (data ? (data.length != 0 ? 'text-green-500' : 'text-red-500') : 'text-blue-500') +
+                (!autoFetchError
+                  ? autoFetch
+                    ? 'text-green-500'
+                    : 'text-blue-500'
+                  : 'text-red-500') +
                 ' flex justify-end items-end flex-col sarabun-font text-green-500 font-bold'
               }
             >
               <span className="text-sm text-gray-600 dark:text-gray-300 kanot-font font-normal py-1.5">
                 สถานะของระบบลงทะเบียน
               </span>
-              {!autoFetchError ? (autoFetch ? 'ออนไลน์' : 'กำลังโหลด') : 'ออฟไลน์'}
+              {!autoFetchError
+                ? autoFetch
+                  ? autoFetch.status === 'intime'
+                    ? 'ออนไลน์'
+                    : 'ยังไม่ถึงเวลา'
+                  : 'กำลังโหลด'
+                : 'ออฟไลน์'}
               {autoRefresh && (
                 <span className="text-xs text-gray-400 kanot-font font-normal py-1.5">
                   อัพเดทข้อมูลอัตโนมัติทุก 60 วินาที
@@ -176,7 +186,7 @@ export default function ChumnumPage(): JSX.Element {
               <b className="font-bold md:py-1 py-2">
                 ระบบลงทะเบียนชุมนุม
                 {dayjs().unix() > dayjs('2021/06/25 13:00:00').unix()
-                  ? 'รอบที่ 2 จะเปิดในวันที่ 28 - 30 มิถุนายน 2564 เวลา 08:00 เป็นต้นไป'
+                  ? 'รอบที่ 2 จะเปิดในวันที่ 28 - 30 มิถุนายน 2564 เวลา 08:00 น. เป็นต้นไป'
                   : 'รอบที่ 1 จะเปิดในวันที่ 25 มิถุนายน 2564 เวลา 12:00 - 13.00 น.'}
               </b>
               เว็บไซต์ PM-RianArai ไม่ได้ให้บริการลงทะเบียนโดยตรง
