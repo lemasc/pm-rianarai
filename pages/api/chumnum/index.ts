@@ -30,6 +30,7 @@ export type ChumnumResult = {
 }
 
 export default async (req: NextApiRequest, res: NextApiResponse<ChumnumResult>): Promise<void> => {
+  res.setHeader('Access-Control-Allow-Origin', '*')
   if (req.method !== 'GET') return res.status(400).json({ success: false })
   try {
     const html = await axios.get(
