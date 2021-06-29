@@ -45,7 +45,7 @@ export default function SurveymeComponent(): JSX.Element {
       size="md:max-w-2xl"
       title="กรุณาตอบแบบสอบถาม"
       show={show}
-      onClose={() => answer !== -1 && setShow(false)}
+      onClose={() => setShow(false)}
       titleClass="bg-yellow-400 text-gray-900 bg-opacity-80 creative-font font-bold"
     >
       <div className="px-6 py-4">
