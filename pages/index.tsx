@@ -25,6 +25,7 @@ const MetaDataComponent = dynamic(() => import('../components/meta'))
 const TimeSlotsComponent = dynamic(() => import('../components/timeslots'))
 const PWAPromoComponent = dynamic(() => import('../components/pwa'))
 const AnnouncementComponent = dynamic(() => import('../components/announce'))
+const SurveyComponent = dynamic(() => import('../components/survey'))
 
 interface SPAProps {
   children: ReactNode
@@ -59,7 +60,7 @@ function MultiComponent(props: SPAProps): JSX.Element {
 
 export default function MainPage(): JSX.Element {
   const { ready, user, metadata, announce, classroom } = useAuth()
-  const { date, schedule, curDay } = useMeeting()
+  const { date, schedule, curDay, isiOS } = useMeeting()
   const [showAnnounce, setAnnounce] = useState(false)
   const [hero, showHero] = useState(false)
   const work = useLiveQuery(() =>
@@ -178,6 +179,7 @@ export default function MainPage(): JSX.Element {
                 </div>
                 <AnnouncementComponent show={showAnnounce} onClose={() => setAnnounce(false)} />
                 {!metadata.upgrade && <WelcomeComponent />}
+                {metadata.upgrade && isiOS() && <SurveyComponent />}
               </>
             ) : (
               <>

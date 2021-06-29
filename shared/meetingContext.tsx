@@ -57,6 +57,10 @@ export interface IMeetingContext {
    * @param meeting Prefered meeting
    */
   launchMeeting: (meeting: Meeting) => void
+  /**
+   * Check whether the target device is running iOS
+   */
+  isiOS: () => boolean
 }
 
 export const meetingContext = createContext<IMeetingContext | undefined>(undefined)
@@ -117,8 +121,11 @@ export function useProvideMeeting(): IMeetingContext {
     if (!params.has('pwd')) return null
     return params.get('pwd')
   }
+  const isiOS = (): boolean => {
+    return !/Android/i.test(navigator.userAgent) && isMobile()
+  }
   const isMobile = (): boolean => {
-    return !(/Windows/i.test(navigator.userAgent))
+    return !/Windows/i.test(navigator.userAgent)
   }
   const dynamicLink = (meeting: string, code: string): void => {
     const params = new URLSearchParams({ confno: meeting, pwd: code })
@@ -143,5 +150,6 @@ export function useProvideMeeting(): IMeetingContext {
     meeting,
     schedule,
     launchMeeting,
+    isiOS,
   }
 }
