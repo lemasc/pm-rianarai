@@ -1,6 +1,5 @@
 import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
-import Image from 'next/image'
 import { useAuth } from '../shared/authContext'
 import { doc, increment, updateDoc } from 'firebase/firestore'
 import { db } from '../shared/firebase'
@@ -15,13 +14,14 @@ const list = [
 ]
 
 export default function SurveymeComponent(): JSX.Element {
-  const { setWelcome } = useAuth()
   const [show, setShow] = useState(false)
   const [answer, setAnswer] = useState(-1)
   useEffect(() => {
-    setTimeout(() => {
-      setShow(true)
-    }, 2500)
+    if (!localStorage.getItem('surveyiOS')) {
+      setTimeout(() => {
+        setShow(true)
+      }, 2500)
+    }
   }, [])
   function selectedClass(i) {
     const baseClass =
@@ -32,6 +32,7 @@ export default function SurveymeComponent(): JSX.Element {
     let d = {}
     if (answer !== -1 && answer !== 4) {
       d[list[answer].name] = increment(1)
+      localStorage.setItem('surveyiOS', new Date().valueOf().toString())
     }
     await updateDoc(doc(db, 'survey', 'ioscheck'), {
       ...d,
