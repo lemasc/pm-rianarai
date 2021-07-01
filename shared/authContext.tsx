@@ -224,7 +224,7 @@ export function useProvideAuth(): IAuthContext {
         setReady(true)
       } else {
         authReady = setTimeout(() => {
-          if (router.pathname !== '/' && !user) {
+          if (router.pathname !== '/' && router.pathname != "/client-login" && !user) {
             sessionStorage.setItem('url', router.pathname)
             router.replace('/')
           } else {
