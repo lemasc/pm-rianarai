@@ -5,8 +5,12 @@ import { useAuth, Provider } from '../shared/authContext'
 import zxcvbn from 'zxcvbn'
 import PasswordStrengthMeter from './password'
 
+interface SignInProps {
+  onSuccess?: () => void
+}
 interface MetaProps {
   cancel: () => void
+  onSuccess?: () => void
 }
 
 type EmailForm = {
@@ -15,7 +19,7 @@ type EmailForm = {
 }
 
 type EmailPage = 'email' | 'signin' | 'signup'
-function EmailForm({ cancel }: MetaProps): JSX.Element {
+function EmailForm({ cancel, onSuccess }: MetaProps): JSX.Element {
   const [_error, setError] = useState<null | string>(null)
   const [page, setPage] = useState<EmailPage>('email')
   const { signUp, signIn, getMethods } = useAuth()
@@ -68,6 +72,8 @@ function EmailForm({ cancel }: MetaProps): JSX.Element {
         default:
           setError('ไม่สามารถสร้างบัญชีได้ เนื่องจาก ' + result.message.replace('auth/', ''))
       }
+    } else {
+      onSuccess && onSuccess()
     }
   }
   async function _signIn(email: string, password: string): Promise<void> {
@@ -86,6 +92,8 @@ function EmailForm({ cancel }: MetaProps): JSX.Element {
         default:
           setError('ไม่สามารถเข้าสู่ระบบได้ เนื่องจาก ' + result.message.replace('auth/', ''))
       }
+    } else {
+      onSuccess && onSuccess()
     }
   }
   const formSubmit = async (data: EmailForm): Promise<void> => {
@@ -164,7 +172,7 @@ function EmailForm({ cancel }: MetaProps): JSX.Element {
   )
 }
 
-export default function SignInComponent(): JSX.Element {
+export default function SignInComponent({ onSuccess }: SignInProps): JSX.Element {
   const auth = useAuth()
   const [show, setShow] = useState(true)
   const [email, setEmail] = useState(false)
@@ -173,14 +181,19 @@ export default function SignInComponent(): JSX.Element {
   async function provider(p: Provider): Promise<void> {
     setError(null)
     const result = await auth.signInWithProvider(p)
-    if (!result.success && !email && result.message) {
+    if (!email) return
+    if (!result.success) {
       switch (result.message) {
+        case 'auth/popup-closed-by-user':
+          break
         case 'auth/popup-blocked':
           setError('กรุณาอนุญาตการเปิด Popup เพื่อเข้าสู่ระบบ')
           break
         default:
           setError('ไม่สามารถเข้าสู่ระบบได้ กรุณาลองใหม่อีกครั้ง')
       }
+    } else {
+      onSuccess && onSuccess()
     }
   }
   return (
@@ -206,6 +219,7 @@ export default function SignInComponent(): JSX.Element {
       {error && <div className="px-4 py-3 border rounded-lg bg-red-200 text-red-700">{error}</div>}
       {email ? (
         <EmailForm
+          onSuccess={onSuccess}
           cancel={() => {
             setNext(false)
             setShow(false)

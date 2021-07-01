@@ -135,7 +135,6 @@ export function useProvideAuth(): IAuthContext {
       await signInWithPopup(auth, provider)
       return { success: true }
     } catch (err) {
-      if (err.code === 'auth/popup-closed-by-user') return { success: true }
       LogRocket.error(err)
       return { success: false, message: err.code }
     }
