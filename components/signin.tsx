@@ -181,7 +181,7 @@ export default function SignInComponent({ onSuccess }: SignInProps): JSX.Element
   async function provider(p: Provider): Promise<void> {
     setError(null)
     const result = await auth.signInWithProvider(p)
-    if (!email) return
+    if (email) return
     if (!result.success) {
       switch (result.message) {
         case 'auth/popup-closed-by-user':

@@ -189,7 +189,7 @@ export default function MenuBarComponent({ landing }: MenuBarProps): JSX.Element
               )}
             </div>
             <Transition
-              show={open && width <= 640}
+              show={!landing && open && width <= 640}
               enter="transition duration-250 ease-in"
               enterFrom="transform scale-95 opacity-0"
               enterTo="transform scale-100 opacity-100"
