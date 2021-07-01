@@ -171,7 +171,7 @@ export default function ChumnumPage(): JSX.Element {
                 ? autoFetch
                   ? autoFetch.status === 'intime'
                     ? 'ออนไลน์'
-                    : 'ยังไม่ถึงเวลา'
+                    : 'ปิดการลงทะเบียน'
                   : 'กำลังโหลด'
                 : 'ออฟไลน์'}
               {autoRefresh && (

@@ -16,7 +16,7 @@ export default function SettingsPage(): JSX.Element {
         <title>การตั้งค่า - PM-RianArai</title>
       </Head>
       <LayoutComponent>
-        <div className={CONTAINER}>
+        <div className={CONTAINER + "gap-10 sm:gap-8"}>
           <h1 className={HEADER}>การตั้งค่า</h1>
           <Transition
             show={success}
