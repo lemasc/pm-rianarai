@@ -179,7 +179,6 @@ export default function MainPage(): JSX.Element {
                 </div>
                 <AnnouncementComponent show={showAnnounce} onClose={() => setAnnounce(false)} />
                 {!metadata.upgrade && <WelcomeComponent />}
-                {metadata.upgrade && isiOS() && <SurveyComponent />}
               </>
             ) : (
               <>
