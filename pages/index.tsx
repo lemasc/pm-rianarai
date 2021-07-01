@@ -127,7 +127,7 @@ export default function MainPage(): JSX.Element {
                             <BookOpenIcon className="md:h-12 md:w-12 w-10 h-10" />
                           </a>
                         </Link>
-                        <div className="md:flex hidden items-center flex-row shadow-md rounded bg-blue-500 hover:bg-gradient-to-b from-blue-500 to-blue-600 text-white p-6">
+                        <div className="flex items-center flex-row shadow-md rounded bg-blue-500 hover:bg-gradient-to-b from-blue-500 to-blue-600 text-white p-6">
                           <button
                             onClick={() => setAnnounce(true)}
                             className="focus:outline-none flex flex-col flex-grow items-start"
