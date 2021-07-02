@@ -212,7 +212,7 @@ export default function MainPage(): JSX.Element {
                     </p>
                   </Transition.Child>
                 </Transition>
-                <div className="my-16 rounded-lg border shadow-xl flex flex-col bg-white text-black items-center justify-start">
+                <div className="mb-16 rounded-lg border shadow-xl flex flex-col bg-white text-black items-center justify-start">
                   {user ? (
                     <>
                       <MultiComponent title="ขั้นตอนสุดท้ายเท่านั้น">

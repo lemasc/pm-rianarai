@@ -155,7 +155,7 @@ export function useProvideAuth(): IAuthContext {
   const signOut = async (): Promise<void> => {
     await auth.signOut()
     setUser(null)
-    setMetadata(null)
+    setMetadata(undefined)
   }
   const updateMeta = async (meta: UserMetadata): Promise<boolean> => {
     try {

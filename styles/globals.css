@@ -78,7 +78,7 @@ body {
   padding: 8px 40px;
   text-align: center;
   zoom: 0.9;
-  font-family: 'Open Sans', 'Helvetica', 'Arial', sans-serif;
+  font-family: 'Roboto', 'Helvetica', 'Arial', sans-serif;
 }
 .zoom-btn:focus {
   background-color: #0c63ce;

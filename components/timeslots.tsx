@@ -69,14 +69,14 @@ const MeetingJoin: React.FC<MeetingComponentProps> = ({ showNames, meetings, dis
         }
         key={index}
         disabled={disabled}
-        className="zoom-btn mx-8 w-72"
+        className="zoom-btn w-full"
         onClick={() => launchMeeting(meeting)}
       >
         {disabled ? 'Not In Time' : 'Launch Meetings'} {showNames && ' : ' + meeting.name}
       </button>
     )
   })
-  return <>{buttons}</>
+  return <div className="px-8 w-full max-w-sm">{buttons}</div>
 }
 
 export function GenerateTeacherName(teacher: string[]): ReactNodeArray {
