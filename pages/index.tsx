@@ -108,7 +108,7 @@ export default function MainPage(): JSX.Element {
                       <div className="flex flex-grow shadow-md rounded bg-gray-100 dark:bg-gray-800 p-4">
                         <TimeSlotsComponent />
                       </div>
-                      <div className="grid md:grid-cols-2 md:pb-10 md:gap-10 pb-6">
+                      <div className="grid md:grid-cols-2 md:pb-10 gap-10 pb-6">
                         <Link href="/timetable">
                           <a
                             title="ตารางสอน"
@@ -211,7 +211,7 @@ export default function MainPage(): JSX.Element {
                     </p>
                   </Transition.Child>
                 </Transition>
-                <div className="my-16 rounded-lg border shadow-xl flex flex-col bg-white text-black items-center justify-start">
+                <div className="mb-16 rounded-lg border shadow-xl flex flex-col bg-white text-black items-center justify-start">
                   {user ? (
                     <>
                       <MultiComponent title="ขั้นตอนสุดท้ายเท่านั้น">

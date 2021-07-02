@@ -268,7 +268,6 @@ export default function ChumnumPage(): JSX.Element {
                   filteredData.map((d) => (
                     <button
                       onClick={() => {
-                        console.log(d)
                         setDetail(d)
                       }}
                       key={d.name}
