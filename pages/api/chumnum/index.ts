@@ -9,25 +9,7 @@ import axios from 'axios'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { JSDOM } from 'jsdom'
 import admin from '../../../shared/firebase-admin'
-
-export type ChumnumStatus = 'online' | 'intime'
-
-export type ChumnumData = {
-  id: number
-  name: string
-  teacher?: string[]
-  room?: string
-  current: number
-  all: number
-  target?: number[]
-  description?: string
-}
-
-export type ChumnumResult = {
-  success: boolean
-  status?: ChumnumStatus | string
-  result?: ChumnumData[]
-}
+import { ChumnumData, ChumnumResult, ChumnumStatus } from '@/types/chumnum'
 
 export default async (req: NextApiRequest, res: NextApiResponse<ChumnumResult>): Promise<void> => {
   res.setHeader('Access-Control-Allow-Origin', '*')

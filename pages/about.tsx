@@ -1,14 +1,11 @@
-import Head from 'next/head'
 import { GetStaticProps, InferGetStaticPropsType } from 'next'
-import { useRouter } from 'next/dist/client/router'
+import Head from 'next/head'
+import { useRouter } from 'next/router'
 import Link from 'next/link'
-import HeaderComponent from '../components/header'
-import MarkDownComponent from '../components/markdown'
-/**
- * Single Page Application!
- */
+import HeaderComponent from '@/components/layout/header'
+import MarkDownComponent from '@/components/markdown'
 
-export const getStaticProps: GetStaticProps = async (context) => {
+export const getStaticProps: GetStaticProps = async () => {
   // Fetch data from Github Docs
   const res = await fetch('https://raw.githubusercontent.com/lemasc/pm-rianarai/main/docs/about.md')
   const content = await res.text()

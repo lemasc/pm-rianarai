@@ -1,9 +1,9 @@
+import { ReactNode, useState, useEffect } from 'react'
 import Head from 'next/head'
-import { useAuth } from '../shared/authContext'
-import { ReactNode, useState } from 'react'
-import { Transition } from '@headlessui/react'
 import dynamic from 'next/dynamic'
 import Link from 'next/link'
+import { useLiveQuery } from 'dexie-react-hooks'
+import { Transition } from '@headlessui/react'
 import {
   AcademicCapIcon,
   ClockIcon,
@@ -11,21 +11,20 @@ import {
   BookOpenIcon,
   IdentificationIcon,
 } from '@heroicons/react/outline'
-import LayoutComponent, { CONTAINER, HEADER } from '../components/layout'
-import SignInComponent from '../components/signin'
-import { useMeeting } from '../shared/meetingContext'
-import { getUnreadAnnounce } from '../components/menubar'
-import { useEffect } from 'react'
-import { db } from '../shared/db'
-import { useLiveQuery } from 'dexie-react-hooks'
+
+import { db } from '@/shared/db'
+import { useAuth } from '@/shared/authContext'
+import { useMeeting } from '@/shared/meetingContext'
+import LayoutComponent, { CONTAINER, HEADER } from '@/components/layout'
+import SignInComponent from '@/components/auth/signin'
+import { getUnreadAnnounce } from '@/components/layout/menubar'
 import { time } from './work'
 
-const WelcomeComponent = dynamic(() => import('../components/welcome'))
-const MetaDataComponent = dynamic(() => import('../components/meta'))
-const TimeSlotsComponent = dynamic(() => import('../components/timeslots'))
-const PWAPromoComponent = dynamic(() => import('../components/pwa'))
-const AnnouncementComponent = dynamic(() => import('../components/announce'))
-const SurveyComponent = dynamic(() => import('../components/survey'))
+const WelcomeComponent = dynamic(() => import('@/components/welcome'))
+const MetaDataComponent = dynamic(() => import('@/components/auth/meta'))
+const TimeSlotsComponent = dynamic(() => import('@/components/timeslots'))
+const PWAPromoComponent = dynamic(() => import('@/components/pwa'))
+const AnnouncementComponent = dynamic(() => import('@/components/announce'))
 
 interface SPAProps {
   children: ReactNode
@@ -60,7 +59,7 @@ function MultiComponent(props: SPAProps): JSX.Element {
 
 export default function MainPage(): JSX.Element {
   const { ready, user, metadata, announce, classroom } = useAuth()
-  const { date, schedule, curDay, isiOS } = useMeeting()
+  const { date, schedule, curDay } = useMeeting()
   const [showAnnounce, setAnnounce] = useState(false)
   const [hero, showHero] = useState(false)
   const work = useLiveQuery(() =>

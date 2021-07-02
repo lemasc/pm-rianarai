@@ -2,7 +2,7 @@ import { ChevronLeftIcon, ChevronRightIcon } from '@heroicons/react/outline'
 
 type PaginationProps = {
   index: number
-  onChange: (number) => void
+  onChange: (id: number) => void
   name: string
   showIcons: boolean
   length: number

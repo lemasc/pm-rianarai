@@ -1,7 +1,8 @@
 import React, { useEffect } from 'react'
-import HeaderComponent from '../components/header'
 import Head from 'next/head'
-import { useAuth } from '../shared/authContext'
+
+import { useAuth } from '@/shared/authContext'
+import HeaderComponent from '@/components/layout/header'
 
 export default function SubmitUpdate(): JSX.Element {
   const { user } = useAuth()

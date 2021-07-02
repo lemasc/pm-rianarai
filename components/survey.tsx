@@ -1,8 +1,7 @@
-import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
-import { useAuth } from '../shared/authContext'
+import dynamic from 'next/dynamic'
 import { doc, increment, updateDoc } from 'firebase/firestore'
-import { db } from '../shared/firebase'
+import { db } from '@/shared/firebase'
 const ModalComponent = dynamic(() => import('./modal'))
 
 const list = [
@@ -23,13 +22,13 @@ export default function SurveymeComponent(): JSX.Element {
       }, 2500)
     }
   }, [])
-  function selectedClass(i) {
+  function selectedClass(i): string {
     const baseClass =
       'border-blue-500 border px-4 py-2 hover:bg-blue-400 rounded text-sm focus:outline-none '
     return i === answer ? baseClass + 'bg-blue-500 text-white' : baseClass
   }
-  async function submit() {
-    let d = {}
+  async function submit(): Promise<void> {
+    const d = {}
     if (answer !== -1 && answer !== 4) {
       d[list[answer].name] = increment(1)
       localStorage.setItem('surveyiOS', new Date().valueOf().toString())
@@ -73,7 +72,7 @@ export default function SurveymeComponent(): JSX.Element {
           </span>
           <div className="flex flex-col gap-4">
             {list.map((l, i) => (
-              <button className={selectedClass(i)} onClick={() => setAnswer(i)}>
+              <button key={l.name} className={selectedClass(i)} onClick={() => setAnswer(i)}>
                 {l.text}
               </button>
             ))}

@@ -1,5 +1,6 @@
 import Head from 'next/head'
-import HeaderComponent from '../components/header'
+import HeaderComponent from '@/components/layout/header'
+
 export default function OfflinePage(): JSX.Element {
   return (
     <div className="circle min-h-screen flex flex-col items-center justify-center dark:bg-gray-900 dark:text-white">

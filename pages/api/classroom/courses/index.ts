@@ -1,21 +1,8 @@
 import { classroom_v1, google } from 'googleapis'
 import type { NextApiResponse } from 'next'
-import {
-  withSession,
-  APIResponse,
-  NextApiSessionRequest,
-  createOAuth2,
-  withRefreshToken,
-} from '../../../../shared/api'
+import { withSession, NextApiSessionRequest, createOAuth2, withRefreshToken } from '@/shared/api'
 import { ClassroomCredentials } from '../callback'
-
-export type ClassroomCourseResult = {
-  accountId?: number
-  id: string
-  name: string
-  section: string
-  slug: string
-}
+import { APIResponse, ClassroomCourseResult } from '@/types/classroom'
 
 const listCourses = async (
   req: NextApiSessionRequest,

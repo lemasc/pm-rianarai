@@ -1,18 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import admin, { privateKey } from '../../../shared/firebase-admin'
+import admin, { privateKey } from '@/shared/firebase-admin'
 import { sign } from 'jsonwebtoken'
-
-export type JWTData = {
-  exp: number
-  ip: string | string[]
-  session: string | string[]
-  uid: string
-}
-
-export type APIResult = {
-  success: boolean
-  message: string
-}
+import { APIResult, JWTData } from '@/types/jwt'
 
 /**
  * Gets the encoded ID token used for Electron Applications

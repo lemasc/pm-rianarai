@@ -1,13 +1,12 @@
 import { AppProps } from 'next/app'
-import React from 'react'
-import { MainProvider } from '../shared'
+import { MainProvider } from '@/shared/index'
+import AuthSpinner from '@/components/auth/spinner'
 import LogRocket from 'logrocket'
 
 import 'tailwindcss/tailwind.css'
 import '../styles/globals.css'
 import 'tippy.js/dist/tippy.css'
 import '../styles/react-tabs.css'
-import AuthSpinner from '../components/spinner'
 
 function App({ Component, pageProps }: AppProps): JSX.Element {
   if (process.env.NODE_ENV === 'production') LogRocket.init('sg61xt/pm-rianarai-i4kpt')

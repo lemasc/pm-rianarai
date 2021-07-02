@@ -1,18 +1,18 @@
-import { Fragment, ReactNode, useRef } from "react";
-import { Transition, Dialog } from "@headlessui/react";
-import { XIcon } from "@heroicons/react/outline";
+import { Fragment, ReactNode, useRef } from 'react'
+import { Transition, Dialog } from '@headlessui/react'
+import { XIcon } from '@heroicons/react/outline'
 
 type ModalComponentProps = {
-  closable: boolean;
-  show: boolean;
-  size: string;
-  onClose: () => void;
-  children: ReactNode;
-  title: string;
-  titleClass?: string;
-  description?: string;
-  descriptionClass?: string;
-};
+  closable: boolean
+  show: boolean
+  size: string
+  onClose: () => void
+  children: ReactNode
+  title: string
+  titleClass?: string
+  description?: string
+  descriptionClass?: string
+}
 
 export default function ModalComponent({
   closable,
@@ -25,7 +25,7 @@ export default function ModalComponent({
   description,
   descriptionClass,
 }: ModalComponentProps): JSX.Element {
-  const closeRef = useRef<HTMLButtonElement>(null);
+  const closeRef = useRef<HTMLButtonElement>(null)
   return (
     <Transition show={show} as={Fragment}>
       <Dialog
@@ -48,10 +48,7 @@ export default function ModalComponent({
           </Transition.Child>
 
           {/* This element is to trick the browser into centering the modal contents. */}
-          <span
-            className="inline-block h-screen align-middle"
-            aria-hidden="true"
-          >
+          <span className="inline-block h-screen align-middle" aria-hidden="true">
             &#8203;
           </span>
           <Transition.Child
@@ -66,21 +63,17 @@ export default function ModalComponent({
             <div
               className={
                 size +
-                " inline-block w-full my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl"
+                ' inline-block w-full my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl'
               }
             >
               <Dialog.Title
                 as="h3"
-                className={
-                  "flex flex-row px-6 py-4 text-lg leading-6 " + titleClass
-                }
+                className={'flex flex-row px-6 py-4 text-lg leading-6 ' + titleClass}
               >
                 <div className="flex flex-grow">{title}</div>
                 <button
                   title="ปิด"
-                  className={
-                    "focus:outline-none" + (!closable ? " hidden" : "")
-                  }
+                  className={'focus:outline-none' + (!closable ? ' hidden' : '')}
                   onClick={closable && onClose}
                   ref={closeRef}
                 >
@@ -88,7 +81,7 @@ export default function ModalComponent({
                 </button>
               </Dialog.Title>
               {description && (
-                <Dialog.Description className={"px-6 py-3 " + descriptionClass}>
+                <Dialog.Description className={'px-6 py-3 ' + descriptionClass}>
                   {description}
                 </Dialog.Description>
               )}
@@ -98,5 +91,5 @@ export default function ModalComponent({
         </div>
       </Dialog>
     </Transition>
-  );
+  )
 }

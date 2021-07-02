@@ -1,14 +1,8 @@
-import admin from '../../../shared/firebase-admin'
 import type { NextApiResponse } from 'next'
-import {
-  withSession,
-  withAuth,
-  APIResponse,
-  NextApiSessionRequest,
-  ClassroomSessionResult,
-  createOAuth2,
-} from '../../../shared/api'
+import { withSession, withAuth, NextApiSessionRequest, createOAuth2 } from '@/shared/api'
 import { ClassroomCredentials, getProfile } from './callback'
+import { APIResponse, ClassroomSessionResult } from '@/types/classroom'
+import admin from '@/shared/firebase-admin'
 
 type ClassroomRefreshResult = {
   credentials?: ClassroomCredentials

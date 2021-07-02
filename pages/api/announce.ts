@@ -1,9 +1,5 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-
-export type DocsData = {
-  success: boolean
-  content?: string
-}
+import type { DocsData } from '@/types/announce'
 
 export default async (req: NextApiRequest, res: NextApiResponse<DocsData>): Promise<void> => {
   if (req.method !== 'GET' || !req.query.name) return res.status(400).json({ success: false })

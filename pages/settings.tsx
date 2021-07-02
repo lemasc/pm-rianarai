@@ -1,9 +1,9 @@
 import Head from 'next/head'
-import { useEffect } from 'react'
-import { useState } from 'react'
-import LayoutComponent, { CONTAINER, HEADER } from '../components/layout'
-import MetadataComponent from '../components/meta'
+import { useEffect, useState } from 'react'
 import { Transition } from '@headlessui/react'
+
+import LayoutComponent, { CONTAINER, HEADER } from '@/components/layout'
+import MetadataComponent from '@/components/auth/meta'
 
 export default function SettingsPage(): JSX.Element {
   const [success, setSuccess] = useState<boolean>(false)
@@ -16,7 +16,7 @@ export default function SettingsPage(): JSX.Element {
         <title>การตั้งค่า - PM-RianArai</title>
       </Head>
       <LayoutComponent>
-        <div className={CONTAINER + "gap-10 sm:gap-8"}>
+        <div className={CONTAINER + 'gap-10 sm:gap-8'}>
           <h1 className={HEADER}>การตั้งค่า</h1>
           <Transition
             show={success}

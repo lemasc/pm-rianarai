@@ -1,4 +1,9 @@
+import { useState, useEffect, useContext, createContext } from 'react'
 import axios from 'axios'
+import LogRocket from 'logrocket'
+import { useCollection, Document } from 'swr-firestore-v9'
+import { useRouter } from 'next/router'
+import { getDoc, setDoc, doc, updateDoc, arrayUnion } from 'firebase/firestore'
 import {
   createUserWithEmailAndPassword,
   FacebookAuthProvider,
@@ -8,39 +13,15 @@ import {
   signInWithPopup,
   User,
 } from 'firebase/auth'
-import { getDoc, setDoc, doc, updateDoc, arrayUnion } from 'firebase/firestore'
-import LogRocket from 'logrocket'
-import { useState, useEffect, useContext, createContext } from 'react'
-import { useCollection, Document } from 'swr-firestore-v9'
-import { auth, db } from './firebase'
-import { ClassroomSessionResult } from './api'
-import { useRouter } from 'next/dist/client/router'
 
-export interface UserMetadata {
-  upgrade?: 'v2'
-  class: number | string
-  room?: number | string
-  name: string
-  displayName: string
-  email: string
-  provider: Provider[]
-  announceId?: string[]
-}
+import { ClassroomSessionResult } from '@/types/classroom'
+import { Provider, UserMetadata } from '@/types/auth'
+import { Announcement } from '@/types/announce'
+import { auth, db } from './firebase'
 
 type FirebaseResult = {
   success: boolean
   message?: string
-}
-
-export type Provider = 'facebook.com' | 'google.com' | 'password'
-
-export type Announcement = {
-  created_at: Date
-  enable: boolean
-  displayName: string
-  name: string
-  needs_login: boolean
-  target: string
 }
 
 interface IAuthContext {
@@ -224,7 +205,7 @@ export function useProvideAuth(): IAuthContext {
         setReady(true)
       } else {
         authReady = setTimeout(() => {
-          if (router.pathname !== '/' && router.pathname !== "/client-login" && !user) {
+          if (router.pathname !== '/' && router.pathname !== '/client-login' && !user) {
             sessionStorage.setItem('url', router.pathname)
             router.replace('/')
           } else {

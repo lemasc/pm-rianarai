@@ -1,6 +1,5 @@
+import { ClassroomCourseResult, ClassroomCourseWorkResult } from '@/types/classroom'
 import Dexie from 'dexie'
-import { ClassroomCourseResult } from '../pages/api/classroom/courses'
-import { ClassroomCourseWorkResult } from '../pages/api/classroom/courses/[cid]'
 
 export class RianAraiDatabase extends Dexie {
   courseWork: Dexie.Table<ClassroomCourseWorkResult, string>

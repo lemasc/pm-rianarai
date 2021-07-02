@@ -1,13 +1,14 @@
-import React, { useEffect, useState } from 'react'
-import HeaderComponent from '../components/header'
+import { useEffect, useState } from 'react'
+import Link from 'next/link'
+import { useRouter } from 'next/router'
 import Head from 'next/head'
 import Image from 'next/image'
 import { Tabs, TabList, Tab, TabPanel } from 'react-tabs'
 import { Disclosure, Transition } from '@headlessui/react'
 import { ChevronUpIcon, DotsVerticalIcon, DownloadIcon } from '@heroicons/react/outline'
-import Link from 'next/link'
-import { useAuth } from '../shared/authContext'
-import { useRouter } from 'next/dist/client/router'
+
+import { useAuth } from '@/shared/authContext'
+import HeaderComponent from '@/components/layout/header'
 
 type InstallPromoProps = {
   children: React.ReactNode

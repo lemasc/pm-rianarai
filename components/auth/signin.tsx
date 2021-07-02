@@ -1,9 +1,10 @@
 import { Transition } from '@headlessui/react'
 import React, { useState } from 'react'
 import { useForm } from 'react-hook-form'
-import { useAuth, Provider } from '../shared/authContext'
+import { useAuth } from '@/shared/authContext'
 import zxcvbn from 'zxcvbn'
 import PasswordStrengthMeter from './password'
+import { Provider } from '@/types/auth'
 
 interface SignInProps {
   onSuccess?: () => void

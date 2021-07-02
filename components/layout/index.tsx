@@ -1,5 +1,5 @@
-import { useAuth } from '../shared/authContext'
-import MenuBarComponent from '../components/menubar'
+import { useAuth } from '@/shared/authContext'
+import MenuBarComponent from './menubar'
 export const CONTAINER = 'flex flex-1 flex-col sm:px-16 px-6 '
 export const HEADER = 'pt-8 text-3xl'
 
