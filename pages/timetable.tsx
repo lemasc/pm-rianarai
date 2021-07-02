@@ -1,8 +1,9 @@
 import { ArrowLeftIcon } from '@heroicons/react/outline'
-import { useRouter } from 'next/dist/client/router'
+import { useRouter } from 'next/router'
 import Head from 'next/head'
-import LayoutComponent, { CONTAINER, HEADER } from '../components/layout'
-import TimetableComponent from '../components/timetable'
+
+import LayoutComponent, { CONTAINER, HEADER } from '@/components/layout'
+import TimetableComponent from '@/components/timetable'
 
 export default function TimetablePage(): JSX.Element {
   const router = useRouter()

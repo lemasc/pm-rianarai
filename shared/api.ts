@@ -2,17 +2,8 @@ import admin from './firebase-admin'
 import type { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from 'next'
 import { withIronSession, Handler, Session } from 'next-iron-session'
 import { Auth, google, Common } from 'googleapis'
-import { ClassroomCredentials } from '../pages/api/classroom/callback'
-
-export type APIResponse<T = any> = {
-  success: boolean
-  data?: T
-}
-export type ClassroomSessionResult = {
-  name: string
-  email: string
-  valid: boolean
-}
+import { APIResponse } from '@/types/classroom'
+import { ClassroomCredentials } from '@/api/classroom/callback'
 
 export type SSRContext = GetServerSidePropsContext & {
   req: GetServerSidePropsContext['req'] & { session: Session }

@@ -1,27 +1,14 @@
+import { createContext, useContext, useEffect, useState } from 'react'
 import { Document, useCollection, useDocument } from 'swr-firestore-v9'
 import LogRocket from 'logrocket'
-import { createContext, useContext, useEffect, useState } from 'react'
+
+import { Meeting, TimeSlots } from '@/types/meeting'
 import { useAuth } from './authContext'
 
 export interface Schedule {
   [days: string]: TimeSlots[]
 }
 
-export interface TimeSlots {
-  start: string
-  end: string
-  teacher: string[]
-  code: string[]
-}
-
-export interface Meeting {
-  code?: string
-  meeting: string
-  name: string
-  subject: string
-  url?: string
-  meet?: boolean
-}
 export interface IMeetingContext {
   /**
    * Indicates Meeting data ready state.

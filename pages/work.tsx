@@ -1,26 +1,25 @@
+import { useState, useEffect } from 'react'
+import Head from 'next/head'
+import SingletonRouter, { Router, useRouter } from 'next/router'
 import axios, { CancelTokenSource } from 'axios'
 import Loader from 'react-loader-spinner'
-import Head from 'next/head'
-import React, { useState, useEffect } from 'react'
+import { Disclosure, Transition } from '@headlessui/react'
+import { useWindowWidth } from '@react-hook/window-size/throttled'
 import {
   AcademicCapIcon,
   CheckCircleIcon,
   ExternalLinkIcon,
   XCircleIcon,
 } from '@heroicons/react/outline'
-import LayoutComponent, { CONTAINER, HEADER } from '../components/layout'
-import { APIResponse } from '../shared/api'
-import { useAuth } from '../shared/authContext'
-import { db } from '../shared/db'
-import { ClassroomCourseResult } from './api/classroom/courses'
-import { ClassroomCourseWorkResult } from './api/classroom/courses/[cid]'
-import SingletonRouter, { Router, useRouter } from 'next/router'
+
+import { APIResponse, ClassroomCourseResult, ClassroomCourseWorkResult } from '@/types/classroom'
+import { useAuth } from '@/shared/authContext'
+import { db } from '@/shared/db'
+import LayoutComponent, { CONTAINER } from '@/components/layout'
+import SelectBox, { SelectData } from '@/components/layout/select'
+
 import dayjs from 'dayjs'
 import weekday from 'dayjs/plugin/weekday'
-import SelectBox, { SelectData } from '../components/select'
-import { Disclosure, Transition } from '@headlessui/react'
-import { useWindowWidth } from '@react-hook/window-size/throttled'
-
 dayjs.extend(weekday)
 
 function ClassworkList({ data }: { data: ClassroomCourseWorkResult[] }): JSX.Element {
@@ -35,7 +34,7 @@ function ClassworkList({ data }: { data: ClassroomCourseWorkResult[] }): JSX.Ele
             href={'https://classroom.google.com/c/' + d.slug + '/details'}
             key={d.id}
             target="_blank"
-            rel="noreferer noopener"
+            rel="noreferrer noopener"
             className={baseClass + 'border flex flex-row'}
           >
             <div className="flex flex-col flex-grow">
@@ -68,9 +67,9 @@ type DisclosureProps = {
   children: JSX.Element
 }
 
-export function WorkDisclosure({ classWork, state, children }: DisclosureProps) {
+export function WorkDisclosure({ classWork, state, children }: DisclosureProps): JSX.Element {
   const width = useWindowWidth()
-  function filterWork(c: ClassroomCourseWorkResult) {
+  function filterWork(c: ClassroomCourseWorkResult): boolean {
     if (state === 'turned-in') return c.state === 'TURNED_IN' || c.state === 'RETURNED'
     return (
       c.state !== 'TURNED_IN' &&
@@ -227,11 +226,11 @@ export default function WorkPage(): JSX.Element {
   }, [load, selectedTime, noDueDate])
   // Cancel on navigation
   useEffect(() => {
-    function beforeunload(e) {
+    function beforeunload(): void {
       source.cancel()
       setFetch(false)
     }
-    // @ts-ignore This is a hack for override navigation
+    // @ts-expect-error This is a hack for override navigation
     SingletonRouter.router.change = (...args) => {
       source.cancel()
       setFetch(false)
@@ -273,11 +272,7 @@ export default function WorkPage(): JSX.Element {
                       checked={noDueDate}
                       onChange={(e) => allowNoDueDate(e.target.checked)}
                     />{' '}
-                    <label
-                      htmlFor="noDueDate"
-                      className="px-2 text-sm font-light select-none"
-                      onClick={(e) => allowNoDueDate(!noDueDate)}
-                    >
+                    <label htmlFor="noDueDate" className="px-2 text-sm font-light select-none">
                       แสดงงานที่ไม่มีกำหนดส่ง
                     </label>
                   </div>

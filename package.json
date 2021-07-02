@@ -5,7 +5,8 @@
   "scripts": {
     "dev": "next dev",
     "build": "next build",
-    "start": "next start"
+    "start": "next start",
+    "lint": "next lint"
   },
   "dependencies": {
     "@headlessui/react": "^1.2.0",
@@ -25,7 +26,7 @@
     "jsdom": "^16.6.0",
     "logrocket": "^1.2.2",
     "nanoid": "^3.1.23",
-    "next": "10.2.3",
+    "next": "^11.0.1",
     "next-iron-session": "^4.2.0",
     "next-pwa": "^5.2.21",
     "postcss": "^8.3.0",
@@ -44,10 +45,14 @@
     "zxcvbn": "^4.4.2"
   },
   "devDependencies": {
+    "@types/jsdom": "^16.2.12",
+    "@types/jsonwebtoken": "^8.5.3",
     "@types/react": "^17.0.6",
+    "@types/react-tabs": "^2.3.2",
     "@typescript-eslint/eslint-plugin": "^4.25.0",
     "@typescript-eslint/parser": "^4.25.0",
     "eslint": "^7.27.0",
+    "eslint-config-next": "^11.0.1",
     "eslint-config-prettier": "^8.3.0",
     "eslint-plugin-jsx-a11y": "^6.4.1",
     "eslint-plugin-prettier": "^3.4.0",

@@ -1,100 +1,82 @@
-import dayjs from "dayjs";
-import { ReactNodeArray, useState } from "react";
-import PaginationComponent from "./pagination";
-import { GenerateTeacherName } from "./timeslots";
-import { useWindowWidth } from "@react-hook/window-size/throttled";
-import { useMeeting, TimeSlots } from "../shared/meetingContext";
+import dayjs from 'dayjs'
+import { ReactNodeArray, useState } from 'react'
+import { GenerateTeacherName } from './timeslots/info'
+import { useWindowWidth } from '@react-hook/window-size/throttled'
+
+import { TimeSlots } from '@/types/meeting'
+import PaginationComponent from './layout/pagination'
+import { useMeeting } from '@/shared/meetingContext'
 
 type dataTimeSlots = {
-  start: string[];
-  end: string[];
-};
+  start: string[]
+  end: string[]
+}
 const timetable: dataTimeSlots = {
   start: [
-    "08:30",
-    "09:20",
-    "10:10",
-    "10:30",
-    "11:20",
-    "12:10",
-    "13:00",
-    "13:50",
-    "14:40",
-    "15:30",
-    "16:20",
+    '08:30',
+    '09:20',
+    '10:10',
+    '10:30',
+    '11:20',
+    '12:10',
+    '13:00',
+    '13:50',
+    '14:40',
+    '15:30',
+    '16:20',
   ],
   end: [
-    "09:20",
-    "10:10",
-    "10:30",
-    "11:20",
-    "12:10",
-    "13:00",
-    "13:50",
-    "14:40",
-    "15:30",
-    "16:20",
-    "17:10",
+    '09:20',
+    '10:10',
+    '10:30',
+    '11:20',
+    '12:10',
+    '13:00',
+    '13:50',
+    '14:40',
+    '15:30',
+    '16:20',
+    '17:10',
   ],
-};
+}
 
 function TimeSlotsData({ data }: { data: TimeSlots }): JSX.Element {
   return (
     <>
-      <span className="text-lg py-2 font-bold sarabun-font">
-        {data.code.join(",")}
-      </span>
+      <span className="text-lg py-2 font-bold sarabun-font">{data.code.join(',')}</span>
       {data.teacher.length !== 0 && (
         <div className="flex flex-row space-x-1 justify-center w-full">
           {GenerateTeacherName(data.teacher)}
         </div>
       )}
     </>
-  );
+  )
 }
 
 export default function TimetableComponent(): JSX.Element {
-  const days = [
-    "sunday",
-    "monday",
-    "tuesday",
-    "wednesday",
-    "thursday",
-    "friday",
-    "saturday",
-  ];
-  const daysTH = [
-    "อาทิตย์",
-    "จันทร์",
-    "อังคาร",
-    "พุธ",
-    "พฤหัสบดี",
-    "ศุกร์",
-    "เสาร์",
-  ];
-  const [curDay, setCurday] = useState<number>(dayjs().day());
-  const { schedule: data } = useMeeting();
-  const width = useWindowWidth();
+  const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
+  const daysTH = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์']
+  const [curDay, setCurday] = useState<number>(dayjs().day())
+  const { schedule: data } = useMeeting()
+  const width = useWindowWidth()
   // BREAKPOINT Breakpoints
-  const BREAKPOINT = 640;
-  const break10Class = "bg-green-500 bg-opacity-40 italic";
-  const breakClass = "bg-yellow-500 bg-opacity-40 italic";
+  const BREAKPOINT = 640
+  const break10Class = 'bg-green-500 bg-opacity-40 italic'
+  const breakClass = 'bg-yellow-500 bg-opacity-40 italic'
   const generatePendingSlots = (slot: TimeSlots[]): ReactNodeArray => {
     // Get index of the last end time in schedule
-    const lastIndex = timetable.end.indexOf(slot[slot.length - 1].end);
-    return Array(timetable.start.length - lastIndex - 1).fill(<td></td>);
-  };
+    const lastIndex = timetable.end.indexOf(slot[slot.length - 1].end)
+    return Array(timetable.start.length - lastIndex - 1).fill(<td></td>)
+  }
   const calculateColSpan = (slot: TimeSlots): number | undefined => {
-    return (
-      timetable.end.indexOf(slot.end) - timetable.start.indexOf(slot.start) + 1
-    );
-  };
+    return timetable.end.indexOf(slot.end) - timetable.start.indexOf(slot.start) + 1
+  }
   return (
     <div
       className={
         width > BREAKPOINT
-          ? "whitespace-nowrap block"
-          : "min-w-min flex flex-col justify-center items-center"
+          ? 'whitespace-nowrap block'
+          : 'min-w-min flex flex-col justify-center items-center'
       }
     >
       {width < BREAKPOINT && (
@@ -131,13 +113,13 @@ export default function TimetableComponent(): JSX.Element {
                             <TimeSlotsData data={d} />
                           </td>
                         </tr>
-                        {d.end == "10:10" && (
+                        {d.end == '10:10' && (
                           <tr key="break10" className={break10Class}>
                             <td>10:10 - 10:30</td>
                             <td>พัก 20 นาที</td>
                           </tr>
                         )}
-                        {d.end == "12:10" && (
+                        {d.end == '12:10' && (
                           <tr key="break" className={breakClass}>
                             <td>12:10 - 13:00</td>
                             <td>พักกลางวัน</td>
@@ -149,18 +131,14 @@ export default function TimetableComponent(): JSX.Element {
                 </table>
               </>
             ) : (
-              <div className="text-lg text-red-500 p-12 font-medium">
-                ไม่มีข้อมูลตารางเรียน
-              </div>
+              <div className="text-lg text-red-500 p-12 font-medium">ไม่มีข้อมูลตารางเรียน</div>
             )}
           </>
         ) : (
           <table className="timetable">
             <thead className="bg-gray-50 dark:bg-gray-900">
               <tr>
-                <th className="sticky -left-0.5 bg-gray-50 dark:bg-gray-900 z-20 border">
-                  วัน
-                </th>
+                <th className="sticky -left-0.5 bg-gray-50 dark:bg-gray-900 z-20 border">วัน</th>
                 {timetable.start.map((d, i) => (
                   <>
                     <th key={d}>
@@ -177,10 +155,10 @@ export default function TimetableComponent(): JSX.Element {
                     <tr>
                       <td
                         className={
-                          "sticky -left-0.5 font-medium border " +
+                          'sticky -left-0.5 font-medium border ' +
                           (dayIndex === curDay
-                            ? "bg-bright-sun-400 text-gray-900"
-                            : "bg-gray-50 dark:bg-gray-900")
+                            ? 'bg-bright-sun-400 text-gray-900'
+                            : 'bg-gray-50 dark:bg-gray-900')
                         }
                       >
                         {daysTH[dayIndex]}
@@ -188,34 +166,22 @@ export default function TimetableComponent(): JSX.Element {
                       {data[day] &&
                         data[day].map((d, i) => (
                           <>
-                            <td
-                              colSpan={calculateColSpan(d)}
-                              key={d.code.toString()}
-                            >
+                            <td colSpan={calculateColSpan(d)} key={d.code.toString()}>
                               <TimeSlotsData data={d} />
                             </td>
-                            {day === "monday" && (
+                            {day === 'monday' && (
                               <>
-                                {d.end == "10:10" && (
-                                  <td
-                                    rowSpan={5}
-                                    key="break10"
-                                    className={break10Class}
-                                  >
+                                {d.end == '10:10' && (
+                                  <td rowSpan={5} key="break10" className={break10Class}>
                                     พัก 20 นาที
                                   </td>
                                 )}
-                                {d.end == "12:10" && (
-                                  <td
-                                    rowSpan={5}
-                                    key="break"
-                                    className={breakClass}
-                                  >
+                                {d.end == '12:10' && (
+                                  <td rowSpan={5} key="break" className={breakClass}>
                                     พักกลางวัน
                                   </td>
                                 )}
-                                {i === data[day].length - 1 &&
-                                  generatePendingSlots(data[day])}
+                                {i === data[day].length - 1 && generatePendingSlots(data[day])}
                               </>
                             )}
                           </>
@@ -229,5 +195,5 @@ export default function TimetableComponent(): JSX.Element {
         )}
       </main>
     </div>
-  );
+  )
 }

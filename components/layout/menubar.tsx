@@ -1,15 +1,17 @@
 import { Disclosure, Transition } from '@headlessui/react'
-import { useRouter } from 'next/dist/client/router'
+import { useRouter } from 'next/router'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
-import { Announcement, useAuth, UserMetadata } from '../shared/authContext'
+import { useAuth } from '@/shared/authContext'
 import { LogoutIcon, MenuIcon, SpeakerphoneIcon, XIcon } from '@heroicons/react/outline'
 import { Document } from 'swr-firestore-v9'
 import { useWindowWidth } from '@react-hook/window-size/throttled'
+import { UserMetadata } from '@/types/auth'
+import { Announcement } from '@/types/announce'
 
-const AnnouncementComponent = dynamic(() => import('../components/announce'))
+const AnnouncementComponent = dynamic(() => import('@/components/announce'))
 
 type MenuBarProps = {
   landing?: boolean
@@ -35,7 +37,7 @@ const navigation: Navigation[] = [
   },
 ]
 
-function Toolbar({ setAnnounce }: { setAnnounce: (boolean) => void }): JSX.Element {
+function Toolbar({ setAnnounce }: { setAnnounce: (val: boolean) => void }): JSX.Element {
   const { announce, metadata, signOut, remove } = useAuth()
   return (
     <>

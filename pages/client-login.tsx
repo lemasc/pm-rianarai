@@ -1,12 +1,14 @@
-import Head from 'next/head'
-import HeaderComponent from '../components/header'
-import SignInComponent from '../components/signin'
-import { GetServerSideProps } from 'next'
-import { useAuth } from '../shared/authContext'
 import { useEffect, useState } from 'react'
+import Head from 'next/head'
+import { useRouter } from 'next/router'
+import { GetServerSideProps } from 'next'
 import axios from 'axios'
-import type { APIResult } from './api/client/get'
-import { useRouter } from 'next/dist/client/router'
+
+import { APIResult } from '@/types/jwt'
+import HeaderComponent from '@/components/layout/header'
+import SignInComponent from '@/components/auth/signin'
+import { useAuth } from '@/shared/authContext'
+
 export const getServerSideProps: GetServerSideProps = async (context) => {
   if (!context.query.session) {
     return {
@@ -43,7 +45,7 @@ export default function ClientLoginPage(): JSX.Element {
         console.log(result.data)
         const data = result.data as APIResult
         if (data.success) {
-          setToken(data.message)
+          setToken(data.message as string)
           setTimeout(() => {
             setError(<>หมดเวลาแล้ว หากต้องการล็อกอินใหม่กรุณาเปิดจากแอพพลิเคชั่นอีกครั้ง</>)
             setToken('')

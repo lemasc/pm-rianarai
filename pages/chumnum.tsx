@@ -1,10 +1,8 @@
-import { useRouter } from 'next/dist/client/router'
+import { useRouter } from 'next/router'
 import Head from 'next/head'
 import dynamic from 'next/dynamic'
 import { Tabs, TabList, Tab, TabPanel } from 'react-tabs'
-import { useAuth } from '../shared/authContext'
-import { useState } from 'react'
-import { useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import axios from 'axios'
 import Fuse from 'fuse.js'
 import {
@@ -16,21 +14,24 @@ import {
 import Tippy from '@tippyjs/react'
 import useSWR from 'swr'
 import { useWindowWidth } from '@react-hook/window-size/throttled'
-import { ChumnumData, ChumnumResult } from './api/chumnum'
-import LayoutComponent, { CONTAINER, HEADER } from '../components/layout'
-import SelectBox, { SelectData } from '../components/select'
 import dayjs from 'dayjs'
 import weekday from 'dayjs/plugin/weekday'
-const ModalComponent = dynamic(() => import('../components/modal'))
-const MarkDownComponent = dynamic(() => import('../components/markdown'))
 import { useCollection } from 'swr-firestore-v9'
+
+import { ChumnumData, ChumnumResult } from '@/types/chumnum'
+import { useAuth } from '@/shared/authContext'
+import LayoutComponent, { CONTAINER, HEADER } from '@/components/layout'
+import SelectBox, { SelectData } from '@/components/layout/select'
+const ModalComponent = dynamic(() => import('@/components/modal'))
+const MarkDownComponent = dynamic(() => import('@/components/markdown'))
 
 dayjs.extend(weekday)
 type ChumnumFilter = {
   target: number[]
 }
 
-const fetcher = (url) => axios.get<ChumnumResult>(url).then((res) => res.data)
+const fetcher = (url: string): Promise<ChumnumResult> =>
+  axios.get<ChumnumResult>(url).then((res) => res.data)
 type TimeRange = {
   startTime: number
   endTime: number
@@ -98,7 +99,7 @@ export default function ChumnumPage(): JSX.Element {
     refreshInterval: autoRefresh ? 60000 : undefined,
   })
 
-  const { data, error } = useCollection<ChumnumData>('chumnum', {
+  const { data } = useCollection<ChumnumData>('chumnum', {
     listen: true,
   })
   useEffect(() => {
@@ -196,7 +197,7 @@ export default function ChumnumPage(): JSX.Element {
               title="เข้าสู่ระบบลงทะเบียนกิจกรรมชุมนุมออนไลน์"
               href="https://wpm.clubth.com/index.php"
               target="_blank"
-              rel="noreferer noopener"
+              rel="noreferrer noopener"
               className="flex-shrink-0 h-12 flex items-center justify-center btn text-white font-bold bg-blue-500 from-blue-500 to-blue-600 focus:ring-blue-600 px-4 py-2"
             >
               เข้าสู่เว็บลงทะเบียน <ExternalLinkIcon className="h-6 w-6 inline -mt-1 ml-2" />
@@ -225,7 +226,7 @@ export default function ChumnumPage(): JSX.Element {
                   />
                 </div>
                 <div className="flex w-full flex-col gap-2">
-                  <label>ระดับชั้น</label>
+                  <span>ระดับชั้น</span>
                   <SelectBox
                     className="w-full"
                     data={filterSet}
@@ -332,7 +333,7 @@ export default function ChumnumPage(): JSX.Element {
                     ในการลงทะเบียนนักเรียนควรมีตัวเลือกในใจประมาณ 3 ชุมนุมเนื่องจากอาจลงไม่ทัน
                   </li>
                   <li>
-                    หากนักเรียนคนใดไม่มีชุมนุมจะได้รับผลการเรียน "ไม่ผ่าน/มผ."
+                    หากนักเรียนคนใดไม่มีชุมนุมจะได้รับผลการเรียน <b>ไม่ผ่าน/มผ.</b>
                     ซึ่งจะทำให้ไม่จบการศึกษา
                   </li>
                 </ul>
@@ -427,7 +428,7 @@ export default function ChumnumPage(): JSX.Element {
                       href="https://wpm.clubth.com/login.php"
                       title="เข้าระบบ"
                       target="_blank"
-                      rel="noopener noreferer"
+                      rel="noopener noreferrer"
                       className="text-blue-500 underline font-normal"
                     >
                       เข้าระบบ
@@ -446,7 +447,7 @@ export default function ChumnumPage(): JSX.Element {
                     <a
                       href="https://wpm.clubth.com/index.php?r=register_agreement"
                       target="_blank"
-                      rel="noreferer noopener"
+                      rel="noreferrer noopener"
                       className="text-blue-500 underline font-normal"
                     >
                       ลงทะเบียนกิจกรรมชุมนุม

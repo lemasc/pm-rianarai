@@ -1,7 +1,7 @@
-import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
+import dynamic from 'next/dynamic'
 import Image from 'next/image'
-import { useAuth } from '../shared/authContext'
+import { useAuth } from '@/shared/authContext'
 const ModalComponent = dynamic(() => import('./modal'))
 
 export default function WelcomeComponent(): JSX.Element {
@@ -13,12 +13,12 @@ export default function WelcomeComponent(): JSX.Element {
       setShow(true)
     }, 2500)
   }, [])
-  function next() {
+  function next(): void {
     if (index !== 4) return setIndex((i) => ++i)
     setShow(false)
     setWelcome(true)
   }
-  function prev() {
+  function prev(): void {
     setIndex((i) => --i)
   }
   return (
@@ -106,7 +106,7 @@ export default function WelcomeComponent(): JSX.Element {
             <a
               className="underline text-blue-500 hover:text-blue-600"
               target="_blank"
-              rel="noopener noreferer"
+              rel="noopener noreferrer"
               href="https://twitter.com/lemascth"
             >
               Official Twitter Account (@lemascth)

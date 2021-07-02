@@ -1,9 +1,10 @@
-import { ReactNodeArray, useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Transition } from '@headlessui/react'
-import Link from 'next/link'
 import dayjs from 'dayjs'
-import { Meeting, useMeeting, TimeSlots } from '../shared/meetingContext'
-import PaginationComponent from './pagination'
+import { useMeeting } from '@/shared/meetingContext'
+import PaginationComponent from '../layout/pagination'
+import { MeetingInfo, MeetingPending } from './info'
+import { TimeSlots } from '@/types/meeting'
 
 interface TimeSlotsMemory {
   active: TimeSlots | null
@@ -15,129 +16,7 @@ interface MemoryQueue {
   state: State
 }
 
-interface MeetingComponentProps {
-  meetings: Meeting[]
-  showNames: boolean
-  disabled: boolean
-}
-
-interface MeetingMetaProps {
-  slot: TimeSlots
-  disabled: boolean
-}
-
 type State = 'active' | 'start' | 'break' | 'end' | ''
-
-function MeetingNotFound(): JSX.Element {
-  return (
-    <>
-      <h4 className="text-lg font-medium text-red-500 p-4">ไม่พบข้อมูลผู้สอนในรายวิชานี้</h4>
-      <div className="text-sm">
-        นี่อาจเกิดจาก
-        <br />
-        <ul className="py-2 px-4 font-light">
-          <li className="px-16">รายวิชานี้ไม่ได้เรียนในระบบ Zoom</li>
-          <li className="px-16">ยังไม่มีข้อมูลผู้สอนของรายวิชานี้</li>
-          <li className="px-16">พิมพ์ตกหล่นทำให้ระบบหาข้อมูลไม่เจอ</li>
-        </ul>
-        หากคิดว่านี้เป็นข้อผิดพลาด กรุณา{' '}
-        <Link href="/support">
-          <a
-            target="_blank"
-            rel="noopener noreferrer"
-            title="Support"
-            className="font-normal underline text-blue-500 hover:text-blue-600"
-          >
-            แจ้งปัญหาการใช้งาน
-          </a>
-        </Link>
-      </div>
-    </>
-  )
-}
-
-const MeetingJoin: React.FC<MeetingComponentProps> = ({ showNames, meetings, disabled }) => {
-  const { launchMeeting } = useMeeting()
-  const buttons: ReactNodeArray = []
-  meetings.map((meeting, index) => {
-    buttons.push(
-      <button
-        title={
-          disabled
-            ? 'สามารถเข้าสู่ห้องเรียนก่อนเวลาได้ 10 นาที'
-            : 'เข้าสู่ห้องเรียน จำเป็นต้องมี Zoom ติดตั้งลงในอุปกรณ์แล้ว'
-        }
-        key={index}
-        disabled={disabled}
-        className="zoom-btn mx-8 w-72"
-        onClick={() => launchMeeting(meeting)}
-      >
-        {disabled ? 'Not In Time' : 'Launch Meetings'} {showNames && ' : ' + meeting.name}
-      </button>
-    )
-  })
-  return <>{buttons}</>
-}
-
-export function GenerateTeacherName(teacher: string[]): ReactNodeArray {
-  function getPrefix(t: string): string {
-    if (t.match(/^[a-zA-Z0-9]*$/g)) return 'T.'
-    if (t.indexOf('.') === -1) return 'อ.'
-    return ''
-  }
-  return teacher.map((t, i) => (
-    <span key={i}>
-      {i !== 0 && ' | '}
-      {getPrefix(t)}
-      {t}
-    </span>
-  ))
-}
-
-function MeetingInfo({ slot, disabled }: MeetingMetaProps): JSX.Element {
-  const [meeting, setMeeting] = useState<Meeting[]>([])
-  const { ready, meeting: _meeting } = useMeeting()
-  useEffect(() => {
-    if (!_meeting || !slot) return
-    setMeeting(_meeting.filter((m) => slot.teacher.includes(m.name)))
-  }, [_meeting, slot])
-  if (!ready || !slot) return null
-  return (
-    <div className="flex flex-col md:grid md:grid-cols-2 w-full md:divide-x divide-gray-400 text-center">
-      <div className="flex flex-col justify-center items-center">
-        <div className="text-2xl p-4 text-blue-600 font-medium px-8 max-w-md">
-          {meeting.length > 0 &&
-            slot.code[0].match(/([0-9]){4}\w/g) !== null &&
-            meeting[0].subject + ' : '}
-          {slot.code.length > 1 && <br />}
-          {slot.code.join(' , ')}
-        </div>
-        {slot.teacher.length > 0 && (
-          <span className="px-4 text-blue-600">สอนโดย {GenerateTeacherName(slot.teacher)}</span>
-        )}
-        <span className="font-light p-2">
-          {slot.start} น. - {slot.end} น.
-        </span>
-      </div>
-      <div className="flex flex-col justify-center items-center">
-        {meeting.length === 0 || meeting[0].meet ? (
-          <MeetingNotFound />
-        ) : (
-          <MeetingJoin meetings={meeting} showNames={meeting.length != 1} disabled={disabled} />
-        )}
-      </div>
-    </div>
-  )
-}
-
-function MeetingPending({ slot }): JSX.Element {
-  if (!slot) return null
-  return (
-    <>
-      {slot.code.join(' , ')} ({GenerateTeacherName(slot.teacher)}) : {slot.start} น.
-    </>
-  )
-}
 
 export default function TimeSlotsComponent(): JSX.Element {
   const { add, schedule, date, curDay } = useMeeting()

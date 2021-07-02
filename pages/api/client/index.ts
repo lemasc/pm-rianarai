@@ -1,19 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next'
-import admin, { clientEmail, privateKeyId } from '../../../shared/firebase-admin'
+import admin, { clientEmail, privateKeyId } from '@/shared/firebase-admin'
 import { Secret, verify, VerifyOptions } from 'jsonwebtoken'
 import axios from 'axios'
-
-export type JWTData = {
-  exp: number
-  ip: string | string[]
-  session: string | string[]
-  uid: string
-}
-
-export type APIResult = {
-  success: boolean
-  message: string | JWTData
-}
+import { APIResult, JWTData } from '@/types/jwt'
 
 /**
  * Parse the JWT tokens and returns the credentials to sign in to desktop clients

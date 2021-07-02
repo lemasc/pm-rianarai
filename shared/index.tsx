@@ -1,8 +1,10 @@
 import React, { ReactNode } from 'react'
-import { useProvideAuth, authContext } from './authContext'
 import { FuegoProvider } from 'swr-firestore-v9'
+
 import { meetingContext, useProvideMeeting } from './meetingContext'
+import { useProvideAuth, authContext } from './authContext'
 import { fuego } from './firebase'
+
 interface IProps {
   children: ReactNode
 }

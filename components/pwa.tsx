@@ -1,9 +1,9 @@
-import { useAuth } from '../shared/authContext'
 import { useEffect, useState } from 'react'
 import { Transition } from '@headlessui/react'
 import { XIcon } from '@heroicons/react/outline'
 import LogRocket from 'logrocket'
 import { useWindowWidth } from '@react-hook/window-size/throttled'
+import { useAuth } from '@/shared/authContext'
 
 type PWAPromoProps = {
   show: boolean

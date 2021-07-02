@@ -1,26 +1,9 @@
 import dayjs from 'dayjs'
 import { classroom_v1, google } from 'googleapis'
 import type { NextApiResponse } from 'next'
-import {
-  withSession,
-  APIResponse,
-  NextApiSessionRequest,
-  createOAuth2,
-  withRefreshToken,
-} from '../../../../shared/api'
+import { withSession, NextApiSessionRequest, createOAuth2, withRefreshToken } from '@/shared/api'
 import { ClassroomCredentials } from '../callback'
-
-type WorkState = 'NEW' | 'CREATED' | 'TURNED_IN' | 'RETURNED' | 'RECLAIMED_BY_STUDENT'
-export type ClassroomCourseWorkResult = {
-  courseId?: string
-  id: string
-  title: string
-  slug: string
-  description: string
-  //materials: (keyof classroom_v1.Schema$Material)[]
-  dueDate: number
-  state: WorkState
-}
+import { APIResponse, ClassroomCourseWorkResult, WorkState } from '@/types/classroom'
 
 /*
 function getMaterials(

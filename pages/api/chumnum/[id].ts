@@ -8,7 +8,7 @@
 import axios from 'axios'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { JSDOM } from 'jsdom'
-import { ChumnumData, ChumnumResult } from './index'
+import { ChumnumData, ChumnumResult } from '@/types/chumnum'
 
 export default async (req: NextApiRequest, res: NextApiResponse<ChumnumResult>): Promise<void> => {
   if (req.method !== 'GET' || !req.query.id) return res.status(400).json({ success: false })

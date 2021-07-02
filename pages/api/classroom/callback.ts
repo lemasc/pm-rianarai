@@ -1,13 +1,8 @@
 import { Auth } from 'googleapis'
 import type { NextApiResponse } from 'next'
-import admin from '../../../shared/firebase-admin'
-import {
-  withSession,
-  APIResponse,
-  NextApiSessionRequest,
-  createOAuth2,
-  withRefreshToken,
-} from '../../../shared/api'
+import admin from '@/shared/firebase-admin'
+import { withSession, NextApiSessionRequest, createOAuth2, withRefreshToken } from '@/shared/api'
+import { APIResponse } from '@/types/classroom'
 
 export type ClassroomCredentials = {
   id: string

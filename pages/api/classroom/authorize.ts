@@ -1,6 +1,7 @@
 import type { NextApiResponse } from 'next'
-import { APIResponse, withSession, NextApiSessionRequest, createOAuth2 } from '../../../shared/api'
+import { withSession, NextApiSessionRequest, createOAuth2 } from '@/shared/api'
 import { nanoid } from 'nanoid'
+import { APIResponse } from '@/types/classroom'
 /**
  * Redirect to Google's OAuth Consent Screen with Classroom API Scopes.
  * This service is dependent from the Firebase Authentication,

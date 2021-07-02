@@ -1,4 +1,4 @@
-import { useAuth } from '../shared/authContext'
+import { useAuth } from '@/shared/authContext'
 import { Transition } from '@headlessui/react'
 import Loader from 'react-loader-spinner'
 export default function AuthSpinner(): JSX.Element {
