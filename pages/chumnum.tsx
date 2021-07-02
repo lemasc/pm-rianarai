@@ -266,10 +266,7 @@ export default function ChumnumPage(): JSX.Element {
                 {filteredData &&
                   filteredData.map((d) => (
                     <button
-                      onClick={() => {
-                        console.log(d)
-                        setDetail(d)
-                      }}
+                      onClick={() => setDetail(d)}
                       key={d.name}
                       className="focus:outline-none border dark:border-gray-600 shadow-md rounded p-4 bg-white dark:bg-gray-700 dark:hover:bg-gray-800 hover:bg-gray-100 cursor-pointer flex flex-col justify-center space-y-2"
                     >

@@ -33,7 +33,6 @@ export default function MetadataComponent({ onSubmit, minUI }: MetaProps): JSX.E
     }
   }
   const cancel = async (): Promise<void> => {
-    console.log(metadata)
     if (metadata) {
       setValue('class', metadata.class.toString().slice(0, 1))
       setValue('room', metadata.class.toString().slice(2))

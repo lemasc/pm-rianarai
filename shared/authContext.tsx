@@ -194,7 +194,6 @@ export function useProvideAuth(): IAuthContext {
     return auth.onIdTokenChanged(async (curUser) => {
       if (!_isMounted) return
       if (authReady) clearTimeout(authReady)
-      console.log(curUser)
       if (curUser) {
         // Check previous state if user exists
         if (curUser !== user) {
