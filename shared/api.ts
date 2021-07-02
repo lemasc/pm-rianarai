@@ -26,7 +26,7 @@ export function withAuth(handler: Handler<NextApiRequest, NextApiResponse>) {
       if (!decodedToken || !decodedToken.uid) return res.status(401).json({ success: false })
       req.uid = decodedToken.uid
     } catch (error) {
-      console.log(error)
+      console.error(error)
       return res.status(500).json({ success: false })
     }
     return handler(req, res)
