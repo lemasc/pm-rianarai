@@ -135,7 +135,6 @@ export function useProvideAuth(): IAuthContext {
       await signInWithPopup(auth, provider)
       return { success: true }
     } catch (err) {
-      if (err.code === 'auth/popup-closed-by-user') return { success: true }
       LogRocket.error(err)
       return { success: false, message: err.code }
     }
@@ -195,6 +194,7 @@ export function useProvideAuth(): IAuthContext {
     return auth.onIdTokenChanged(async (curUser) => {
       if (!_isMounted) return
       if (authReady) clearTimeout(authReady)
+      console.log(curUser)
       if (curUser) {
         // Check previous state if user exists
         if (curUser !== user) {
@@ -225,7 +225,7 @@ export function useProvideAuth(): IAuthContext {
         setReady(true)
       } else {
         authReady = setTimeout(() => {
-          if (router.pathname !== '/' && !user) {
+          if (router.pathname !== '/' && router.pathname !== "/client-login" && !user) {
             sessionStorage.setItem('url', router.pathname)
             router.replace('/')
           } else {
