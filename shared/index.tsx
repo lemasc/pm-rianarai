@@ -1,4 +1,4 @@
-import React, { ReactNode } from 'react'
+import { ReactNode } from 'react'
 import { FuegoProvider } from 'swr-firestore-v9'
 
 import { meetingContext, useProvideMeeting } from './meetingContext'
