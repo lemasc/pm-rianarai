@@ -1,6 +1,5 @@
 import { useRouter } from 'next/router'
 import Head from 'next/head'
-import dynamic from 'next/dynamic'
 import { Tabs, TabList, Tab, TabPanel } from 'react-tabs'
 import { useState, useEffect } from 'react'
 import axios from 'axios'
@@ -22,8 +21,8 @@ import { ChumnumData, ChumnumResult } from '@/types/chumnum'
 import { useAuth } from '@/shared/authContext'
 import LayoutComponent, { CONTAINER, HEADER } from '@/components/layout'
 import SelectBox, { SelectData } from '@/components/layout/select'
-const ModalComponent = dynamic(() => import('@/components/modal'))
-const MarkDownComponent = dynamic(() => import('@/components/markdown'))
+import ModalComponent from '@/components/modal'
+import MarkDownComponent from '@/components/markdown'
 
 dayjs.extend(weekday)
 type ChumnumFilter = {

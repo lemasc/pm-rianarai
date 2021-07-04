@@ -1,13 +1,11 @@
 import { ArrowLeftIcon } from '@heroicons/react/outline'
 import { useWindowWidth } from '@react-hook/window-size/throttled'
 import LogRocket from 'logrocket'
-import dynamic from 'next/dynamic'
 import { useEffect, useState } from 'react'
 import { DocsData, AnnounceData } from '@/types/announce'
 import { useAuth } from '@/shared/authContext'
 import MarkDownComponent from './markdown'
-
-const ModalComponent = dynamic(() => import('./modal'))
+import ModalComponent from './modal'
 
 type ComponentProps = {
   show: boolean

@@ -1,6 +1,5 @@
 import { Disclosure, Transition } from '@headlessui/react'
 import { useRouter } from 'next/router'
-import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import Link from 'next/link'
 import React, { useEffect, useState } from 'react'
@@ -10,8 +9,7 @@ import { Document } from 'swr-firestore-v9'
 import { useWindowWidth } from '@react-hook/window-size/throttled'
 import { UserMetadata } from '@/types/auth'
 import { Announcement } from '@/types/announce'
-
-const AnnouncementComponent = dynamic(() => import('@/components/announce'))
+import AnnouncementComponent from '@/components/announce'
 
 type MenuBarProps = {
   landing?: boolean
@@ -38,7 +36,7 @@ const navigation: Navigation[] = [
 ]
 
 function Toolbar({ setAnnounce }: { setAnnounce: (val: boolean) => void }): JSX.Element {
-  const { announce, metadata, signOut, remove } = useAuth()
+  const { announce, metadata, signOut } = useAuth()
   return (
     <>
       <button
@@ -58,16 +56,7 @@ function Toolbar({ setAnnounce }: { setAnnounce: (val: boolean) => void }): JSX.
       </button>
       {metadata && (
         <>
-          <button
-            title="ออกจากระบบ"
-            className="focus:outline-none"
-            onClick={() => {
-              if (metadata) return signOut()
-              remove().then((ok) => {
-                if (!ok) signOut()
-              })
-            }}
-          >
+          <button title="ออกจากระบบ" className="focus:outline-none" onClick={() => signOut()}>
             <LogoutIcon
               className="w-8 h-8 font-light opacity-60 hover:opacity-100"
               strokeWidth={1}
@@ -121,7 +110,6 @@ export default function MenuBarComponent({ landing }: MenuBarProps): JSX.Element
   const { metadata } = useAuth()
   const [top, setTop] = useState(true)
   const width = useWindowWidth({ fps: 60 })
-
   useEffect(() => {
     const scrollHandler = (): void => {
       window.pageYOffset > 10 ? setTop(false) : setTop(true)

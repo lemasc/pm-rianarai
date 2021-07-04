@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
-import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import { useAuth } from '@/shared/authContext'
-const ModalComponent = dynamic(() => import('./modal'))
+import ModalComponent from './modal'
 
 export default function WelcomeComponent(): JSX.Element {
   const { setWelcome } = useAuth()

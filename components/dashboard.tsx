@@ -1,6 +1,5 @@
 import { useState } from 'react'
 import Link from 'next/link'
-import dynamic from 'next/dynamic'
 import { useLiveQuery } from 'dexie-react-hooks'
 import {
   AcademicCapIcon,
@@ -17,9 +16,8 @@ import TimeSlotsComponent from '@/components/timeslots'
 import { CONTAINER, HEADER } from '@/components/layout'
 import { getUnreadAnnounce } from '@/components/layout/menubar'
 import { time } from '@/pages/work'
-
-const WelcomeComponent = dynamic(() => import('@/components/welcome'))
-const AnnouncementComponent = dynamic(() => import('@/components/announce'))
+import WelcomeComponent from '@/components/welcome'
+import AnnouncementComponent from '@/components/announce'
 
 export default function Dashboard(): JSX.Element {
   const { metadata, announce, classroom } = useAuth()

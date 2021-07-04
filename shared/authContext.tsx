@@ -4,15 +4,8 @@ import LogRocket from 'logrocket'
 import { useCollection, Document } from 'swr-firestore-v9'
 import { useRouter } from 'next/router'
 import { getDoc, setDoc, doc, updateDoc, arrayUnion } from 'firebase/firestore'
-import {
-  createUserWithEmailAndPassword,
-  FacebookAuthProvider,
-  fetchSignInMethodsForEmail,
-  GoogleAuthProvider,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-  User,
-} from 'firebase/auth'
+import { signInWithCustomToken, User } from 'firebase/auth'
+import { ipcRenderer } from 'electron'
 
 import { ClassroomSessionResult } from '@/types/classroom'
 import { Provider, UserMetadata } from '@/types/auth'
@@ -30,14 +23,10 @@ interface IAuthContext {
   ready: boolean
   setWelcome: (state: boolean) => Promise<void>
   classroom: ClassroomSessionResult[] | null
-  remove: () => Promise<boolean>
   announce: Document<Announcement>[]
   markAsRead: (announceId: string) => Promise<void>
   metadata: UserMetadata
-  getMethods: (email: string) => Promise<Provider[]>
-  signUp: (email: string, password: string) => Promise<FirebaseResult>
   signIn: (email: string, password: string) => Promise<FirebaseResult>
-  signInWithProvider: (provider: Provider) => Promise<FirebaseResult>
   signOut: () => Promise<void>
   updateMeta: (meta: UserMetadata) => Promise<boolean>
 }
@@ -78,60 +67,16 @@ export function useProvideAuth(): IAuthContext {
     return isPWA
   }
 
-  const getMethods = async (email: string): Promise<Provider[]> => {
-    return (await fetchSignInMethodsForEmail(auth, email)) as Provider[]
+  const signIn = async (token: string): Promise<FirebaseResult> => {
+    try {
+      await signInWithCustomToken(auth, token)
+      return { success: true }
+    } catch (err) {
+      LogRocket.error(err)
+      return { success: false, message: err.code }
+    }
   }
 
-  const signUp = async (email: string, password: string): Promise<FirebaseResult> => {
-    try {
-      await createUserWithEmailAndPassword(auth, email, password)
-      return { success: true }
-    } catch (err) {
-      LogRocket.error(err)
-      return { success: false, message: err.code }
-    }
-  }
-  const signIn = async (email: string, password: string): Promise<FirebaseResult> => {
-    try {
-      await signInWithEmailAndPassword(auth, email, password)
-      return { success: true }
-    } catch (err) {
-      LogRocket.error(err)
-      return { success: false, message: err.code }
-    }
-  }
-  const signInWithProvider = async (p: Provider): Promise<FirebaseResult> => {
-    let provider
-    switch (p) {
-      case 'google.com':
-        provider = new GoogleAuthProvider()
-        break
-      case 'facebook.com':
-        provider = new FacebookAuthProvider()
-        break
-      default:
-        return { success: false }
-    }
-    try {
-      await signInWithPopup(auth, provider)
-      return { success: true }
-    } catch (err) {
-      LogRocket.error(err)
-      return { success: false, message: err.code }
-    }
-  }
-  const remove = async (): Promise<boolean> => {
-    try {
-      await user.delete()
-      return true
-    } catch (err) {
-      if (err.code === 'auth/requires-recent-login') {
-        await signOut()
-        return true
-      }
-      return false
-    }
-  }
   const signOut = async (): Promise<void> => {
     await auth.signOut()
     setUser(null)
@@ -197,21 +142,25 @@ export function useProvideAuth(): IAuthContext {
         }
         setUser(curUser)
         clearTimeout(authReady)
-        const url = sessionStorage.getItem('url')
-        if (url && router.pathname !== url) {
-          return router.push(url)
-        }
-        sessionStorage.removeItem('url')
+        ipcRenderer.send(
+          'auth-changed',
+          JSON.stringify({
+            ready: true,
+            login: false,
+          })
+        )
         setReady(true)
       } else {
         authReady = setTimeout(() => {
-          if (router.pathname !== '/' && router.pathname !== '/client-login' && !user) {
-            sessionStorage.setItem('url', router.pathname)
-            router.replace('/')
-          } else {
-            setReady(true)
-          }
+          setReady(true)
         }, 1000)
+        ipcRenderer.send(
+          'auth-changed',
+          JSON.stringify({
+            ready: true,
+            login: true,
+          })
+        )
         setUser(null)
       }
       return () => {
@@ -243,13 +192,9 @@ export function useProvideAuth(): IAuthContext {
     metadata,
     setWelcome,
     classroom,
-    remove,
     ready,
     isPWA,
-    getMethods,
-    signUp,
     signIn,
-    signInWithProvider,
     signOut,
     updateMeta,
   }

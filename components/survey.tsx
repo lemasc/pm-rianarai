@@ -1,8 +1,7 @@
 import { useEffect, useState } from 'react'
-import dynamic from 'next/dynamic'
 import { doc, increment, updateDoc } from 'firebase/firestore'
 import { db } from '@/shared/firebase'
-const ModalComponent = dynamic(() => import('./modal'))
+import ModalComponent from './modal'
 
 const list = [
   { text: 'ไม่เคยเกิดปัญหานี้ และสามารถเข้าเรียนได้ปกติ', name: 'ok' },
