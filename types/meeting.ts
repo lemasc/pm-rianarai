@@ -1,3 +1,9 @@
+export interface TimeSlotsMemory {
+  active: TimeSlots | null
+  next: TimeSlots | null
+}
+export type State = 'active' | 'start' | 'break' | 'end' | ''
+
 export interface TimeSlots {
   start: string
   end: string

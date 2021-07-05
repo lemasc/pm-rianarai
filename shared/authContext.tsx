@@ -78,6 +78,10 @@ export function useProvideAuth(): IAuthContext {
   }
 
   const signOut = async (): Promise<void> => {
+    // We don't sign out users immediately.
+    // Ask the users before continuing.
+    const result = ipcRenderer.sendSync('log-out')
+    if (!result) return
     await auth.signOut()
     setUser(null)
     setMetadata(undefined)
@@ -116,7 +120,7 @@ export function useProvideAuth(): IAuthContext {
         setClassroom([])
       }
     }
-
+    // We have a dedicated sign-in page, so no web redirect happens.
     return auth.onIdTokenChanged(async (curUser) => {
       if (!_isMounted) return
       if (authReady) clearTimeout(authReady)

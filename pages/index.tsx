@@ -13,10 +13,7 @@ export default function MainPage(): JSX.Element {
       }
     >
       <Head>
-        <title>
-          {ready ? (user && metadata ? 'หน้าหลัก' : 'ยินดีต้อนรับ') + ' : ' : ''}
-          PM-RianArai
-        </title>
+        <title>PM-RianArai</title>
         <meta name="title" content="PM-RianArai : เข้าเรียนทุกวิชาได้จากทีนี่ที่เดียว" />
         <meta
           name="description"
