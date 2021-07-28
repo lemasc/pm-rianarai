@@ -130,7 +130,7 @@ function EmailForm({ cancel, onSuccess }: MetaProps): JSX.Element {
         <h3 className="text-left text-xl pb-2 font-medium">{title[page]}</h3>
         <input
           name="email"
-          className={'input' + (page !== 'email' ? ' bg-gray-100' : '')}
+          className={'input rounded-md' + (page !== 'email' ? ' bg-gray-100' : '')}
           type="email"
           readOnly={page !== 'email'}
           placeholder="ป้อนอีเมลของคุณ..."
@@ -140,7 +140,7 @@ function EmailForm({ cancel, onSuccess }: MetaProps): JSX.Element {
           <>
             <input
               name="password"
-              className="input"
+              className="input rounded-md"
               type="password"
               autoComplete="current-password"
               placeholder="ป้อนรหัสผ่าน..."

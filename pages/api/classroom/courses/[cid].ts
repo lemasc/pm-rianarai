@@ -3,7 +3,7 @@ import { classroom_v1, google } from 'googleapis'
 import type { NextApiResponse } from 'next'
 import { withSession, NextApiSessionRequest, createOAuth2, withRefreshToken } from '@/shared/api'
 import { ClassroomCredentials } from '../callback'
-import { APIResponse, ClassroomCourseWorkResult, WorkState } from '@/types/classroom'
+import { APIResponse, ClassroomCourseWorkResult, WorkState, WorkType } from '@/types/classroom'
 
 /*
 function getMaterials(
@@ -31,7 +31,7 @@ function generateDuedate(
   if (!date) return undefined
   let instance = dayjs(Object.values(date).join('/'))
   if (time.hours && time.minutes) {
-    instance = instance.hour(time.hours).minute(time.minutes)
+    instance = instance.hour(time.hours + 7).minute(time.minutes)
   } else {
     instance = instance.hour(23).minute(59)
   }
@@ -84,10 +84,8 @@ const listWorks = async (
         return {
           id: w.id,
           title: w.title,
-          type: w.workType,
-          slug: w.alternateLink
-            .replace('https://classroom.google.com/c/', '')
-            .replace('/details', ''),
+          type: w.workType as WorkType,
+          slug: w.alternateLink.split('/')[6],
           description: w.description,
           //materials: getMaterials(w.materials),
           dueDate: generateDuedate(w.dueDate, w.dueTime),

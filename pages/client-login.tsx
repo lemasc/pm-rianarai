@@ -42,7 +42,6 @@ export default function ClientLoginPage(): JSX.Element {
             session: router.query.session,
           },
         })
-        console.log(result.data)
         const data = result.data as APIResult
         if (data.success) {
           setToken(data.message as string)

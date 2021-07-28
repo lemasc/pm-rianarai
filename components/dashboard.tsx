@@ -7,7 +7,6 @@ import {
   ClockIcon,
   SpeakerphoneIcon,
   BookOpenIcon,
-  IdentificationIcon,
 } from '@heroicons/react/outline'
 
 import { db } from '@/shared/db'
@@ -16,7 +15,7 @@ import { useAuth } from '@/shared/authContext'
 import TimeSlotsComponent from '@/components/timeslots'
 import { CONTAINER, HEADER } from '@/components/layout'
 import { getUnreadAnnounce } from '@/components/layout/menubar'
-import { time } from '@/pages/work'
+import { timeList } from '@/components/work/toolbar'
 
 const WelcomeComponent = dynamic(() => import('@/components/welcome'))
 const AnnouncementComponent = dynamic(() => import('@/components/announce'))
@@ -26,7 +25,7 @@ export default function Dashboard(): JSX.Element {
   const { date, schedule, curDay } = useMeeting()
   const [showAnnounce, setAnnounce] = useState(false)
   const work = useLiveQuery(() =>
-    db.courseWork.where('dueDate').between(time[0].startTime, time[0].endTime).count()
+    db.courseWork.where('dueDate').between(timeList[0].startTime, timeList[0].endTime).count()
   )
   return (
     <>
@@ -76,18 +75,6 @@ export default function Dashboard(): JSX.Element {
             </div>
           </div>
           <div className="md:w-72 w-full gap-8 flex flex-col">
-            <Link href="/chumnum">
-              <a
-                title="ชุมนุม"
-                className="items-center flex flex-row shadow-md rounded bg-purple-500 hover:bg-gradient-to-b from-purple-500 to-purple-600 text-white p-6"
-              >
-                <div className="flex flex-col flex-grow items-start">
-                  <h4 className="py-2 text-2xl font-medium">ลงทะเบียนชุมนุม</h4>
-                  <span className="py-2 text-sm sarabun-font">ตรวจสอบข้อมูลการลงทะเบียน</span>
-                </div>
-                <IdentificationIcon className="md:h-12 md:w-12 w-10 h-10" />
-              </a>
-            </Link>
             <div>
               <div className="items-center flex flex-row rounded-t-lg hover:bg-yellow-500 bg-gradient-to-b from-yellow-400 to-yellow-500 text-white py-3 px-6">
                 <h4 className="py-2 text-lg font-medium flex-grow">งานที่ได้รับ</h4>
