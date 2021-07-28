@@ -31,7 +31,9 @@ function generateDuedate(
   if (!date) return undefined
   let instance = dayjs(Object.values(date).join('/'))
   if (time.hours && time.minutes) {
-    instance = instance.hour(time.hours + 7).minute(time.minutes)
+    instance = instance
+      .hour(process.env.NODE_ENV === 'production' ? time.hours : time.hours + 7)
+      .minute(time.minutes)
   } else {
     instance = instance.hour(23).minute(59)
   }

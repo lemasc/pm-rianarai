@@ -192,7 +192,7 @@ export default function WorkModal({ onClose, state, data }: ModalProps): JSX.Ele
             ) : (
               <div className="grid text-center my-2">
                 <a
-                  href={'https://classroom.google.com/c/' + item.slug + '/details'}
+                  href={`https://classroom.google.com/c/${item.course.slug}/a/${item.slug}/details`}
                   target="_blank"
                   rel="noreferrer noopener"
                   className="btn px-4 py-2 text-white bg-apple-500 from-apple-500 to-apple-600 ring-apple-500"

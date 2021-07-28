@@ -42,7 +42,7 @@ const listCourses = async (
     res.status(200).json({ success: true, data: courses })
   } catch (err) {
     console.error(err)
-    res.redirect('/work?error')
+    res.status(200).json({ success: false })
   }
 }
 

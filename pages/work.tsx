@@ -17,8 +17,8 @@ export default function WorkPage(): JSX.Element {
           <div className={'flex pt-8 flex-row items-center'}>
             <h1 className="text-3xl flex-grow">งานที่ได้รับ</h1>
           </div>
-          {classroom &&
-            (classroom.length > 0 ? (
+          {classroom ? (
+            classroom.length > 0 ? (
               <WorkComponent />
             ) : (
               <div className="font-light flex flex-col flex-1 items-center justify-center space-y-4">
@@ -30,7 +30,12 @@ export default function WorkPage(): JSX.Element {
                   เชื่อมต่อกับ Classroom
                 </button>
               </div>
-            ))}
+            )
+          ) : (
+            <div className="font-light flex flex-col flex-1 items-center justify-center space-y-4">
+              กำลังโหลดข้อมูลจาก Google Clasroom...
+            </div>
+          )}
         </div>
       </LayoutComponent>
     </div>
