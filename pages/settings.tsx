@@ -16,7 +16,7 @@ export default function SettingsPage(): JSX.Element {
         <title>การตั้งค่า - PM-RianArai</title>
       </Head>
       <LayoutComponent>
-        <div className={CONTAINER + 'gap-10 sm:gap-8'}>
+        <div className={CONTAINER + 'gap-10 sm:gap-8 mb-20 md:mb-0'}>
           <h1 className={HEADER}>การตั้งค่า</h1>
           <Transition
             show={success}
@@ -32,7 +32,7 @@ export default function SettingsPage(): JSX.Element {
             </div>
           </Transition>
           <div className="grid">
-            <div className="p-4 md:mx-8 border rounded bg-gray-50 dark:bg-gray-800">
+            <div className="md:p-4 md:mx-8 pb-4 border rounded bg-gray-50 dark:bg-gray-800">
               <h2 className="text-2xl font-medium p-8">ข้อมูลส่วนตัว</h2>
               <MetadataComponent onSubmit={() => setSuccess(true)} />
             </div>

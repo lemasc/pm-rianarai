@@ -203,7 +203,7 @@ export default function MenuBarComponent({ landing }: MenuBarProps): JSX.Element
               <Disclosure.Panel static>
                 <div className="p-4 flex flex-col space-y-2 bg-gray-50 dark:bg-gray-800 rounded-b-lg w-full shadow-lg">
                   <Pages />
-                  <div className="flex justify-center flex-row space-x-16 pb-4">
+                  <div className="flex justify-center flex-row space-x-16 py-4">
                     <Toolbar setAnnounce={setAnnounce} />
                   </div>
                 </div>

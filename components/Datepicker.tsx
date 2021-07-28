@@ -30,7 +30,7 @@ export const RawDatePicker: React.FC<DatePickerProps> = ({ config, onChange, onB
       <>
         <div className="flex w-full datepicker" ref={setReferenceElement}>
           <input
-            className="focus:outline-none px-3 py-2 border border-gray-400 font-light hover:ring-0 focus:ring-0 rounded-l-md flex-grow"
+            className="dark:bg-black focus:outline-none px-3 py-2 border border-gray-400 font-light hover:ring-0 focus:ring-0 rounded-l-md flex-grow"
             type="text"
             onBlur={() => onBlur && onBlur()}
             onFocus={() => ctxValue.showCalendar()}
