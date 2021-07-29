@@ -77,7 +77,7 @@ export default function WorkComponent(): JSX.Element {
   const [classWork, setClassWork] = useState<ClassroomCourseWorkResult[]>([])
   const [button, setButton] = useState<StatusButton>(buttons[0])
   const { data: _customData } = useCollection<ClassroomCourseWorkResult>(
-    `users/${user.uid}/classwork`,
+    user ? `users/${user.uid}/classwork` : null,
     {
       listen: true,
     }

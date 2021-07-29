@@ -4,6 +4,7 @@ export type APIResponse<T = any> = {
 }
 
 export type ClassroomSessionResult = {
+  id: string
   name: string
   email: string
   valid: boolean
@@ -36,5 +37,6 @@ export type ClassroomCourseWorkResult = {
   // Added in v2.5
   type: WorkType
   custom?: boolean
+  accountId?: string
   tags?: WorkTag[]
 }

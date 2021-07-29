@@ -5,9 +5,9 @@ import { Auth, google, Common } from 'googleapis'
 import { APIResponse } from '@/types/classroom'
 import { ClassroomCredentials } from '@/api/classroom/callback'
 
-export type SSRContext = GetServerSidePropsContext & {
+export type SSRContext = {
   req: GetServerSidePropsContext['req'] & { session: Session }
-}
+} & GetServerSidePropsContext
 
 type SSRHandler = (context: SSRContext) => any
 

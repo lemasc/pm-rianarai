@@ -15,10 +15,16 @@ dayjs.extend(LocalizedFormat)
 
 import { useAuth } from '@/shared/authContext'
 import { db } from '@/shared/firebase'
-import { ClassroomCourseWorkResult, WorkState, WorkTag } from '@/types/classroom'
+import {
+  ClassroomCourseWorkResult,
+  ClassroomSessionResult,
+  WorkState,
+  WorkTag,
+} from '@/types/classroom'
 
 export function minifiedFields(
-  data: Document<ClassroomCourseWorkResult>
+  data: Document<ClassroomCourseWorkResult>,
+  classroom: ClassroomSessionResult[]
 ): ClassroomCourseWorkResult {
   const _data = Object.assign({}, data)
   delete _data.exists
@@ -26,6 +32,10 @@ export function minifiedFields(
   delete _data.__snapshot
   delete _data.id // Added as a firestore doc ID instead
   delete _data.course // Referencing purposes only.
+  if (data.course) {
+    // Account ID is required to reference on deletion
+    _data.accountId = classroom[data.course.accountId].id
+  }
   return _data
 }
 
@@ -94,10 +104,10 @@ type TagButtonProps = {
   isModal?: boolean
 }
 export function TagButton({ data, isModal }: TagButtonProps): JSX.Element {
-  const { user } = useAuth()
+  const { user, classroom } = useAuth()
   async function setTag(tag: WorkTag): Promise<void> {
     const _uniqueTags: WorkTag[] = ['important', 'archived']
-    const _data = minifiedFields(data)
+    const _data = minifiedFields(data, classroom)
 
     if (data.dueDate === 0) {
       delete _data.dueDate

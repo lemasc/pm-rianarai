@@ -8,10 +8,16 @@ type ClassroomRefreshResult = {
   credentials?: ClassroomCredentials
   result: ClassroomSessionResult
 }
+
+function secretEmail(email: string): string {
+  const a = email.split('')
+  return a.fill('x', Math.max(3, Math.floor((a.indexOf('@') * 3) / 5)), a.indexOf('@')).join('')
+}
 async function refreshToken(
   req: NextApiSessionRequest,
   credentials: ClassroomCredentials
 ): Promise<ClassroomRefreshResult> {
+  let valid = true
   if (new Date() > (credentials.expiry_date as any).toDate()) {
     // Refresh token
     try {
@@ -22,17 +28,16 @@ async function refreshToken(
       credentials = await getProfile(req, oAuth2Client)
     } catch (err) {
       console.error(err)
-      return {
-        result: {
-          valid: false,
-          name: credentials.name,
-          email: credentials.email,
-        },
-      }
+      valid = false
     }
   }
   return {
-    result: { valid: true, name: credentials.name, email: credentials.email },
+    result: {
+      id: credentials.id,
+      valid,
+      name: credentials.name,
+      email: secretEmail(credentials.email),
+    },
     credentials,
   }
 }

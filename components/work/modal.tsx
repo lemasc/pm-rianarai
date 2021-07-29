@@ -45,7 +45,7 @@ type FormData = {
   description: string
 }
 export default function WorkModal({ onClose, state, data }: ModalProps): JSX.Element {
-  const { user } = useAuth()
+  const { user, classroom } = useAuth()
   const [edit, setEdit] = useState(false)
   const { handleSubmit, register, control, reset } = useForm<FormData>({
     defaultValues: {
@@ -87,7 +87,7 @@ export default function WorkModal({ onClose, state, data }: ModalProps): JSX.Ele
   async function onSubmit(data): Promise<void> {
     try {
       const _data: ClassroomCourseWorkResult = {
-        ...minifiedFields(data),
+        ...minifiedFields(data, classroom),
         dueDate: dayjs(data.dueDate).hour(data.hour).minute(data.minutes).unix(),
         custom: true,
         state: data.state ? data.state : 'CREATED',
