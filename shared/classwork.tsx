@@ -2,13 +2,68 @@ import { APIResponse, ClassroomCourseResult, ClassroomCourseWorkResult } from '@
 import axios, { CancelTokenSource } from 'axios'
 import SingletonRouter, { Router } from 'next/router'
 import { useEffect, useState } from 'react'
+import dayjs from 'dayjs'
+import weekday from 'dayjs/plugin/weekday'
+dayjs.extend(weekday)
 
 import { db } from '@/shared/db'
+import { SelectData } from '@/components/layout/select'
 
 type ClassworkHelper = {
   // Classwork result from API.
   classWork: ClassroomCourseWorkResult[] | null
+  // Whether the API is fetching or not.
+  fetching: boolean
 }
+export type TimeRange = {
+  startTime: number
+  endTime: number
+}
+export const timeList: SelectData<TimeRange>[] = [
+  {
+    name: 'สัปดาห์นี้',
+    startTime: dayjs().weekday(0).hour(0).minute(0).second(0).unix(),
+    endTime: dayjs().weekday(7).hour(0).minute(0).second(0).unix(),
+  },
+  {
+    name: 'อีก 7 วัน',
+    startTime: dayjs().hour(0).minute(0).second(0).unix(),
+    endTime: dayjs().add(8, 'days').hour(0).minute(0).second(0).unix(),
+  },
+  {
+    name: 'ก่อนหน้านี้',
+    startTime: dayjs('2021-06-01').unix(),
+    endTime: dayjs().unix(),
+  },
+  {
+    name: 'อีก 30 วัน',
+    startTime: dayjs().subtract(1, 'month').hour(0).minute(0).second(0).unix(),
+    endTime: dayjs().add(1, 'month').hour(0).minute(0).second(0).unix(),
+  },
+  {
+    name: 'นานกว่านั้น',
+    startTime: dayjs().add(1, 'month').hour(0).minute(0).second(0).unix(),
+    endTime: dayjs('2022-06-01').unix(),
+  },
+  {
+    name: 'แสดงทั้งหมด',
+    startTime: dayjs('2021-06-01').unix(),
+    endTime: dayjs('2022-06-01').unix(),
+  },
+]
+
+export function mergeFirestore(arrays: ClassroomCourseWorkResult[][]): ClassroomCourseWorkResult[] {
+  const merged = {}
+  arrays.forEach((arr) => {
+    if (arr) {
+      arr.forEach((item) => {
+        merged[item['id']] = Object.assign({}, merged[item['id']], item)
+      })
+    }
+  })
+  return Object.values(merged)
+}
+
 /**
  * Classroom API Database fetching utility.
  * @returns Classwork data interface.
@@ -18,6 +73,7 @@ export default function useClasswork(): ClassworkHelper {
   const [fetching, setFetching] = useState(false)
   const [needsFetch, setFetch] = useState(false)
   const [load, setLoad] = useState(false)
+
   const source: CancelTokenSource = axios.CancelToken.source()
   // Main Fetcher hook
   useEffect(() => {
@@ -81,6 +137,7 @@ export default function useClasswork(): ClassworkHelper {
 
     if (needsFetch && !fetching) fetchAll()
   }, [needsFetch, fetching, source.token])
+
   useEffect(() => {
     ;(async () => {
       if (fetching) return
@@ -92,6 +149,7 @@ export default function useClasswork(): ClassworkHelper {
       })
     })()
   }, [fetching])
+
   // Cancel on navigation
   useEffect(() => {
     function beforeunload(): void {
@@ -115,5 +173,6 @@ export default function useClasswork(): ClassworkHelper {
   }, [source])
   return {
     classWork,
+    fetching,
   }
 }

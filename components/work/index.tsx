@@ -1,22 +1,22 @@
-import { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
+import { useEffect, useState } from 'react'
+import Loader from 'react-loader-spinner'
+import Fuse from 'fuse.js'
 import { Scrollbars } from 'react-custom-scrollbars-2'
+import { useCollection } from 'swr-firestore-v9'
 import { Transition } from '@headlessui/react'
 import { useWindowWidth } from '@react-hook/window-size/throttled'
-import { useCollection } from 'swr-firestore-v9'
-import Fuse from 'fuse.js'
-import Loader from 'react-loader-spinner'
 
 import { db } from '@/shared/db'
 import { useAuth } from '@/shared/authContext'
+import useClasswork, { mergeFirestore, timeList, TimeRange } from '@/shared/classwork'
 import { SelectData } from '@/components/layout/select'
 import type { ClassroomCourseWorkResult } from '@/types/classroom'
 
-import Toolbar, { timeList, TimeRange } from './toolbar'
+import Toolbar from './toolbar'
 import ClassworkItem, { checkTurnedIn, checkDuedate } from './item'
 import StatusSelector, { Selector, buttons, StatusButton } from './status'
 import { WorkModalState } from './modal'
-import useClasswork from '@/shared/classwork'
 
 const WorkModal = dynamic(() => import('./modal'))
 
@@ -53,20 +53,13 @@ const desc: Record<Selector, JSX.Element> = {
     </>
   ),
 }
-function mergeFirestore(arrays: ClassroomCourseWorkResult[][]): ClassroomCourseWorkResult[] {
-  const merged = {}
-  arrays.forEach((arr) => {
-    if (arr) {
-      arr.forEach((item) => {
-        merged[item['id']] = Object.assign({}, merged[item['id']], item)
-      })
-    }
-  })
-  return Object.values(merged)
-}
 
-export default function WorkComponent(): JSX.Element {
-  const { classWork: _classWork } = useClasswork()
+export default function WorkComponent({
+  setFetching,
+}: {
+  setFetching: (fetch: boolean) => void
+}): JSX.Element {
+  const { classWork: _classWork, fetching } = useClasswork()
   const { user } = useAuth()
   const [lastIndex, setLastIndex] = useState(-1)
   const [modal, setModal] = useState<WorkModalState>({ show: false })
@@ -111,6 +104,10 @@ export default function WorkComponent(): JSX.Element {
       )
     })()
   }, [_classWork, noDueDate, _customData, time])
+
+  useEffect(() => {
+    setFetching(fetching)
+  }, [setFetching, fetching])
 
   function filterWork(c: ClassroomCourseWorkResult, i: number): boolean {
     if (modal.index !== undefined && i === lastIndex) return true

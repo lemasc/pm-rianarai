@@ -45,6 +45,7 @@ const listWorks = async (
   res: NextApiResponse<APIResponse<ClassroomCourseWorkResult[]>>
 ): Promise<void> => {
   if (!req.query.cid || !req.query.account) return res.status(400).json({ success: false })
+
   try {
     const oAuth2Client = createOAuth2(req)
     const tokens: ClassroomCredentials[] = req.session.get('token')
@@ -65,24 +66,27 @@ const listWorks = async (
       },
       token.id
     )
-    if (!api.result.data.courseWork)
+    if (!api.result.data.courseWork) {
       return res.status(200).json({
         success: true,
         data: [],
       })
-    const work: ClassroomCourseWorkResult[] = await Promise.all(
-      api.result.data.courseWork.map(async (w) => {
-        const workApi = await withRefreshToken<classroom_v1.Schema$ListStudentSubmissionsResponse>(
-          oAuth2Client,
-          req,
-          async (client) => {
-            return await google.classroom('v1').courses.courseWork.studentSubmissions.list({
-              courseId: req.query.cid as string,
-              courseWorkId: w.id,
-              auth: client,
-            })
-          }
-        )
+    }
+    const workApi = await withRefreshToken<classroom_v1.Schema$ListStudentSubmissionsResponse>(
+      oAuth2Client,
+      req,
+      async (client) => {
+        return await google.classroom('v1').courses.courseWork.studentSubmissions.list({
+          courseId: req.query.cid as string,
+          courseWorkId: '-',
+          auth: client,
+        })
+      }
+    )
+    const work: ClassroomCourseWorkResult[] = api.result.data.courseWork
+      .map((w) => {
+        const id = workApi.result.data.studentSubmissions.findIndex((s) => s.courseWorkId === w.id)
+        if (id === -1) return null
         return {
           id: w.id,
           title: w.title,
@@ -91,12 +95,10 @@ const listWorks = async (
           description: w.description,
           //materials: getMaterials(w.materials),
           dueDate: generateDuedate(w.dueDate, w.dueTime),
-          state: workApi.result.data.studentSubmissions.map(
-            (s) => s.state
-          )[0] as unknown as WorkState,
+          state: workApi.result.data.studentSubmissions[id].state as WorkState,
         }
       })
-    )
+      .filter((w) => w !== null)
     await req.session.save()
     res.status(200).json({
       success: true,

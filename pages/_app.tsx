@@ -8,6 +8,7 @@ import 'tailwindcss/tailwind.css'
 import '../styles/globals.css'
 import 'tippy.js/dist/tippy.css'
 import '../styles/react-tabs.css'
+import 'react-circular-progressbar/dist/styles.css'
 
 function App({ Component, pageProps }: AppProps): JSX.Element {
   if (process.env.NODE_ENV === 'production') LogRocket.init('sg61xt/pm-rianarai-i4kpt')

@@ -124,7 +124,7 @@ export default function TimeSlotsComponent(): JSX.Element {
     <Transition
       show={show}
       appear={true}
-      className="flex flex-1 flex-col justify-center items-center"
+      className="flex flex-1 flex-col justify-center items-center text-center"
       enter="transition-opacity duration-500"
       enterFrom="opacity-0"
       enterTo="opacity-100"
@@ -147,7 +147,7 @@ export default function TimeSlotsComponent(): JSX.Element {
       ) : (
         <>
           <PaginationComponent
-            className="w-56"
+            className="sm:w-56 w-full"
             index={nextPage ? 1 : 0}
             onChange={(index) => setNextPage(index == 1 ? true : false)}
             name={nextPage ? 'รายวิชาต่อไป' : 'รายวิชาปัจจุบัน'}
@@ -160,7 +160,9 @@ export default function TimeSlotsComponent(): JSX.Element {
           />
           {!memory.active && (
             <>
-              <div className="text-2xl p-8 text-green-600 font-medium">ไม่มีคาบเรียนในตอนนี้</div>
+              <div className="text-2xl sm:px-8 px-4 py-8 text-green-600 font-medium">
+                ไม่มีคาบเรียนในตอนนี้
+              </div>
               <span className="text-sm font-light creative-font px-4 py-1">{message}</span>
             </>
           )}

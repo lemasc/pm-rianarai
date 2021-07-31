@@ -2,10 +2,7 @@ import { FC, ComponentProps, Fragment } from 'react'
 import { Listbox, Transition } from '@headlessui/react'
 import { ClockIcon, MenuIcon, SearchIcon, CheckIcon } from '@heroicons/react/outline'
 import { SelectData } from '@/components/layout/select'
-
-import dayjs from 'dayjs'
-import weekday from 'dayjs/plugin/weekday'
-dayjs.extend(weekday)
+import { timeList, TimeRange } from '@/shared/classwork'
 
 type ToolbarProps = {
   onMenu: () => void
@@ -35,43 +32,6 @@ function ToolbarButton(props: ButtonProps): JSX.Element {
     </button>
   )
 }
-export type TimeRange = {
-  startTime: number
-  endTime: number
-}
-
-export const timeList: SelectData<TimeRange>[] = [
-  {
-    name: 'สัปดาห์นี้',
-    startTime: dayjs().weekday(0).hour(0).minute(0).second(0).unix(),
-    endTime: dayjs().weekday(7).hour(0).minute(0).second(0).unix(),
-  },
-  {
-    name: 'อีก 7 วัน',
-    startTime: dayjs().hour(0).minute(0).second(0).unix(),
-    endTime: dayjs().add(8, 'days').hour(0).minute(0).second(0).unix(),
-  },
-  {
-    name: 'ก่อนหน้านี้',
-    startTime: dayjs('2021-06-01').unix(),
-    endTime: dayjs().unix(),
-  },
-  {
-    name: 'อีก 30 วัน',
-    startTime: dayjs().subtract(1, 'month').hour(0).minute(0).second(0).unix(),
-    endTime: dayjs().add(1, 'month').hour(0).minute(0).second(0).unix(),
-  },
-  {
-    name: 'นานกว่านั้น',
-    startTime: dayjs().add(1, 'month').hour(0).minute(0).second(0).unix(),
-    endTime: dayjs('2022-06-01').unix(),
-  },
-  {
-    name: 'แสดงทั้งหมด',
-    startTime: dayjs('2021-06-01').unix(),
-    endTime: dayjs('2022-06-01').unix(),
-  },
-]
 
 export default function Toolbar({ onMenu, onSearch, time, setTime }: ToolbarProps): JSX.Element {
   return (
@@ -86,11 +46,11 @@ export default function Toolbar({ onMenu, onSearch, time, setTime }: ToolbarProp
       <ToolbarButton title="ค้นหา" icon={SearchIcon} />
       <input
         onChange={(e) => onSearch(e.target.value)}
-        className="h-full focus:outline-none flex-grow px-4 font-light sarabun-font sm:text-sm dark:bg-gray-900"
+        className="h-full focus:outline-none px-4 font-light sarabun-font sm:text-sm dark:bg-gray-900"
         type="search"
       />
       <Listbox value={time} onChange={setTime}>
-        <Listbox.Button as="div">
+        <Listbox.Button as="div" className="absolute right-0">
           <ToolbarButton clickable={true} title="เวลา" icon={ClockIcon} />
         </Listbox.Button>
         <Transition

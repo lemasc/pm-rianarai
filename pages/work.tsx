@@ -3,8 +3,11 @@ import LayoutComponent, { CONTAINER } from '@/components/layout'
 import WorkComponent from '@/components/work'
 import { useAuth } from '@/shared/authContext'
 import { useRouter } from 'next/router'
+import { useState } from 'react'
+import dayjs from 'dayjs'
 
 export default function WorkPage(): JSX.Element {
+  const [fetching, setFetching] = useState<boolean | null>(null)
   const { classroom } = useAuth()
   const router = useRouter()
   return (
@@ -16,18 +19,31 @@ export default function WorkPage(): JSX.Element {
         <div className={CONTAINER + 'flex-1 sm:space-y-10 space-y-8 mb-10'}>
           <div className={'flex pt-8 flex-row items-center'}>
             <h1 className="text-3xl flex-grow">งานที่ได้รับ</h1>
+            {fetching !== null && (
+              <span className="text-sm sarabun-font">
+                {fetching
+                  ? 'กำลังอัพเดทข้อมูล...'
+                  : `อัพเดทล่าสุดเมื่อ ${dayjs().format('HH:mm')} น.`}
+              </span>
+            )}
           </div>
           {classroom ? (
-            classroom.length > 0 ? (
-              <WorkComponent />
+            classroom.filter((c) => c.valid).length > 0 ? (
+              <WorkComponent setFetching={setFetching} />
             ) : (
               <div className="font-light flex flex-col flex-1 items-center justify-center space-y-4">
-                <span>ยังไม่ได้เชื่อมต่อกับ Google Classroom</span>
+                {classroom.filter((c) => !c.valid).length > 0 ? (
+                  <span className="text-red-500 font-medium">
+                    {classroom.filter((c) => !c.valid).length} บัญชีที่ไม่สามารถเชื่อมต่อได้
+                  </span>
+                ) : (
+                  <span>ยังไม่ได้เชื่อมต่อกับ Google Classroom</span>
+                )}
                 <button
-                  onClick={() => router.push('/api/classroom/authorize')}
+                  onClick={() => router.push('/settings')}
                   className="btn text-white px-4 py-2 bg-apple-500 from-apple-500 to-apple-600 ring-apple-500"
                 >
-                  เชื่อมต่อกับ Classroom
+                  ตั้งค่าบัญชี Classroom
                 </button>
               </div>
             )

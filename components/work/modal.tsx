@@ -1,21 +1,21 @@
 /* eslint-disable react/display-name */
-import ModalComponent from '@/components/modal'
-import MarkDownComponent from '../markdown'
-import { ClassroomCourseWorkResult } from '@/types/classroom'
-import { DueDate, TagButton, toggleState, checkTurnedIn, minifiedFields } from './item'
-import { DatePicker } from '../Datepicker'
+
+import { nanoid } from 'nanoid'
+import { useEffect, useState } from 'react'
+import dynamic from 'next/dynamic'
 import { useForm, Controller } from 'react-hook-form'
-import { db } from '@/shared/firebase'
 import { deleteDoc, doc, setDoc } from 'firebase/firestore'
 import dayjs from 'dayjs'
-import LocalizedFormat from 'dayjs/plugin/localizedFormat'
 import th from 'dayjs/locale/th'
-import dynamic from 'next/dynamic'
-import { useState } from 'react'
-import { useAuth } from '@/shared/authContext'
-import { nanoid } from 'nanoid'
-import { useEffect } from 'react'
+import LocalizedFormat from 'dayjs/plugin/localizedFormat'
+dayjs.extend(LocalizedFormat)
+dayjs.locale(th)
 
+import { db } from '@/shared/firebase'
+import { useAuth } from '@/shared/authContext'
+import { ClassroomCourseWorkResult } from '@/types/classroom'
+import { DueDate, TagButton, toggleState, checkTurnedIn, minifiedFields } from './item'
+import ModalComponent from '@/components/modal'
 const CKEditor = dynamic(() => import('@/components/CKEditor'), {
   ssr: false,
   loading: () => (
@@ -24,9 +24,9 @@ const CKEditor = dynamic(() => import('@/components/CKEditor'), {
     </i>
   ),
 })
+const MarkDownComponent = dynamic(() => import('@/components/markdown'))
+const DatePicker = dynamic(() => import('@/components/Datepicker').then((d) => d.DatePicker))
 
-dayjs.extend(LocalizedFormat)
-dayjs.locale(th)
 export type WorkModalState = {
   show: boolean
   index?: number
