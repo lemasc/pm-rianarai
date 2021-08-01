@@ -9,4 +9,6 @@ export interface UserMetadata {
   email: string
   provider: Provider[]
   announceId?: string[]
+  insider?: boolean
+  insiderAt?: Date | any
 }

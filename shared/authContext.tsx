@@ -3,7 +3,7 @@ import axios from 'axios'
 import LogRocket from 'logrocket'
 import { useCollection, Document } from 'swr-firestore-v9'
 import { useRouter } from 'next/router'
-import { getDoc, setDoc, doc, updateDoc, arrayUnion } from 'firebase/firestore'
+import { getDoc, setDoc, doc, updateDoc, arrayUnion, serverTimestamp } from 'firebase/firestore'
 import {
   createUserWithEmailAndPassword,
   EmailAuthProvider,
@@ -45,6 +45,7 @@ interface IAuthContext {
   signInWithProvider: (provider: Provider, reAuthenticate?: boolean) => Promise<FirebaseResult>
   signOut: () => Promise<void>
   updateMeta: (meta: UserMetadata) => Promise<boolean>
+  setInsider: () => Promise<void>
 }
 
 export const authContext = createContext<IAuthContext | undefined>(undefined)
@@ -259,6 +260,15 @@ export function useProvideAuth(): IAuthContext {
     })
     setMetadata((meta) => ({ ...meta, update: version }))
   }
+  const setInsider = async (): Promise<void> => {
+    if (!user || metadata.insider) return
+    await updateDoc(doc(db, 'users/' + user.uid), {
+      insider: true,
+      insiderAt: serverTimestamp(),
+    })
+    setMetadata((meta) => ({ ...meta, insider: true, insiderAt: new Date() }))
+  }
+
   return {
     version,
     user,
@@ -276,5 +286,6 @@ export function useProvideAuth(): IAuthContext {
     signInWithProvider,
     signOut,
     updateMeta,
+    setInsider,
   }
 }

@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
 import dynamic from 'next/dynamic'
-import { ClockIcon, BookOpenIcon } from '@heroicons/react/outline'
+import { ClockIcon, BookOpenIcon, DownloadIcon } from '@heroicons/react/outline'
 import { useMeeting } from '@/shared/meetingContext'
 import { useAuth } from '@/shared/authContext'
 import TimeSlotsComponent from '@/components/timeslots'
@@ -161,6 +161,18 @@ export default function Dashboard(): JSX.Element {
                   </span>
                 </div>
                 <BookOpenIcon className="md:h-12 md:w-12 w-10 h-10" />
+              </a>
+            </Link>
+            <Link href="/install">
+              <a
+                title="ติดตั้งแอพพลิเคชั่น"
+                className="items-center flex flex-row shadow-md rounded bg-purple-500 hover:bg-gradient-to-b from-purple-500 to-purple-600 text-white p-6"
+              >
+                <div className="flex flex-col flex-grow items-start">
+                  <h4 className="py-2 text-2xl font-medium">PM-RianArai PC</h4>
+                  <span className="py-2 text-sm sarabun-font">ลงทะเบียนล่วงหน้า Early Access</span>
+                </div>
+                <DownloadIcon className="md:h-12 md:w-12 w-10 h-10" />
               </a>
             </Link>
           </div>
