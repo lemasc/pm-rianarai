@@ -63,7 +63,7 @@ export default function WorkComponent({
   const { user } = useAuth()
   const [lastIndex, setLastIndex] = useState(-1)
   const [modal, setModal] = useState<WorkModalState>({ show: false })
-  const [time, setTime] = useState<SelectData<TimeRange>>(timeList[0])
+  const [time, setTime] = useState<SelectData<TimeRange>>(timeList[timeList.length - 1])
   const [search, setSearch] = useState('')
   const [showMenu, setShowMenu] = useState(false)
   const [noDueDate, allowNoDueDate] = useState(false)
