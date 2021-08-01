@@ -136,13 +136,13 @@ export default function Install(): JSX.Element {
                 </p>
                 <div className="flex flex-row gap-4 items-center">
                   <button
-                    disabled={metadata.insider}
+                    disabled={metadata ? metadata.insider === true : true}
                     onClick={() => setInsider()}
                     className="px-4 text-white btn py-2 ring-blue-500 bg-blue-500 from-blue-500 to-blue-600 disabled:bg-gray-200 disabled:text-gray-500 disabled:from-gray-200 disabled:to-gray-200 disabled:cursor-not-allowed"
                   >
                     ลงทะเบียนล่วงหน้า
                   </button>
-                  {metadata.insider && (
+                  {metadata && metadata.insider && (
                     <span className="text-blue-500 text-sm sarabun-font">
                       คุณได้ลงทะเบียนไปแล้วเมื่อ{' '}
                       {dayjs(
