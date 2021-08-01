@@ -17,14 +17,14 @@ export default function TimetablePage(): JSX.Element {
         <meta property="og:description" content="เข้าเรียนทุกวิชาได้จากทีนี่ที่เดียว" />
       </Head>
       <LayoutComponent>
-        <div className={CONTAINER + 'sm:space-y-10 space-y-8'}>
+        <div className={CONTAINER + 'sm:space-y-10 space-y-8 mb-20 md:mb-0'}>
           <div className={'flex ' + HEADER}>
             <button onClick={() => router.back()} className="focus:outline-none">
               <ArrowLeftIcon className="w-8 h-8" />
             </button>
             <h1 className="pl-4">ตารางสอน</h1>
           </div>
-          <div className="bg-gray-100 dark:bg-gray-800 sm:px-8 py-4 rounded">
+          <div className="bg-gray-100 dark:bg-gray-800 sm:px-8 pt-4 md:pb-4 rounded">
             <TimetableComponent />
           </div>
         </div>

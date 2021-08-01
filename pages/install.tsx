@@ -9,6 +9,7 @@ import { ChevronUpIcon, DotsVerticalIcon, DownloadIcon } from '@heroicons/react/
 
 import { useAuth } from '@/shared/authContext'
 import HeaderComponent from '@/components/layout/header'
+import dayjs from 'dayjs'
 
 type InstallPromoProps = {
   children: React.ReactNode
@@ -74,16 +75,16 @@ function InstallPromo({ children, index, mobile, className }: InstallPromoProps)
 }
 
 export default function Install(): JSX.Element {
-  const { isPWA } = useAuth()
-  const router = useRouter()
-  const [index, setIndex] = useState(2)
-  const [show, setShow] = useState(false)
-  useEffect(() => {
+  const { metadata, setInsider } = useAuth()
+  // const router = useRouter()
+  const [index, setIndex] = useState(0)
+  /*const [show, setShow] = useState(false)
+   useEffect(() => {
     let showTime = null
     if (showTime) clearTimeout(showTime)
     if (/Android/i.test(navigator.userAgent)) {
       setIndex(1)
-      if (isPWA && isPWA()) {
+      /* if (isPWA && isPWA()) {
         // User already use PWA, redirect to PWA
         router.replace('/')
         return
@@ -94,7 +95,7 @@ export default function Install(): JSX.Element {
     }
     showTime = setTimeout(() => setShow(true), 1000)
   }, [isPWA, router])
-  if (!show) return <div></div>
+  if (!show) return <div></div>*/
   return (
     <div className="circle min-h-screen flex flex-col items-center justify-center dark:bg-gray-900 dark:text-white">
       <Head>
@@ -112,7 +113,7 @@ export default function Install(): JSX.Element {
           ติดตั้งแอพพลิเคชั่นลงในอุปกรณ์เพื่อการเข้าใช้งานที่รวดเร็วกว่า
           รับการแจ้งเตือนการเข้าเรียนก่อนเวลา และฟีเจอร์อื่น ๆ อีกมากมาย
         </div>
-        <div className="p-4">
+        <div className="sm:mx-16 mx-4 p-4">
           <Tabs selectedIndex={index} onSelect={(index) => setIndex(index)}>
             <TabList>
               <Tab>PC</Tab>
@@ -120,61 +121,94 @@ export default function Install(): JSX.Element {
               <Tab>iOS/iPadOS</Tab>
             </TabList>
             <TabPanel>
-              <h2 className="font-medium text-2xl py-1" id="install">
-                การติดตั้ง
-              </h2>
-              <p>
-                คอมพิวเตอร์ที่ใช้ Windows, MacOS และใช้เบราวเซอร์รุ่นใหม่ ๆ อย่าง Google Chrome หรือ
-                Microsoft Edge สามารถใช้งานได้ทันที
-              </p>
-              <InstallPromo className="sm:max-w-md" mobile={false} index={1}>
-                <>
-                  <span className="py-4">
-                    ตรวจสอบที่ด้านบน Address Bar ว่ามีปุ่มเหล่านี้หรือไม่ หากมี ให้คลิกที่ปุ่ม
-                  </span>
-                  <Image className="rounded-lg" src="/install/pc1.png" width={512} height={396} />
-                  <span className="py-4">
-                    หากไม่มีข้อความเหล่านี้ขึ้น แสดงว่าคุณกำลังใช้เบราวเซอร์ที่ไม่รองรับ PWA
-                    กรุณาเปลี่ยนไปใช้เบราวเซอร์ที่รองรับ
-                  </span>
-                </>
-              </InstallPromo>
-              <div className="md:grid md:grid-cols-2 md:divide-x">
-                <div className="max-w-lg flex flex-col justify-center">
-                  <h3 className="font-medium text-center">2. ติดตั้งแอพพลิเคชั่นโดยกด Install</h3>
-                  <Image className="rounded-lg" src="/install/pc2.png" width={600} height={600} />
-                </div>
-                <div className="max-w-lg flex flex-col justify-start items-center md:space-y-4 space-y-2">
-                  <h3 className="font-medium text-center px-4">
-                    3. เมื่อติดตั้งเรียบร้อย โปรแกรมจะเปิดขึ้นมาโดยอัตโนมัติเป็นอันเสร็จ
-                  </h3>
-                  <div>
-                    <Image
-                      className="rounded-lg"
-                      src="/install/shortcut.png"
-                      width={126}
-                      height={158}
-                    />
-                  </div>
-                  <span className="text-gray-500">ไอคอนโปรแกรมที่หน้า Desktop</span>
-                  <div>
-                    <Image
-                      className="rounded-lg"
-                      src="/install/start.png"
-                      width={245}
-                      height={75}
-                    />
-                  </div>
-                  <span className="text-gray-500">ไอคอนโปรแกรมที่ Start Menu</span>
+              <div className="space-y-2 py-4 border-b max-w-5xl">
+                <h2 className="font-medium text-2xl">(ใหม่) PM-RianArai PC - Early Access</h2>
+                <p className="">
+                  PM-RianArai PC เป็น PM-RianArai
+                  ในรูปแบบของโปรแกรมที่สามารถติดตั้งลงในคอมพิวเตอร์ได้
+                  โดยมีหน้าตาและฟีเจอร์เช่นเดียวกับ PM-RianArai บนเว็บ แต่มีฟีเจอร์อื่น ๆ เพิ่มเติม
+                  อาทิเช่น การบันทึกภาพหน้าจอระหว่างเรียน การแจ้งเตือนเข้าเรียนก่อนเวลา การใช้งานแบบ
+                  Mini-Window เป็นต้น
+                </p>
+                <p>
+                  คุณสามารถลงทะเบียนล่วงหน้าเพื่อรับสิทธิติดตั้งก่อนเปิดใช้งานจริง (Early Access)
+                  และแจ้งปัญหาต่าง ๆ เพื่อปรับปรุงและพัฒนาได้โดยตรง
+                </p>
+                <div className="flex flex-row gap-4 items-center">
+                  <button
+                    disabled={metadata ? metadata.insider === true : true}
+                    onClick={() => setInsider()}
+                    className="px-4 text-white btn py-2 ring-blue-500 bg-blue-500 from-blue-500 to-blue-600 disabled:bg-gray-200 disabled:text-gray-500 disabled:from-gray-200 disabled:to-gray-200 disabled:cursor-not-allowed"
+                  >
+                    ลงทะเบียนล่วงหน้า
+                  </button>
+                  {metadata && metadata.insider && (
+                    <span className="text-blue-500 text-sm sarabun-font">
+                      คุณได้ลงทะเบียนไปแล้วเมื่อ{' '}
+                      {dayjs(
+                        metadata.insiderAt.toDate ? metadata.insiderAt.toDate() : metadata.insider
+                      ).format('DD/MM/YYYY HH:mm น.')}
+                    </span>
+                  )}
                 </div>
               </div>
-              <h2 className="font-medium text-2xl py-1" id="open">
-                การเข้าใช้งาน
-              </h2>
-              <p>
-                สามารถเรียกใช้งานได้จากหน้า Shortcut ของโปรแกรมที่ตำแหน่งต่าง ๆ เช่น Desktop
-                ได้ทันที
-              </p>
+              <div className="py-4 space-y-2">
+                <h2 className="font-medium text-2xl" id="install">
+                  การติดตั้ง (แบบ PWA)
+                </h2>
+                <p>
+                  คอมพิวเตอร์ที่ใช้ Windows, MacOS และใช้เบราวเซอร์รุ่นใหม่ ๆ อย่าง Google Chrome
+                  หรือ Microsoft Edge สามารถใช้งานได้ทันที
+                </p>
+                <InstallPromo className="sm:max-w-md" mobile={false} index={1}>
+                  <>
+                    <span className="py-4">
+                      ตรวจสอบที่ด้านบน Address Bar ว่ามีปุ่มเหล่านี้หรือไม่ หากมี ให้คลิกที่ปุ่ม
+                    </span>
+                    <Image className="rounded-lg" src="/install/pc1.png" width={512} height={396} />
+                    <span className="py-4">
+                      หากไม่มีข้อความเหล่านี้ขึ้น แสดงว่าคุณกำลังใช้เบราวเซอร์ที่ไม่รองรับ PWA
+                      กรุณาเปลี่ยนไปใช้เบราวเซอร์ที่รองรับ
+                    </span>
+                  </>
+                </InstallPromo>
+                <div className="md:grid md:grid-cols-2 md:divide-x">
+                  <div className="max-w-lg flex flex-col justify-center">
+                    <h3 className="font-medium text-center">2. ติดตั้งแอพพลิเคชั่นโดยกด Install</h3>
+                    <Image className="rounded-lg" src="/install/pc2.png" width={600} height={600} />
+                  </div>
+                  <div className="max-w-lg flex flex-col justify-start items-center md:space-y-4 space-y-2">
+                    <h3 className="font-medium text-center px-4">
+                      3. เมื่อติดตั้งเรียบร้อย โปรแกรมจะเปิดขึ้นมาโดยอัตโนมัติเป็นอันเสร็จ
+                    </h3>
+                    <div>
+                      <Image
+                        className="rounded-lg"
+                        src="/install/shortcut.png"
+                        width={126}
+                        height={158}
+                      />
+                    </div>
+                    <span className="text-gray-500">ไอคอนโปรแกรมที่หน้า Desktop</span>
+                    <div>
+                      <Image
+                        className="rounded-lg"
+                        src="/install/start.png"
+                        width={245}
+                        height={75}
+                      />
+                    </div>
+                    <span className="text-gray-500">ไอคอนโปรแกรมที่ Start Menu</span>
+                  </div>
+                </div>
+                <h2 className="font-medium text-2xl py-1" id="open">
+                  การเข้าใช้งาน
+                </h2>
+                <p>
+                  สามารถเรียกใช้งานได้จากหน้า Shortcut ของโปรแกรมที่ตำแหน่งต่าง ๆ เช่น Desktop
+                  ได้ทันที
+                </p>
+              </div>
             </TabPanel>
             <TabPanel>
               <h2 className="font-medium text-2xl py-1" id="install">

@@ -6,12 +6,13 @@ import zxcvbn from 'zxcvbn'
 import PasswordStrengthMeter from './password'
 import { Provider } from '@/types/auth'
 
-interface SignInProps {
+type SignInProps = {
+  disableSignUp?: boolean
+  reAuthenticate?: boolean
   onSuccess?: () => void
 }
-interface MetaProps {
+type MetaProps = SignInProps & {
   cancel: () => void
-  onSuccess?: () => void
 }
 
 type EmailForm = {
@@ -20,7 +21,7 @@ type EmailForm = {
 }
 
 type EmailPage = 'email' | 'signin' | 'signup'
-function EmailForm({ cancel, onSuccess }: MetaProps): JSX.Element {
+function EmailForm({ cancel, onSuccess, reAuthenticate, disableSignUp }: MetaProps): JSX.Element {
   const [_error, setError] = useState<null | string>(null)
   const [page, setPage] = useState<EmailPage>('email')
   const { signUp, signIn, getMethods } = useAuth()
@@ -47,7 +48,10 @@ function EmailForm({ cancel, onSuccess }: MetaProps): JSX.Element {
   }
   async function checkSignIn(email: string): Promise<void> {
     const methods = await getMethods(email)
-    if (methods.length === 0) return setPage('signup')
+    if (methods.length === 0) {
+      if (disableSignUp) return setError('กรุณาเข้าสู่ระบบด้วยบัญชีที่มีอยู่แล้ว')
+      return setPage('signup')
+    }
     if (methods[0] === 'password') return setPage('signin')
     const shortName = methods[0].slice(0, methods[0].indexOf('.'))
     setError(
@@ -78,9 +82,13 @@ function EmailForm({ cancel, onSuccess }: MetaProps): JSX.Element {
     }
   }
   async function _signIn(email: string, password: string): Promise<void> {
-    const result = await signIn(email, password)
+    const result = await signIn(email, password, reAuthenticate)
     if (!result.success && result.message) {
+      console.log(result.message)
       switch (result.message) {
+        case 'auth/user-mismatch':
+          setError('บัญชีไม่ตรงกัน กรุณาเข้าสู่ระบบใหม่อีกครั้ง')
+          break
         case 'auth/user-not-found':
           setError('ไม่พบผู้ใช้นี้')
           break
@@ -122,7 +130,7 @@ function EmailForm({ cancel, onSuccess }: MetaProps): JSX.Element {
     <>
       <form className="flex flex-col gap-2 gap-x-4 w-72" onSubmit={handleSubmit(formSubmit)}>
         {(_error !== null || Object.values(errors).length !== 0) && (
-          <div className="px-4 py-3 border rounded-lg bg-red-200 text-red-700">
+          <div className="px-4 py-3 border rounded-lg bg-red-200 text-red-700 text-center">
             {_error !== null && _error}
             {Object.values(errors).length !== 0 && Object.values(errors)[0].message}
           </div>
@@ -130,7 +138,7 @@ function EmailForm({ cancel, onSuccess }: MetaProps): JSX.Element {
         <h3 className="text-left text-xl pb-2 font-medium">{title[page]}</h3>
         <input
           name="email"
-          className={'input' + (page !== 'email' ? ' bg-gray-100' : '')}
+          className={'input rounded-md' + (page !== 'email' ? ' bg-gray-100' : '')}
           type="email"
           readOnly={page !== 'email'}
           placeholder="ป้อนอีเมลของคุณ..."
@@ -140,7 +148,7 @@ function EmailForm({ cancel, onSuccess }: MetaProps): JSX.Element {
           <>
             <input
               name="password"
-              className="input"
+              className="input rounded-md"
               type="password"
               autoComplete="current-password"
               placeholder="ป้อนรหัสผ่าน..."
@@ -173,22 +181,29 @@ function EmailForm({ cancel, onSuccess }: MetaProps): JSX.Element {
   )
 }
 
-export default function SignInComponent({ onSuccess }: SignInProps): JSX.Element {
+export default function SignInComponent({
+  onSuccess,
+  reAuthenticate,
+  disableSignUp,
+}: SignInProps): JSX.Element {
   const auth = useAuth()
   const [show, setShow] = useState(true)
   const [email, setEmail] = useState(false)
   const [next, setNext] = useState<null | boolean>(false)
   const [error, setError] = useState<null | string>(null)
   async function provider(p: Provider): Promise<void> {
-    setError(null)
-    const result = await auth.signInWithProvider(p)
+    const result = await auth.signInWithProvider(p, reAuthenticate)
     if (email) return
     if (!result.success) {
+      console.error(result.message)
       switch (result.message) {
         case 'auth/popup-closed-by-user':
           break
         case 'auth/popup-blocked':
           setError('กรุณาอนุญาตการเปิด Popup เพื่อเข้าสู่ระบบ')
+          break
+        case 'auth/user-mismatch':
+          setError('บัญชีไม่ตรงกัน กรุณาเข้าสู่ระบบใหม่อีกครั้ง')
           break
         default:
           setError('ไม่สามารถเข้าสู่ระบบได้ กรุณาลองใหม่อีกครั้ง')
@@ -217,9 +232,15 @@ export default function SignInComponent({ onSuccess }: SignInProps): JSX.Element
       }}
       afterLeave={() => setShow(true)}
     >
-      {error && <div className="px-4 py-3 border rounded-lg bg-red-200 text-red-700">{error}</div>}
+      {error && (
+        <div className="px-4 py-3 border rounded-lg bg-red-200 text-red-700 text-center">
+          {error}
+        </div>
+      )}
       {email ? (
         <EmailForm
+          disableSignUp={disableSignUp}
+          reAuthenticate={reAuthenticate}
           onSuccess={onSuccess}
           cancel={() => {
             setNext(false)

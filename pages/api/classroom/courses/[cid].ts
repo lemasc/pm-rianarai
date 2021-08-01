@@ -3,7 +3,7 @@ import { classroom_v1, google } from 'googleapis'
 import type { NextApiResponse } from 'next'
 import { withSession, NextApiSessionRequest, createOAuth2, withRefreshToken } from '@/shared/api'
 import { ClassroomCredentials } from '../callback'
-import { APIResponse, ClassroomCourseWorkResult, WorkState } from '@/types/classroom'
+import { APIResponse, ClassroomCourseWorkResult, WorkState, WorkType } from '@/types/classroom'
 
 /*
 function getMaterials(
@@ -31,7 +31,9 @@ function generateDuedate(
   if (!date) return undefined
   let instance = dayjs(Object.values(date).join('/'))
   if (time.hours && time.minutes) {
-    instance = instance.hour(time.hours).minute(time.minutes)
+    instance = instance
+      .hour(process.env.NODE_ENV === 'production' ? time.hours : time.hours + 7)
+      .minute(time.minutes)
   } else {
     instance = instance.hour(23).minute(59)
   }
@@ -43,6 +45,7 @@ const listWorks = async (
   res: NextApiResponse<APIResponse<ClassroomCourseWorkResult[]>>
 ): Promise<void> => {
   if (!req.query.cid || !req.query.account) return res.status(400).json({ success: false })
+
   try {
     const oAuth2Client = createOAuth2(req)
     const tokens: ClassroomCredentials[] = req.session.get('token')
@@ -63,40 +66,39 @@ const listWorks = async (
       },
       token.id
     )
-    if (!api.result.data.courseWork)
+    if (!api.result.data.courseWork) {
       return res.status(200).json({
         success: true,
         data: [],
       })
-    const work: ClassroomCourseWorkResult[] = await Promise.all(
-      api.result.data.courseWork.map(async (w) => {
-        const workApi = await withRefreshToken<classroom_v1.Schema$ListStudentSubmissionsResponse>(
-          oAuth2Client,
-          req,
-          async (client) => {
-            return await google.classroom('v1').courses.courseWork.studentSubmissions.list({
-              courseId: req.query.cid as string,
-              courseWorkId: w.id,
-              auth: client,
-            })
-          }
-        )
+    }
+    const workApi = await withRefreshToken<classroom_v1.Schema$ListStudentSubmissionsResponse>(
+      oAuth2Client,
+      req,
+      async (client) => {
+        return await google.classroom('v1').courses.courseWork.studentSubmissions.list({
+          courseId: req.query.cid as string,
+          courseWorkId: '-',
+          auth: client,
+        })
+      }
+    )
+    const work: ClassroomCourseWorkResult[] = api.result.data.courseWork
+      .map((w) => {
+        const id = workApi.result.data.studentSubmissions.findIndex((s) => s.courseWorkId === w.id)
+        if (id === -1) return null
         return {
           id: w.id,
           title: w.title,
-          type: w.workType,
-          slug: w.alternateLink
-            .replace('https://classroom.google.com/c/', '')
-            .replace('/details', ''),
+          type: w.workType as WorkType,
+          slug: w.alternateLink.split('/')[6],
           description: w.description,
           //materials: getMaterials(w.materials),
           dueDate: generateDuedate(w.dueDate, w.dueTime),
-          state: workApi.result.data.studentSubmissions.map(
-            (s) => s.state
-          )[0] as unknown as WorkState,
+          state: workApi.result.data.studentSubmissions[id].state as WorkState,
         }
       })
-    )
+      .filter((w) => w !== null)
     await req.session.save()
     res.status(200).json({
       success: true,

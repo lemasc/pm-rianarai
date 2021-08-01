@@ -3,12 +3,15 @@ import axios from 'axios'
 import LogRocket from 'logrocket'
 import { useCollection, Document } from 'swr-firestore-v9'
 import { useRouter } from 'next/router'
-import { getDoc, setDoc, doc, updateDoc, arrayUnion } from 'firebase/firestore'
+import { getDoc, setDoc, doc, updateDoc, arrayUnion, serverTimestamp } from 'firebase/firestore'
 import {
   createUserWithEmailAndPassword,
+  EmailAuthProvider,
   FacebookAuthProvider,
   fetchSignInMethodsForEmail,
   GoogleAuthProvider,
+  reauthenticateWithCredential,
+  reauthenticateWithPopup,
   signInWithEmailAndPassword,
   signInWithPopup,
   User,
@@ -18,6 +21,7 @@ import { ClassroomSessionResult } from '@/types/classroom'
 import { Provider, UserMetadata } from '@/types/auth'
 import { Announcement } from '@/types/announce'
 import { auth, db } from './firebase'
+import { db as _db } from './db'
 
 type FirebaseResult = {
   success: boolean
@@ -25,6 +29,7 @@ type FirebaseResult = {
 }
 
 interface IAuthContext {
+  version: string
   isPWA: () => boolean
   user: User | null
   ready: boolean
@@ -36,10 +41,11 @@ interface IAuthContext {
   metadata: UserMetadata
   getMethods: (email: string) => Promise<Provider[]>
   signUp: (email: string, password: string) => Promise<FirebaseResult>
-  signIn: (email: string, password: string) => Promise<FirebaseResult>
-  signInWithProvider: (provider: Provider) => Promise<FirebaseResult>
+  signIn: (email: string, password: string, reAuthenticate?: boolean) => Promise<FirebaseResult>
+  signInWithProvider: (provider: Provider, reAuthenticate?: boolean) => Promise<FirebaseResult>
   signOut: () => Promise<void>
   updateMeta: (meta: UserMetadata) => Promise<boolean>
+  setInsider: () => Promise<void>
 }
 
 export const authContext = createContext<IAuthContext | undefined>(undefined)
@@ -50,6 +56,7 @@ export const useAuth = (): IAuthContext | undefined => {
 
 // Provider hook that creates auth object and handles state
 export function useProvideAuth(): IAuthContext {
+  const version = 'v2.2'
   const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
   const [metadata, setMetadata] = useState<UserMetadata>(undefined)
@@ -91,16 +98,27 @@ export function useProvideAuth(): IAuthContext {
       return { success: false, message: err.code }
     }
   }
-  const signIn = async (email: string, password: string): Promise<FirebaseResult> => {
+  const signIn = async (
+    email: string,
+    password: string,
+    reAuthenticate?: boolean
+  ): Promise<FirebaseResult> => {
     try {
-      await signInWithEmailAndPassword(auth, email, password)
+      if (reAuthenticate) {
+        await reauthenticateWithCredential(user, EmailAuthProvider.credential(email, password))
+      } else {
+        await signInWithEmailAndPassword(auth, email, password)
+      }
       return { success: true }
     } catch (err) {
       LogRocket.error(err)
       return { success: false, message: err.code }
     }
   }
-  const signInWithProvider = async (p: Provider): Promise<FirebaseResult> => {
+  const signInWithProvider = async (
+    p: Provider,
+    reAuthenticate?: boolean
+  ): Promise<FirebaseResult> => {
     let provider
     switch (p) {
       case 'google.com':
@@ -113,7 +131,11 @@ export function useProvideAuth(): IAuthContext {
         return { success: false }
     }
     try {
-      await signInWithPopup(auth, provider)
+      if (reAuthenticate) {
+        await reauthenticateWithPopup(user, provider)
+      } else {
+        await signInWithPopup(auth, provider)
+      }
       return { success: true }
     } catch (err) {
       LogRocket.error(err)
@@ -134,6 +156,8 @@ export function useProvideAuth(): IAuthContext {
   }
   const signOut = async (): Promise<void> => {
     await auth.signOut()
+    _db.courses.clear()
+    _db.courseWork.clear()
     setUser(null)
     setMetadata(undefined)
   }
@@ -205,7 +229,7 @@ export function useProvideAuth(): IAuthContext {
         setReady(true)
       } else {
         authReady = setTimeout(() => {
-          if (router.pathname !== '/' && router.pathname !== '/client-login' && !user) {
+          if (router.pathname !== '/' && !router.pathname.includes('login') && !user) {
             sessionStorage.setItem('url', router.pathname)
             router.replace('/')
           } else {
@@ -232,11 +256,21 @@ export function useProvideAuth(): IAuthContext {
   const setWelcome = async (state: boolean): Promise<void> => {
     if (!user) return
     await updateDoc(doc(db, 'users/' + user.uid), {
-      upgrade: 'v2',
+      upgrade: version,
     })
-    setMetadata((meta) => ({ ...meta, update: 'v2' }))
+    setMetadata((meta) => ({ ...meta, update: version }))
   }
+  const setInsider = async (): Promise<void> => {
+    if (!user || metadata.insider) return
+    await updateDoc(doc(db, 'users/' + user.uid), {
+      insider: true,
+      insiderAt: serverTimestamp(),
+    })
+    setMetadata((meta) => ({ ...meta, insider: true, insiderAt: new Date() }))
+  }
+
   return {
+    version,
     user,
     announce,
     markAsRead,
@@ -252,5 +286,6 @@ export function useProvideAuth(): IAuthContext {
     signInWithProvider,
     signOut,
     updateMeta,
+    setInsider,
   }
 }

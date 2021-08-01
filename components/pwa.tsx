@@ -38,6 +38,8 @@ export default function PWAPromo({ show }: PWAPromoProps): JSX.Element {
     }
   })
   useEffect(() => {
+    let _isMounted = false
+    if (_isMounted) return
     if (auth.isPWA()) {
       showPromo(false)
       return
@@ -58,6 +60,9 @@ export default function PWAPromo({ show }: PWAPromoProps): JSX.Element {
       if (new Date(time) <= dateToRemind) return
     }
     setTimeout(() => showPromo(true), 2000)
+    return () => {
+      _isMounted = true
+    }
   }, [auth])
   function installOrOpenPWA(): void {
     LogRocket.track('PWA Promo Clicked')

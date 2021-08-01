@@ -69,7 +69,7 @@ export default function MetadataComponent({ onSubmit, minUI }: MetaProps): JSX.E
         <div className="flex flex-row gap-2 items-center justify-center">
           <input
             name="class"
-            className="input text-center w-20"
+            className="input rounded-md text-center w-20"
             type="number"
             inputMode="numeric"
             {...register('class', { required: true, min: 1, max: 6 })}
@@ -77,7 +77,7 @@ export default function MetadataComponent({ onSubmit, minUI }: MetaProps): JSX.E
           <span className="p-2 flex-grow text-center">/</span>
           <input
             name="room"
-            className="input text-center w-20"
+            className="input rounded-md text-center w-20"
             type="number"
             inputMode="numeric"
             {...register('room', {
@@ -98,7 +98,7 @@ export default function MetadataComponent({ onSubmit, minUI }: MetaProps): JSX.E
         </div>
         <textarea
           name="displayName"
-          className="input text-center sm:text-left text-sm"
+          className="input rounded-md text-center sm:text-left text-sm"
           {...register('displayName', { required: true })}
         />
         {!isMinUI() ? (

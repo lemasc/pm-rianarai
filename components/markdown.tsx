@@ -50,7 +50,7 @@ export default function MarkDownComponent({
     ),
     ul: ({ node, depth, ordered, ...props }) => <ol className="list-disc ml-8 px-2" {...props} />,
     ol: ({ node, depth, ordered, ...props }) => (
-      <ol className="list-decimal ml-8 px-2" {...props} />
+      <ol className="list-decimal ml-4 px-2" {...props} />
     ),
     strong: ({ node, ...props }) => <strong className="font-semibold" {...props} />,
     table: ({ node, ...props }) => (
