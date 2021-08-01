@@ -19,8 +19,8 @@ import ModalComponent from '@/components/modal'
 const CKEditor = dynamic(() => import('@/components/CKEditor'), {
   ssr: false,
   loading: () => (
-    <i className="flex flex-col items-center" style={{ width: '150px' }}>
-      กำลังโหลด...
+    <i className="flex flex-col w-full" style={{ height: '150px' }}>
+      กำลังโหลดโปรแกรมแก้ไข...
     </i>
   ),
 })
@@ -175,7 +175,7 @@ export default function WorkModal({ onClose, state, data }: ModalProps): JSX.Ele
                     title="แก้ไขงานนี้"
                     type="button"
                     onClick={() => setEditPage()}
-                    className="w-full text-gray-800 hover:text-white btn py-2 ring-indigo-500 bg-white border-opacity-80 border-indigo-500 border-2 from-indigo-600 to-indigo-600 hover:border-transparent"
+                    className="w-full hover:text-white btn py-2 ring-indigo-500 border-opacity-80 border-indigo-500 border-2 from-indigo-600 to-indigo-600 hover:border-transparent"
                   >
                     แก้ไข
                   </button>
@@ -183,7 +183,7 @@ export default function WorkModal({ onClose, state, data }: ModalProps): JSX.Ele
                     title="ลบงานนี้"
                     type="button"
                     onClick={() => onDelete()}
-                    className="w-full ring-red-500 btn py-2 border-2 border-red-500 border-opacity-80 text-gray-800 bg-white from-red-500 to-red-600 hover:text-white hover:border-transparent"
+                    className="w-full ring-red-500 btn py-2 border-2 border-red-500 border-opacity-80 from-red-500 to-red-600 hover:text-white hover:border-transparent"
                   >
                     ลบงานนี้
                   </button>
@@ -204,7 +204,7 @@ export default function WorkModal({ onClose, state, data }: ModalProps): JSX.Ele
             {item.description && (
               <>
                 <h2 className="font-medium text-lg">รายละเอียดของงาน</h2>
-                <div className="font-light bg-gray-200 rounded py-2 px-4 text-sm sarabun-font">
+                <div className="font-light dark:bg-gray-900 bg-gray-200 rounded py-2 px-4 text-sm sarabun-font">
                   <MarkDownComponent search="" content={item.description} />
                 </div>
               </>

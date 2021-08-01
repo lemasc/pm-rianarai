@@ -13,11 +13,11 @@ import { ClassroomCourseWorkResult } from '@/types/classroom'
 import { StatusButton } from './work/status'
 import { checkDuedate, checkTurnedIn } from './work/item'
 
-const WelcomeComponent = dynamic(() => import('@/components/welcome'))
+const WhatsNewComponent = dynamic(() => import('@/components/whatsnew'))
 const AnnouncementComponent = dynamic(() => import('@/components/announce'))
 
 export default function Dashboard(): JSX.Element {
-  const { metadata, user, classroom } = useAuth()
+  const { metadata, user, classroom, version } = useAuth()
   const { date, schedule, curDay } = useMeeting()
   const [showAnnounce, setAnnounce] = useState(false)
   const [classWork, setClassWork] = useState<ClassroomCourseWorkResult[] | null>(null)
@@ -167,7 +167,7 @@ export default function Dashboard(): JSX.Element {
         </div>
       </div>
       <AnnouncementComponent show={showAnnounce} onClose={() => setAnnounce(false)} />
-      {!metadata.upgrade && <WelcomeComponent />}
+      {!(metadata.upgrade && metadata.upgrade == version) && <WhatsNewComponent />}
     </>
   )
 }

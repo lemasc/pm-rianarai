@@ -29,6 +29,7 @@ type FirebaseResult = {
 }
 
 interface IAuthContext {
+  version: string
   isPWA: () => boolean
   user: User | null
   ready: boolean
@@ -54,6 +55,7 @@ export const useAuth = (): IAuthContext | undefined => {
 
 // Provider hook that creates auth object and handles state
 export function useProvideAuth(): IAuthContext {
+  const version = 'v2.2'
   const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
   const [metadata, setMetadata] = useState<UserMetadata>(undefined)
@@ -253,11 +255,12 @@ export function useProvideAuth(): IAuthContext {
   const setWelcome = async (state: boolean): Promise<void> => {
     if (!user) return
     await updateDoc(doc(db, 'users/' + user.uid), {
-      upgrade: 'v2',
+      upgrade: version,
     })
-    setMetadata((meta) => ({ ...meta, update: 'v2' }))
+    setMetadata((meta) => ({ ...meta, update: version }))
   }
   return {
+    version,
     user,
     announce,
     markAsRead,

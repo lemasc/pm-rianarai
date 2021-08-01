@@ -7,6 +7,7 @@ import MetadataComponent from '@/components/auth/meta'
 import { useAuth } from '@/shared/authContext'
 import { XIcon } from '@heroicons/react/outline'
 import Link from 'next/link'
+import FooterComponent from '@/components/layout/footer'
 
 export default function SettingsPage(): JSX.Element {
   const { classroom } = useAuth()
@@ -50,7 +51,7 @@ export default function SettingsPage(): JSX.Element {
                   {classroom.map((c) => (
                     <div
                       key={c.email}
-                      className="items-center flex flex-row border bg-white hover:bg-gray-100 cursor-pointer rounded p-4 gap-4"
+                      className="items-center flex flex-row border dark:bg-gray-700 dark:hover:bg-gray-900 bg-white hover:bg-gray-100 cursor-pointer rounded p-4 gap-4"
                     >
                       <div className="flex sm:flex-row flex-col flex-grow gap-2 sm:items-center">
                         <div className="flex flex-col flex-grow">
@@ -90,6 +91,7 @@ export default function SettingsPage(): JSX.Element {
           </div>
         </div>
       </LayoutComponent>
+      <FooterComponent />
     </div>
   )
 }

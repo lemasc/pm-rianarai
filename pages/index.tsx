@@ -9,6 +9,7 @@ const Dashboard = dynamic(() => import('@/components/dashboard'))
 const MetaDataComponent = dynamic(() => import('@/components/auth/meta'))
 const SignInComponent = dynamic(() => import('@/components/auth/signin'))
 const PWAPromoComponent = dynamic(() => import('@/components/pwa'))
+const FooterComponent = dynamic(() => import('@/components/layout/footer'))
 
 interface SPAProps {
   children: ReactNode
@@ -128,25 +129,7 @@ export default function MainPage(): JSX.Element {
         )}
       </LayoutComponent>
       <PWAPromoComponent show={ready && !metadata} />
-      {ready && !metadata && (
-        <footer className="bottom-0 bg-white bg-opacity-30 text-black text-sm gap-2 flex flex-col justify-center items-center w-full p-8 border-t">
-          <div className="flex flex-row justify-center text-center items-center w-full space-x-4">
-            <a href="/about" target="_blank" rel="noopener" className="font-normal underline">
-              เกี่ยวกับเรา
-            </a>
-            <a
-              href="/support"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="font-normal underline"
-            >
-              แจ้งปัญหาการใช้งาน / ติดต่อ
-            </a>
-          </div>
-
-          <span className="text-gray-800">Version 2.0 (@next)</span>
-        </footer>
-      )}
+      {ready && !metadata && <FooterComponent />}
     </div>
   )
 }
