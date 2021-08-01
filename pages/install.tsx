@@ -121,15 +121,22 @@ export default function Install(): JSX.Element {
               <Tab>iOS/iPadOS</Tab>
             </TabList>
             <TabPanel>
-              <div className="space-y-2 py-4 border-b max-w-5xl">
+              <div className="space-y-3 pb-4 border-b max-w-5xl">
                 <h2 className="font-medium text-2xl">(ใหม่) PM-RianArai PC - Early Access</h2>
                 <p className="">
                   PM-RianArai PC เป็น PM-RianArai
                   ในรูปแบบของโปรแกรมที่สามารถติดตั้งลงในคอมพิวเตอร์ได้
                   โดยมีหน้าตาและฟีเจอร์เช่นเดียวกับ PM-RianArai บนเว็บ แต่มีฟีเจอร์อื่น ๆ เพิ่มเติม
-                  อาทิเช่น การบันทึกภาพหน้าจอระหว่างเรียน การแจ้งเตือนเข้าเรียนก่อนเวลา การใช้งานแบบ
-                  Mini-Window เป็นต้น
+                  อาทิเช่น
                 </p>
+                <ul className="list-disc pl-10 space-y-2 bg-gray-100 p-4 rounded w-full">
+                  <li>เข้าเรียนได้จากหน้า Desktop ได้ทันที</li>
+                  <li>การแจ้งเตือนใน Windows ก่อนเข้าเรียน 5 นาที</li>
+                  <li>บันทึกภาพหน้าจอจาก Zoom และจัดระเบียบภาพให้โดยอัตโนมัติ</li>
+                  <li>
+                    Zoom Mini Window ใช้งานแอพพลิเคชั่นอื่นระหว่างเรียนได้ (อยู่ในระหว่างการทดลอง)
+                  </li>
+                </ul>
                 <p>
                   คุณสามารถลงทะเบียนล่วงหน้าเพื่อรับสิทธิติดตั้งก่อนเปิดใช้งานจริง (Early Access)
                   และแจ้งปัญหาต่าง ๆ เพื่อปรับปรุงและพัฒนาได้โดยตรง
@@ -154,7 +161,7 @@ export default function Install(): JSX.Element {
               </div>
               <div className="py-4 space-y-2">
                 <h2 className="font-medium text-2xl" id="install">
-                  การติดตั้ง (แบบ PWA)
+                  การติดตั้งผ่านเบราวเซอร์ (แบบ PWA)
                 </h2>
                 <p>
                   คอมพิวเตอร์ที่ใช้ Windows, MacOS และใช้เบราวเซอร์รุ่นใหม่ ๆ อย่าง Google Chrome

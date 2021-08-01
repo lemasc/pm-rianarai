@@ -103,13 +103,13 @@ export default function TimeSlotsComponent(): JSX.Element {
   let message = ''
   switch (state) {
     case 'start':
-      message = 'ทำสมาธิ หายใจเข้าลึก ๆ'
+      message = 'มาเร็วจังเลยนะ ไปเตรียมตัวอะไรให้เรียบร้อยแล้วมาเริ่มเรียนกัน'
       break
     case 'break':
-      message = 'พักผ่อนให้เรียบร้อย เตรียมตัวเรียนต่อนะ'
+      message = 'พักเติมพลังให้เต็มที่ไปเลย'
       break
     case 'end':
-      message = 'หมดวันแล้ว วันนี้เก่งมาก!'
+      message = 'วันนี้ทำดีมาก ๆ แล้วนะคนเก่ง'
       break
   }
   useEffect(() => {

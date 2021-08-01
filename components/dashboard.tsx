@@ -91,7 +91,7 @@ export default function Dashboard(): JSX.Element {
                       styles={buildStyles({
                         rotation: 1 / 2 + 1 / 8,
                         pathTransitionDuration: 0.5,
-                        pathColor: `rgba(62, 199, 70, ${percentage})`,
+                        pathColor: `rgb(62, 199, 70)`,
                         textColor: '#848484',
                         textSize: isNaN(percentage) ? '14px' : '20px',
                         backgroundColor: '#3e98c7',
