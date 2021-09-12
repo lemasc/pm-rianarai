@@ -56,17 +56,16 @@ export default function AnnouncementComponent({ show, onClose }: ComponentProps)
         const result = (await api.json()) as DocsData
         if (result.success && show && cData[index].new) {
           // Mark as readed
-          //await markAsRead(data[index].id)
-          console.log(data[index])
+          await markAsRead(data[index].id)
           if (data[index].name == '3_months') {
-            //await setWelcome()
+            await setWelcome()
           }
         }
         cData[index].success = result.success
         cData[index].content = result.content
         setData(cData)
       } catch (err) {
-        LogRocket.error(err)
+        console.error(err)
       }
     })()
   }, [data, index, markAsRead, setWelcome, show])
