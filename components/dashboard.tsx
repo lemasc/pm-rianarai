@@ -53,7 +53,7 @@ export default function Dashboard(): JSX.Element {
       metadata &&
       !(metadata.upgrade && metadata.upgrade == version)
     ) {
-      setTimeout(() => setAnnounce(true), 2000)
+      setTimeout(() => setAnnounce(true), 4000)
     }
   }, [announce, metadata, showAnnounce, version])
 

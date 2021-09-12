@@ -59,7 +59,7 @@ export default function AnnouncementComponent({ show, onClose }: ComponentProps)
           //await markAsRead(data[index].id)
           console.log(data[index])
           if (data[index].name == '3_months') {
-            await setWelcome()
+            //await setWelcome()
           }
         }
         cData[index].success = result.success
