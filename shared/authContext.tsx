@@ -68,12 +68,12 @@ export function useProvideAuth(): IAuthContext {
   const [classroom, setClassroom] = useState<ClassroomSessionResult[] | null>(null)
   const { data: announce } = useCollection<Announcement>(ready ? 'announcement' : null, {
     where: [
-      /*['enable', '==', true],*/
+      ['enable', '==', true],
       ['needs_login', '!=', !user ? true : ''],
     ],
     orderBy: [
       ['needs_login', 'asc'],
-      //['created_at', 'desc'],
+      ['created_at', 'desc'],
     ],
     parseDates: ['created_at', 'released_at'],
     listen: true,
