@@ -15,7 +15,7 @@ type ComponentProps = {
 }
 
 export default function AnnouncementComponent({ show, onClose }: ComponentProps): JSX.Element {
-  const { metadata, announce, markAsRead } = useAuth()
+  const { metadata, announce, markAsRead, setWelcome } = useAuth()
   const [data, setData] = useState<AnnounceData[]>([])
   const [index, setIndex] = useState(-1)
   const [list, showList] = useState(false)
@@ -47,7 +47,7 @@ export default function AnnouncementComponent({ show, onClose }: ComponentProps)
   useEffect(() => {
     ;(async () => {
       if (index === -1) return
-      if (data[index].success !== undefined) return
+      if (data[index] && data[index].success !== undefined) return
       const cData = Object.assign([], data) as AnnounceData[]
       try {
         const api = await fetch(
@@ -56,7 +56,11 @@ export default function AnnouncementComponent({ show, onClose }: ComponentProps)
         const result = (await api.json()) as DocsData
         if (result.success && show && cData[index].new) {
           // Mark as readed
-          await markAsRead(data[index].id)
+          //await markAsRead(data[index].id)
+          console.log(data[index])
+          if (data[index].name == '3_months') {
+            await setWelcome()
+          }
         }
         cData[index].success = result.success
         cData[index].content = result.content
@@ -65,8 +69,8 @@ export default function AnnouncementComponent({ show, onClose }: ComponentProps)
         LogRocket.error(err)
       }
     })()
-  }, [data, index, markAsRead, show])
-
+  }, [data, index, markAsRead, setWelcome, show])
+  if (data === undefined) return null
   return (
     <ModalComponent
       closable={true}
@@ -95,7 +99,7 @@ export default function AnnouncementComponent({ show, onClose }: ComponentProps)
                   (width > 640 && index === i
                     ? 'bg-gray-200 dark:bg-gray-800'
                     : 'bg-gray-100 dark:bg-gray-900') +
-                  ' flex flex-row w-full px-6 py-3 hover:bg-gray-200 dark:hover:bg-gray-800 border dark:border-gray-600 focus:outline-none text-left items-center'
+                  ' flex flex-row w-full px-6 py-3 hover:bg-gray-200 dark:hover:bg-gray-800 border-t border-b dark:border-gray-600 focus:outline-none text-left items-center'
                 }
                 onClick={() => {
                   setIndex(i)
@@ -118,7 +122,7 @@ export default function AnnouncementComponent({ show, onClose }: ComponentProps)
         </div>
         <div
           className={
-            'text-sm text-gray-700 px-6 py-3 w-60 flex-grow sarabun-font sm:block dark:bg-gray-700 dark:text-white' +
+            'border-l text-sm text-gray-700 px-6 py-3 w-60 flex-grow sarabun-font sm:block dark:bg-gray-700 dark:text-white' +
             (list ? ' hidden' : '')
           }
         >
@@ -127,7 +131,7 @@ export default function AnnouncementComponent({ show, onClose }: ComponentProps)
               {width <= 640 && (
                 <button
                   onClick={() => showList(true)}
-                  className="flex flex-row focus:outline-none rounded px-4 py-2 bg-blue-500 text-white hober:bg-blue-600"
+                  className="my-2 flex flex-row focus:outline-none rounded px-4 py-2 bg-blue-500 text-white hober:bg-blue-600"
                 >
                   <ArrowLeftIcon className="h-5 w-5 mr-2" />
                   ดูประกาศทั้งหมด ({announce && announce.length})

@@ -140,7 +140,7 @@ export default function MenuBarComponent({ landing }: MenuBarProps): JSX.Element
               className={
                 (landing
                   ? !top
-                    ? 'dark:bg-gray-900 dark:border bg-white blur shadow-md'
+                    ? 'dark:bg-gray-900 dark:border bg-white shadow-md'
                     : 'bg-transparent'
                   : 'dark:bg-gray-900 dark:border-b dark:border-gray-600 bg-white shadow-md') +
                 ' w-full fixed top-0 left-0 flex flex-row items-center justify-start px-6 py-4 sm:space-x-4 space-x-3 transition duration-300 ease-in-out'

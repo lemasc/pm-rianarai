@@ -17,6 +17,7 @@ import Toolbar from './toolbar'
 import ClassworkItem, { checkTurnedIn, checkDuedate } from './item'
 import StatusSelector, { Selector, buttons, StatusButton } from './status'
 import { WorkModalState } from './modal'
+import { logEvent, withAnalytics } from '@/shared/analytics'
 
 const WorkModal = dynamic(() => import('./modal'))
 
@@ -113,6 +114,11 @@ export default function WorkComponent({
     if (modal.index !== undefined && i === lastIndex) return true
     const isArchived = c.tags && c.tags.includes('archived')
     const isTurnedIn = checkTurnedIn(c.state)
+    withAnalytics((a) =>
+      logEvent(a, 'view_item_list', {
+        item_list_name: button.status == '' ? 'all' : button.status,
+      })
+    )
     if (button.status === '') return !isArchived
     switch (button.status) {
       case 'important':
@@ -206,13 +212,15 @@ export default function WorkComponent({
 
                 {filteredWork.length > 0 ? (
                   <Scrollbars>
-                    {filteredWork.map((d, i) => (
-                      <ClassworkItem
-                        onClick={() => setModal({ show: true, index: i })}
-                        key={d.id}
-                        data={d}
-                      />
-                    ))}
+                    <div>
+                      {filteredWork.map((d, i) => (
+                        <ClassworkItem
+                          onClick={() => setModal({ show: true, index: i })}
+                          key={d.id}
+                          data={d}
+                        />
+                      ))}
+                    </div>
                   </Scrollbars>
                 ) : (
                   <div className="flex flex-col gap-2 h-full w-full items-center justify-center text-gray-500 dark:text-gray-300 dark:bg-gray-700">

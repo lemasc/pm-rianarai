@@ -95,13 +95,13 @@ body {
 .timetable {
   @apply border overflow-y-hidden divide-y divide-gray-200 text-sm border-collapse dark:border-gray-600 dark:bg-gray-700;
 }
-table {
+.timetable {
   display: block;
   overflow-x: auto;
   white-space: nowrap;
 }
 
-table tbody {
+.timetable tbody {
   display: table;
   width: 100%;
 }

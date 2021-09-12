@@ -16,7 +16,7 @@ export default function WelcomeComponent(): JSX.Element {
   function next(): void {
     if (index !== 4) return setIndex((i) => ++i)
     setShow(false)
-    setWelcome(true)
+    setWelcome()
   }
   function prev(): void {
     setIndex((i) => --i)

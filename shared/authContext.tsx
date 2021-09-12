@@ -22,6 +22,8 @@ import { Provider, UserMetadata } from '@/types/auth'
 import { Announcement } from '@/types/announce'
 import { auth, db } from './firebase'
 import { db as _db } from './db'
+import { withAnalytics } from './analytics'
+import { logEvent, setUserId } from '@firebase/analytics'
 
 type FirebaseResult = {
   success: boolean
@@ -29,11 +31,11 @@ type FirebaseResult = {
 }
 
 interface IAuthContext {
-  version: string
+  version: UserMetadata['upgrade']
   isPWA: () => boolean
   user: User | null
   ready: boolean
-  setWelcome: (state: boolean) => Promise<void>
+  setWelcome: () => Promise<void>
   classroom: ClassroomSessionResult[] | null
   remove: () => Promise<boolean>
   announce: Document<Announcement>[]
@@ -54,9 +56,11 @@ export const useAuth = (): IAuthContext | undefined => {
   return useContext(authContext)
 }
 
+const staticPages = ['/client-login', '/about', '/install', '/support']
+
 // Provider hook that creates auth object and handles state
 export function useProvideAuth(): IAuthContext {
-  const version = 'v2.2'
+  const version = 'v2.3'
   const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
   const [metadata, setMetadata] = useState<UserMetadata>(undefined)
@@ -64,12 +68,12 @@ export function useProvideAuth(): IAuthContext {
   const [classroom, setClassroom] = useState<ClassroomSessionResult[] | null>(null)
   const { data: announce } = useCollection<Announcement>(ready ? 'announcement' : null, {
     where: [
-      ['enable', '==', true],
+      /*['enable', '==', true],*/
       ['needs_login', '!=', !user ? true : ''],
     ],
     orderBy: [
       ['needs_login', 'asc'],
-      ['created_at', 'desc'],
+      //['created_at', 'desc'],
     ],
     parseDates: ['created_at', 'released_at'],
     listen: true,
@@ -212,6 +216,7 @@ export function useProvideAuth(): IAuthContext {
           email: curUser.email,
           pwa: isPWA(),
         })
+        withAnalytics((a) => setUserId(a, curUser.uid))
         const meta = await getDoc(doc(db, 'users/' + curUser.uid))
         if (meta.exists) {
           setMetadata(meta.data() as UserMetadata)
@@ -229,7 +234,7 @@ export function useProvideAuth(): IAuthContext {
         setReady(true)
       } else {
         authReady = setTimeout(() => {
-          if (router.pathname !== '/' && !router.pathname.includes('login') && !user) {
+          if (router.pathname !== '/' && !staticPages.includes(router.pathname) && !user) {
             sessionStorage.setItem('url', router.pathname)
             router.replace('/')
           } else {
@@ -251,14 +256,26 @@ export function useProvideAuth(): IAuthContext {
     await updateDoc(doc(db, 'users/' + user.uid), {
       announceId: arrayUnion(announceId),
     })
+    withAnalytics((a) =>
+      logEvent(a, 'view_item', {
+        items: [
+          {
+            item_category: 'announcement',
+            item_id: announceId,
+          },
+        ],
+      })
+    )
     setMetadata((meta) => ({ ...meta, announceId: Array.from(currentIds) }))
   }
-  const setWelcome = async (state: boolean): Promise<void> => {
-    if (!user) return
-    await updateDoc(doc(db, 'users/' + user.uid), {
-      upgrade: version,
-    })
-    setMetadata((meta) => ({ ...meta, update: version }))
+  const setWelcome = async (): Promise<void> => {
+    console.log('set welcome')
+    if (user && metadata && metadata.upgrade !== version) {
+      await updateDoc(doc(db, 'users/' + user.uid), {
+        upgrade: version,
+      })
+      setMetadata((meta) => ({ ...meta, upgrade: version }))
+    }
   }
   const setInsider = async (): Promise<void> => {
     if (!user || metadata.insider) return

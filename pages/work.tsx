@@ -49,7 +49,7 @@ export default function WorkPage(): JSX.Element {
             )
           ) : (
             <div className="font-light flex flex-col flex-1 items-center justify-center space-y-4">
-              กำลังโหลดข้อมูลจาก Google Clasroom...
+              กำลังโหลดข้อมูลจาก Google Classroom...
             </div>
           )}
         </div>

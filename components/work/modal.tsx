@@ -44,6 +44,114 @@ type FormData = {
   minutes?: number
   description: string
 }
+
+type ViewerProps = {
+  item: ClassroomCourseWorkResult
+  onEdit: () => void
+  onClose: () => void
+}
+function WorkViewer({ item, onEdit, onClose }: ViewerProps): JSX.Element {
+  const { user } = useAuth()
+  async function onDelete(): Promise<void> {
+    if (
+      item &&
+      item.custom &&
+      confirm('ต้องการลบงานนี้หรือไม่? หากลบแล้วจะไม่สามารถกู้คืนได้อีก')
+    ) {
+      try {
+        onClose()
+        await deleteDoc(doc(db, `users/${user.uid}/classwork`, item.id))
+      } catch (err) {
+        console.error(err)
+      }
+    }
+  }
+  return (
+    <>
+      <div className="flex flex-row justify-center items-center">
+        <div className="flex flex-col flex-grow space-y-2">
+          <h1 className="text-2xl sarabun-font font-bold">{item.title}</h1>
+        </div>
+        <TagButton data={item} isModal={true} />
+      </div>
+      <div className="flex flex-col space-y-1 font-light">
+        <span>
+          <DueDate dueDate={item.dueDate} />
+        </span>
+        {item.course && (
+          <span>
+            <b>รายวิชา: </b>
+            {item.course.name}
+          </span>
+        )}
+        <span>
+          <b>แหล่งข้อมูล: </b>
+          {item.custom ? 'เพิ่มในระบบด้วยตนเอง' : 'Google Classroom (อัตโนมัติ)'}
+        </span>
+      </div>
+      {item.custom ? (
+        <>
+          <div className="grid text-center my-2">
+            <button
+              type="button"
+              title={`${
+                checkTurnedIn(item.state) ? 'ยกเลิกการ' : ''
+              }ทำเครื่องหมายงานนี้ว่าเสร็จสิ้น`}
+              onClick={() => {
+                toggleState(item, user.uid)
+                onClose()
+              }}
+              className={`btn px-4 py-2 ${
+                checkTurnedIn(item.state)
+                  ? 'bg-yellow-300 text-gray-800'
+                  : 'bg-apple-500 text-white'
+              } ring-transparent`}
+            >
+              ทำเครื่องหมายว่าเสร็จสิ้น{checkTurnedIn(item.state) && 'แล้ว'}{' '}
+            </button>
+          </div>
+          <div className=" items-center justify-center flex flex-col sm:grid-cols-2 sm:grid gap-4 w-full">
+            <button
+              title="แก้ไขงานนี้"
+              type="button"
+              onClick={() => onEdit()}
+              className="w-full hover:text-white btn py-2 ring-indigo-500 border-opacity-80 border-indigo-500 border-2 from-indigo-600 to-indigo-600 hover:border-transparent"
+            >
+              แก้ไข
+            </button>
+            <button
+              title="ลบงานนี้"
+              type="button"
+              onClick={() => onDelete()}
+              className="w-full ring-red-500 btn py-2 border-2 border-red-500 border-opacity-80 from-red-500 to-red-600 hover:text-white hover:border-transparent"
+            >
+              ลบงานนี้
+            </button>
+          </div>
+        </>
+      ) : (
+        <div className="grid text-center my-2">
+          <a
+            href={`https://classroom.google.com/c/${item.course.slug}/a/${item.slug}/details`}
+            target="_blank"
+            rel="noreferrer noopener"
+            className="btn px-4 py-2 text-white bg-apple-500 from-apple-500 to-apple-600 ring-apple-500"
+          >
+            ไปยัง Google Classroom
+          </a>
+        </div>
+      )}
+      {item.description && (
+        <>
+          <h2 className="font-medium text-lg">รายละเอียดของงาน</h2>
+          <div className="font-light dark:bg-gray-900 bg-gray-200 rounded py-2 px-4 text-sm sarabun-font">
+            <MarkDownComponent search="" content={item.description} />
+          </div>
+        </>
+      )}
+    </>
+  )
+}
 export default function WorkModal({ onClose, state, data }: ModalProps): JSX.Element {
   const { user, classroom } = useAuth()
   const [edit, setEdit] = useState(false)
@@ -99,20 +207,7 @@ export default function WorkModal({ onClose, state, data }: ModalProps): JSX.Ele
       console.error(err)
     }
   }
-  async function onDelete(): Promise<void> {
-    if (
-      item &&
-      item.custom &&
-      confirm('ต้องการลบงานนี้หรือไม่? หากลบแล้วจะไม่สามารถกู้คืนได้อีก')
-    ) {
-      try {
-        onClose()
-        await deleteDoc(doc(db, `users/${user.uid}/classwork`, item.id))
-      } catch (err) {
-        console.error(err)
-      }
-    }
-  }
+
   return (
     <ModalComponent
       closable={true}
@@ -126,90 +221,7 @@ export default function WorkModal({ onClose, state, data }: ModalProps): JSX.Ele
     >
       <div className="p-4 flex flex-col gap-2 dark:bg-gray-700 dark:text-gray-100 overflow-y-auto">
         {item && !edit ? (
-          <>
-            <div className="flex flex-row justify-center items-center">
-              <div className="flex flex-col flex-grow space-y-2">
-                <h1 className="text-2xl sarabun-font font-bold">{item.title}</h1>
-              </div>
-
-              <TagButton data={item} isModal={true} />
-            </div>
-            <div className="flex flex-col space-y-1 font-light">
-              <span>
-                <DueDate dueDate={item.dueDate} />
-              </span>
-              {item.course && (
-                <span>
-                  <b>รายวิชา: </b>
-                  {item.course.name}
-                </span>
-              )}
-              <span>
-                <b>แหล่งข้อมูล: </b>
-                {item.custom ? 'เพิ่มในระบบด้วยตนเอง' : 'Google Classroom (อัตโนมัติ)'}
-              </span>
-            </div>
-            {item.custom ? (
-              <>
-                <div className="grid text-center my-2">
-                  <button
-                    type="button"
-                    title={`${
-                      checkTurnedIn(item.state) ? 'ยกเลิกการ' : ''
-                    }ทำเครื่องหมายงานนี้ว่าเสร็จสิ้น`}
-                    onClick={() => {
-                      toggleState(item, user.uid)
-                      onClose()
-                    }}
-                    className={`btn px-4 py-2 ${
-                      checkTurnedIn(item.state)
-                        ? 'bg-yellow-300 text-gray-800'
-                        : 'bg-apple-500 text-white'
-                    } ring-transparent`}
-                  >
-                    ทำเครื่องหมายว่าเสร็จสิ้น{checkTurnedIn(item.state) && 'แล้ว'}{' '}
-                  </button>
-                </div>
-                <div className=" items-center justify-center flex flex-col sm:grid-cols-2 sm:grid gap-4 w-full">
-                  <button
-                    title="แก้ไขงานนี้"
-                    type="button"
-                    onClick={() => setEditPage()}
-                    className="w-full hover:text-white btn py-2 ring-indigo-500 border-opacity-80 border-indigo-500 border-2 from-indigo-600 to-indigo-600 hover:border-transparent"
-                  >
-                    แก้ไข
-                  </button>
-                  <button
-                    title="ลบงานนี้"
-                    type="button"
-                    onClick={() => onDelete()}
-                    className="w-full ring-red-500 btn py-2 border-2 border-red-500 border-opacity-80 from-red-500 to-red-600 hover:text-white hover:border-transparent"
-                  >
-                    ลบงานนี้
-                  </button>
-                </div>
-              </>
-            ) : (
-              <div className="grid text-center my-2">
-                <a
-                  href={`https://classroom.google.com/c/${item.course.slug}/a/${item.slug}/details`}
-                  target="_blank"
-                  rel="noreferrer noopener"
-                  className="btn px-4 py-2 text-white bg-apple-500 from-apple-500 to-apple-600 ring-apple-500"
-                >
-                  ไปยัง Google Classroom
-                </a>
-              </div>
-            )}
-            {item.description && (
-              <>
-                <h2 className="font-medium text-lg">รายละเอียดของงาน</h2>
-                <div className="font-light dark:bg-gray-900 bg-gray-200 rounded py-2 px-4 text-sm sarabun-font">
-                  <MarkDownComponent search="" content={item.description} />
-                </div>
-              </>
-            )}
-          </>
+          <WorkViewer item={item} onEdit={setEditPage} onClose={onClose} />
         ) : (
           <>
             <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4 justify-center">

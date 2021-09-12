@@ -76,7 +76,7 @@ function ToggleSvg({ icon, activeIcon, active, className }: ToggleSvgProps): JSX
 
 function Badge({ children, className }: { children: ReactNode; className: string }): JSX.Element {
   return (
-    <span className={`sarabun-font font-bold ${className} rounded px-2 py-1 w-max`}>
+    <span className={`sarabun-font font-bold ${className} rounded px-2 py-1 break-words`}>
       {children}
     </span>
   )
@@ -84,7 +84,7 @@ function Badge({ children, className }: { children: ReactNode; className: string
 
 function ItemBadge({ data }: { data: ClassroomCourseWorkResult }): JSX.Element {
   return (
-    <div className="flex sm:flex-row flex-col gap-2">
+    <div className="flex flex-row gap-2 flex-wrap min-w-0 items-start">
       {data.courseId && data.course ? (
         <Badge className="bg-gray-200 text-gray-600">{data.course.name}</Badge>
       ) : (
@@ -149,8 +149,10 @@ export function TagButton({ data, isModal }: TagButtonProps): JSX.Element {
   }
   return (
     <span
-      className={`flex ${
-        isModal ? 'flex-row flex-shrink-0 my-2' : 'sm:flex-row flex-col m-4 '
+      className={`${
+        isModal
+          ? 'flex-row flex-shrink-0 my-2 flex'
+          : 'sm:flex-row flex-col m-4 hidden sm:flex self-stretch '
       } items-center justify-center gap-4 flex-shrink-0`}
     >
       <button
@@ -189,14 +191,15 @@ export default function ClassworkItem({ data, onClick }: ItemProps): JSX.Element
     if (checkDuedate(data.dueDate)) return 'text-red-500 dark:text-red-400'
     return ''
   }
+  //const textClass = 'w-48 sm:w-full sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg'
   return (
     <div
       key={data.id}
-      className="dark:border-gray-600 hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-800 cursor-pointer font-light border flex flex-row"
+      className="dark:border-gray-600 hover:bg-gray-100 dark:bg-gray-700 dark:hover:bg-gray-800 cursor-pointer font-light border flex items-start"
     >
       <button
         title="สถานะการส่ง"
-        className="flex flex-shrink-0 items-center m-4"
+        className="flex flex-shrink-0 items-center m-4 self-stretch "
         onClick={() => toggleState(data, user.uid)}
       >
         <ToggleSvg
@@ -206,13 +209,12 @@ export default function ClassworkItem({ data, onClick }: ItemProps): JSX.Element
           icon={XCircleIcon}
         />
       </button>
-      <button onClick={onClick} className="flex flex-col flex-grow my-4 text-left">
-        <span
-          className={`font-medium w-48 sm:w-full sm:max-w-xs md:max-w-sm lg:max-w-md xl:max-w-lg truncate ${getStatus()} `}
-        >
-          {data.title}
-        </span>
-        <span className="pt-2 text-sm flex flex-col flex-grow space-y-2">
+      <button
+        onClick={onClick}
+        className="flex flex-col flex-grow items-start my-4 text-left min-w-0 mr-4"
+      >
+        <span className={`font-medium ${getStatus()}`}>{data.title}</span>
+        <span className="pt-2 text-sm flex flex-col space-y-2 min-w-0 items-start">
           <ItemBadge data={data} />
           <span className="text-gray-500 dark:text-gray-300">
             <DueDate dueDate={data.dueDate} />

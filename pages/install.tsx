@@ -141,23 +141,27 @@ export default function Install(): JSX.Element {
                   คุณสามารถลงทะเบียนล่วงหน้าเพื่อรับสิทธิติดตั้งก่อนเปิดใช้งานจริง (Early Access)
                   และแจ้งปัญหาต่าง ๆ เพื่อปรับปรุงและพัฒนาได้โดยตรง
                 </p>
-                <div className="flex flex-row gap-4 items-center">
-                  <button
-                    disabled={metadata ? metadata.insider === true : true}
-                    onClick={() => setInsider()}
-                    className="px-4 text-white btn py-2 ring-blue-500 bg-blue-500 from-blue-500 to-blue-600 disabled:bg-gray-200 disabled:text-gray-500 disabled:from-gray-200 disabled:to-gray-200 disabled:cursor-not-allowed"
-                  >
-                    ลงทะเบียนล่วงหน้า
-                  </button>
-                  {metadata && metadata.insider && (
-                    <span className="text-blue-500 text-sm sarabun-font">
-                      คุณได้ลงทะเบียนไปแล้วเมื่อ{' '}
-                      {dayjs(
-                        metadata.insiderAt.toDate ? metadata.insiderAt.toDate() : metadata.insider
-                      ).format('DD/MM/YYYY HH:mm น.')}
-                    </span>
-                  )}
-                </div>
+                {metadata ? (
+                  <div className="flex flex-row gap-4 items-center">
+                    <button
+                      disabled={metadata ? metadata.insider === true : true}
+                      onClick={() => setInsider()}
+                      className="px-4 text-white btn py-2 ring-blue-500 bg-blue-500 from-blue-500 to-blue-600 disabled:bg-gray-200 disabled:text-gray-500 disabled:from-gray-200 disabled:to-gray-200 disabled:cursor-not-allowed"
+                    >
+                      ลงทะเบียนล่วงหน้า
+                    </button>
+                    {metadata && metadata.insider && (
+                      <span className="text-blue-500 text-sm sarabun-font">
+                        คุณได้ลงทะเบียนไปแล้วเมื่อ{' '}
+                        {dayjs(
+                          metadata.insiderAt.toDate ? metadata.insiderAt.toDate() : metadata.insider
+                        ).format('DD/MM/YYYY HH:mm น.')}
+                      </span>
+                    )}
+                  </div>
+                ) : (
+                  <b className="text-red-500">กรุณาเข้าสู่ระบบก่อนลงทะเบียน</b>
+                )}
               </div>
               <div className="py-4 space-y-2">
                 <h2 className="font-medium text-2xl" id="install">

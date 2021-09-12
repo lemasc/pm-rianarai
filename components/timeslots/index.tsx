@@ -103,7 +103,7 @@ export default function TimeSlotsComponent(): JSX.Element {
   let message = ''
   switch (state) {
     case 'start':
-      message = 'มาเร็วจังเลยนะ ไปเตรียมตัวอะไรให้เรียบร้อยแล้วมาเริ่มเรียนกัน'
+      message = 'ไปเตรียมตัวอะไรให้เรียบร้อยแล้วมาเริ่มเรียนกัน'
       break
     case 'break':
       message = 'พักเติมพลังให้เต็มที่ไปเลย'

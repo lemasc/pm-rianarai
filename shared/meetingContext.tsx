@@ -4,6 +4,7 @@ import LogRocket from 'logrocket'
 
 import { Meeting, TimeSlots } from '@/types/meeting'
 import { useAuth } from './authContext'
+import { withAnalytics, logEvent } from './analytics'
 
 export interface Schedule {
   [days: string]: TimeSlots[]
@@ -118,6 +119,12 @@ export function useProvideMeeting(): IMeetingContext {
     const params = new URLSearchParams({ confno: meeting, pwd: code })
     const host = isMobile() ? 'zoomus://zoom.us/join?' : 'zoommtg://zoom.us/join?'
     LogRocket.track('Launch Meeting')
+    withAnalytics((a) =>
+      logEvent(a, 'dynamic_link', {
+        isMobile: isMobile(),
+        isiOS: isiOS(),
+      })
+    )
     window.location.replace(host + params.toString())
   }
   const launchMeeting = (meeting: Meeting): void => {

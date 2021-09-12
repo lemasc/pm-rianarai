@@ -5,6 +5,7 @@
 
 import ReactMarkdown from 'react-markdown'
 import gfm from 'remark-gfm'
+import raw from 'rehype-raw'
 import { Components } from 'react-markdown/src/ast-to-react'
 
 export default function MarkDownComponent({
@@ -26,13 +27,13 @@ export default function MarkDownComponent({
         <h2
           id={match ? 'jump' : undefined}
           className={
-            'sm:text-2xl text-lg creative-font font-medium py-4' + (match ? ' underline' : '')
+            'sm:text-2xl text-lg creative-font font-medium py-2' + (match ? ' underline' : '')
           }
           {...props}
         />
       )
     },
-    h3: ({ node, ...props }) => <h3 className="kanit-font text-lg font-medium py-4" {...props} />,
+    h3: ({ node, ...props }) => <h3 className="kanit-font text-lg font-medium py-1" {...props} />,
     a: ({ node, ...props }) => (
       <a
         target="_blank"
@@ -41,7 +42,6 @@ export default function MarkDownComponent({
         {...props}
       />
     ),
-    p: ({ node, ...props }) => <p className="py-2" {...props} />,
     blockquote: ({ node, ...props }) => (
       <blockquote
         className="kanit-font py-2 my-2 pl-6 border-l-4 border-gray-500 bg-gray-100 dark:bg-gray-900"
@@ -63,7 +63,12 @@ export default function MarkDownComponent({
     td: ({ node, isHeader, ...props }) => <td className="border py-2 px-2 md:px-4" {...props} />,
   }
   return (
-    <ReactMarkdown components={components} remarkPlugins={[gfm]}>
+    <ReactMarkdown
+      components={components}
+      rehypePlugins={[raw]}
+      remarkPlugins={[gfm]}
+      className="leading-6 space-y-3"
+    >
       {content}
     </ReactMarkdown>
   )
