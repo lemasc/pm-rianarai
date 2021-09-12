@@ -5,7 +5,7 @@ export default async (req: NextApiRequest, res: NextApiResponse<DocsData>): Prom
   if (req.method !== 'GET' || !req.query.name) return res.status(400).json({ success: false })
   try {
     const data = await fetch(
-      'https://raw.githubusercontent.com/lemasc/pm-rianarai/main/docs/announcement/' +
+      'https://raw.githubusercontent.com/lemasc/pm-rianarai/staging/docs/announcement/' +
         req.query.name +
         '.md'
     )
