@@ -8,7 +8,6 @@ type AnalyticsHandler = (analytics: Analytics) => void
 const analytics = (): Analytics => getAnalytics(app)
 
 function canLoad(): boolean {
-  return false
   return typeof window !== 'undefined' && process.env.NODE_ENV === 'production'
 }
 
