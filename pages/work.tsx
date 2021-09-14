@@ -20,11 +20,16 @@ export default function WorkPage(): JSX.Element {
           <div className={'flex pt-8 flex-row items-center'}>
             <h1 className="text-3xl flex-grow">งานที่ได้รับ</h1>
             {fetching !== null && (
-              <span className="text-sm sarabun-font">
-                {fetching
-                  ? 'กำลังอัพเดทข้อมูล...'
-                  : `อัพเดทล่าสุดเมื่อ ${dayjs().format('HH:mm')} น.`}
-              </span>
+              <div className="text-sm sarabun-font flex flex-col gap-1 text-right">
+                <span>
+                  {fetching
+                    ? 'กำลังอัพเดทข้อมูล...'
+                    : `อัพเดทล่าสุดเมื่อ ${dayjs().format('HH:mm')} น.`}
+                </span>
+                <span className="text-red-500 font-bold">
+                  ปิดใช้งานระบบ Google Classroom ชั่วคราว
+                </span>
+              </div>
             )}
           </div>
           {classroom ? (

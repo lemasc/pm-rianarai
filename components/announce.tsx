@@ -39,10 +39,10 @@ export default function AnnouncementComponent({ show, onClose }: ComponentProps)
 
   useEffect(() => {
     if (show) {
-      setIndex(0)
+      setIndex(metadata && metadata.upgrade != 'v2.3' ? 1 : 0)
       showList(false)
     }
-  }, [show])
+  }, [show, metadata])
 
   useEffect(() => {
     ;(async () => {
