@@ -24,8 +24,8 @@ export default function AnnouncementComponent({ show, onClose }: ComponentProps)
     if (!announce) return
     setData((data) =>
       Object.values(announce).map((a, i) => {
-        const content = data[i] ? data[i].content : undefined
-        const success = data[i] ? data[i].success : undefined
+        const content = data[i] && data[i].id == a.id ? data[i].content : undefined
+        const success = data[i] && data[i].id == a.id ? data[i].success : undefined
         return {
           id: a.id,
           name: a.name,
