@@ -67,11 +67,13 @@ export function useProvideAuth(): IAuthContext {
   const [ready, setReady] = useState<boolean>(false)
   const [classroom, setClassroom] = useState<ClassroomSessionResult[] | null>(null)
   const { data: announce } = useCollection<Announcement>(ready ? 'announcement' : null, {
-    where: [['enable', '==', true], ...(user ? [] : ([['needs_login', '==', true]] as any))],
-    orderBy: [...(user ? [] : ([['needs_login', 'asc']] as any)), ['created_at', 'desc']],
+    where: [['enable', '==', true], ...(user ? [] : ([['needs_login', '==', false]] as any))],
+    orderBy: ['created_at', 'desc'],
     parseDates: ['created_at', 'released_at'],
     listen: true,
   })
+  console.log([...(user ? [] : ([['needs_login', 'asc']] as any)), ['created_at', 'desc']])
+  console.log()
   const isPWA = (): boolean => {
     const isPWA =
       // eslint-disable-next-line @typescript-eslint/no-explicit-any

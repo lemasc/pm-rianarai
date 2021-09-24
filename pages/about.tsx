@@ -16,7 +16,7 @@ export const getStaticProps: GetStaticProps = async () => {
   }
 }
 
-export default function MainPage({
+export default function AboutPage({
   content,
 }: InferGetStaticPropsType<typeof getStaticProps>): JSX.Element {
   const router = useRouter()

@@ -6,7 +6,7 @@ export default function FooterComponent(): JSX.Element {
   const router = useRouter()
   return (
     <footer
-      className={`bottom-0 bg-white bg-opacity-30 text-black text-sm gap-2 ${
+      className={`text-center bottom-0 bg-white bg-opacity-30 text-black text-sm gap-3 ${
         router.pathname == '/' ? `border-t p-8` : 'bg-gray-100 border-t py-6'
       } flex flex-col justify-center items-center w-full `}
     >
@@ -24,7 +24,19 @@ export default function FooterComponent(): JSX.Element {
         </a>
       </div>
 
-      <span className="text-gray-800">Version {version.slice(1)}</span>
+      {false && <span className="text-gray-800">Version {version.slice(1)}</span>}
+
+      <span className="text-gray-500 font-light flex flex-row flex-wrap gap-1 justify-center">
+        <span>สามารถติดตามข้อมูลข่าวสารและอัพเดทต่าง ๆ ได้ที่</span>
+        <a
+          href="https://twitter.com/lemascth"
+          className="text-blue-500 hover:text-blue-600 underline text-bold font-normal"
+          target="_blank"
+          rel="noreferrer noopener"
+        >
+          Twitter Official Account
+        </a>{' '}
+      </span>
     </footer>
   )
 }
