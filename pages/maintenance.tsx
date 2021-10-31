@@ -21,11 +21,10 @@ function CountDown(): JSX.Element {
   const [date, setDate] = useState(dayjs())
   const text = ['วัน', 'ชั่วโมง', 'นาที', 'วินาที']
   useEffect(() => {
-    console.log(dayjs.duration(dayjs('2021-11-01').diff(date)).format('M:D:H:m:s'))
     setInterval(() => setDate(dayjs()), 1000)
   }, [])
   function getDate(unit: DurationUnitType): string {
-    const d = dayjs.duration(dayjs('2021-11-01').diff(date))
+    const d = dayjs.duration(dayjs('2021-11-02').diff(date))
     return (Math.floor(unit.includes('d') ? d.as(unit) : d.get(unit)) / 100).toFixed(2).slice(2)
   }
 
@@ -70,7 +69,7 @@ export default function MaintenancePage(): JSX.Element {
           <p className="p-4 sarabun-font max-w-3xl leading-6">
             แต่อย่าเพิ่งลบทิ้งนะ!{' '}
             <b className="text-red-500">หากในภาคเรียนที่ 2 ยังคงเรียนออนไลน์ด้วยระบบ Zoom</b>{' '}
-            เว็บไซต์จะกลับมาออนไลน์ในวันที่ 1 พฤศจิกายน 2564
+            เว็บไซต์จะกลับมาออนไลน์ในวันที่ 2 พฤศจิกายน 2564
             พร้อมกับเว็บไซต์และแอพพลิเคชั่นโฉมใหม่ทั้งหมด 😍
           </p>
           <span className="text-medium text-red-500 pb-4 px-2">

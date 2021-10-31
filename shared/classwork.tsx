@@ -76,7 +76,7 @@ export default function useClasswork(): ClassworkHelper {
 
   const source: CancelTokenSource = axios.CancelToken.source()
   // Main Fetcher hook
-  
+
   useEffect(() => {
     async function getCourses(): Promise<ClassroomCourseResult[][]> {
       try {
@@ -145,7 +145,7 @@ export default function useClasswork(): ClassworkHelper {
       const data = await db.courseWork.toArray()
       setClassWork(data)
       setLoad((load) => {
-        //if (!load) setFetch(true)
+        if (!load) setFetch(true)
         return true
       })
     })()
@@ -172,7 +172,7 @@ export default function useClasswork(): ClassworkHelper {
       window.removeEventListener('beforeunload', beforeunload)
     }
   }, [source])
-  
+
   return {
     classWork,
     fetching,

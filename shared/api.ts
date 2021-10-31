@@ -13,7 +13,7 @@ type SSRHandler = (context: SSRContext) => any
 
 export type NextApiSessionRequest = NextApiRequest & { session: Session; uid: string }
 
-export function withAuth(handler: Handler<NextApiRequest, NextApiResponse>) {
+export function withAuth(handler: Handler<NextApiSessionRequest, NextApiResponse>) {
   return async (req: NextApiSessionRequest, res: NextApiResponse<APIResponse>): Promise<void> => {
     const authHeader = req.headers.authorization
     if (!authHeader) {

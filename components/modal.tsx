@@ -34,7 +34,7 @@ export default function ModalComponent({
         onClose={onClose}
         initialFocus={closeRef}
       >
-        <div className="min-h-screen px-4 text-center">
+        <div className="min-h-screen px-4 md:px-8 text-center">
           <Transition.Child
             as={Fragment}
             enter="ease-out duration-300"
@@ -68,7 +68,7 @@ export default function ModalComponent({
             >
               <Dialog.Title
                 as="h3"
-                className={'flex flex-row px-6 py-4 text-lg leading-6 ' + titleClass}
+                className={'flex flex-row px-6 gap-4 py-4 text-lg leading-7 ' + titleClass}
               >
                 <div className="flex flex-grow">{title}</div>
                 <button

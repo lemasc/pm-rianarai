@@ -4,6 +4,7 @@ import dynamic from 'next/dynamic'
 import { Transition } from '@headlessui/react'
 import { useAuth } from '@/shared/authContext'
 import LayoutComponent from '@/components/layout'
+import InsiderModal from '@/components/insider'
 
 const Dashboard = dynamic(() => import('@/components/dashboard'))
 const MetaDataComponent = dynamic(() => import('@/components/auth/meta'))
@@ -129,6 +130,7 @@ export default function MainPage(): JSX.Element {
         )}
       </LayoutComponent>
       <PWAPromoComponent show={ready && !metadata} />
+      <InsiderModal />
       {ready && !metadata && <FooterComponent />}
     </div>
   )

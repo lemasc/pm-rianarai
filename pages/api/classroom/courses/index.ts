@@ -2,7 +2,7 @@ import { classroom_v1, google } from 'googleapis'
 import type { NextApiResponse } from 'next'
 import { withSession, NextApiSessionRequest, createOAuth2, withRefreshToken } from '@/shared/api'
 import { ClassroomCredentials } from '../callback'
-import { APIResponse, ClassroomCourseResult } from '@/types/classroom'
+import { APIResponse } from '@/types/classroom'
 
 const listCourses = async (
   req: NextApiSessionRequest,
@@ -13,7 +13,7 @@ const listCourses = async (
     const tokens: ClassroomCredentials[] = req.session.get('token')
     if (!tokens) return res.status(400).json({ success: false })
     const courses = await Promise.all(
-      tokens.map(async (t): Promise<ClassroomCourseResult[]> => {
+      tokens.map(async (t) => {
         oAuth2Client.setCredentials({
           access_token: t.access_token,
           refresh_token: t.refresh_token,
@@ -22,23 +22,20 @@ const listCourses = async (
           oAuth2Client,
           req,
           async (client) => {
+            const fields = ['id', 'name', 'section', 'description', 'alternateLink']
             return await google.classroom('v1').courses.list({
               auth: client,
+              fields: `courses(${fields.join(',')})`,
+              courseStates: ['ACTIVE'],
             })
           },
           t.id
         )
         return api.result.data.courses
-          .filter((c) => c.courseState === 'ACTIVE')
-          .map((c) => ({
-            id: c.id,
-            name: c.name,
-            section: c.section,
-            slug: c.alternateLink.replace('https://classroom.google.com/c/', ''),
-          }))
       })
     )
     await req.session.save()
+    res.setHeader('Cache-Control', `private, max-age=${60 * 60 * 24}`)
     res.status(200).json({ success: true, data: courses })
   } catch (err) {
     console.error(err)

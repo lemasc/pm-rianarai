@@ -4098,10 +4098,10 @@ googleapis-common@^5.0.2:
     url-template "^2.0.8"
     uuid "^8.0.0"
 
-googleapis@^77.0.0:
-  version "77.0.0"
-  resolved "https://registry.yarnpkg.com/googleapis/-/googleapis-77.0.0.tgz#c2d5b9dc08cfe2dee2de9320b321b9032d53efa4"
-  integrity sha512-BtH2dxG7IiEC1Crs6Ke5BenXuWgXyBK4k5SQTYOxcKuDtG27gVcyLaysTo0imbfBmnzLr4CcXXuojrFeJAy+tA==
+googleapis@^88.2.0:
+  version "88.2.0"
+  resolved "https://registry.yarnpkg.com/googleapis/-/googleapis-88.2.0.tgz#956cdc45ebce82215a246b1069eb475770408c26"
+  integrity sha512-z3iDvGVqaJ+4TZ7YulK530q5vkY0BifvAWqcu2JiUSgpnIHzsA89k005+McoaYB+lAgv7lPY2Y4OPMT6iloWRA==
   dependencies:
     google-auth-library "^7.0.2"
     googleapis-common "^5.0.2"
@@ -7087,19 +7087,19 @@ supports-color@^8.0.0:
   dependencies:
     has-flag "^4.0.0"
 
-swr-firestore-v9@^0.20.0:
-  version "0.20.0"
-  resolved "https://registry.yarnpkg.com/swr-firestore-v9/-/swr-firestore-v9-0.20.0.tgz#b9f0a68df74ca242402aba3a57bb1a71fe28e0e7"
-  integrity sha512-H6Nxd5rytYX6gALvNzJ9ySU+0UPIpKOS/MJruZ1GWDfdBEX2E21uaX0hHPyoqHSVacsfOnfbt/uWjTpMFaYK1Q==
+swr-firestore-v9@^1.0.2:
+  version "1.0.2"
+  resolved "https://registry.yarnpkg.com/swr-firestore-v9/-/swr-firestore-v9-1.0.2.tgz#89113cafd93ab203dd92b42c31f972fcb19272bc"
+  integrity sha512-3e7B3Rh5nUSxbSkngk9ei8D/khioqmS73gAqClHZPOxO7yjjYdZKyUREcr45dkbvKAviIg5/lvnM/4W2GQVY6Q==
   dependencies:
     lodash.get "^4.4.2"
     lodash.set "^4.3.2"
-    swr "^0.5.6"
+    swr "^1.0.0"
 
-swr@^0.5.6:
-  version "0.5.6"
-  resolved "https://registry.yarnpkg.com/swr/-/swr-0.5.6.tgz#70bfe9bc9d7ac49a064be4a0f4acf57982e55a31"
-  integrity sha512-Bmx3L4geMZjYT5S2Z6EE6/5Cx6v1Ka0LhqZKq8d6WL2eu9y6gHWz3dUzfIK/ymZVHVfwT/EweFXiYGgfifei3w==
+swr@^1.0.0, swr@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/swr/-/swr-1.0.1.tgz#15f62846b87ee000e52fa07812bb65eb62d79483"
+  integrity sha512-EPQAxSjoD4IaM49rpRHK0q+/NzcwoT8c0/Ylu/u3/6mFj/CWnQVjNJ0MV2Iuw/U+EJSd2TX5czdAwKPYZIG0YA==
   dependencies:
     dequal "2.0.2"
 

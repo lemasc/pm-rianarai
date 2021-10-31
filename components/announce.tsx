@@ -39,7 +39,7 @@ export default function AnnouncementComponent({ show, onClose }: ComponentProps)
 
   useEffect(() => {
     if (show) {
-      setIndex(metadata && metadata.upgrade != 'v2.3' ? 1 : 0)
+      setIndex(0)
       showList(false)
     }
   }, [show, metadata])
@@ -80,10 +80,10 @@ export default function AnnouncementComponent({ show, onClose }: ComponentProps)
       titleClass="bg-apple-500 text-white bg-opacity-80 creative-font font-bold"
     >
       {}
-      <div className="flex flex-row">
+      <div className="flex flex-row" style={{ maxHeight: '75vh' }}>
         <div
           className={
-            'sm:w-64 w-full flex flex-col items-start bg-gray-50 dark:bg-gray-900 dark:text-white sm:block ' +
+            'sm:w-64 w-full flex flex-col items-start bg-gray-50 dark:bg-gray-900 dark:text-white sm:block overflow-auto ' +
             (!list ? 'hidden' : '')
           }
         >
@@ -121,7 +121,7 @@ export default function AnnouncementComponent({ show, onClose }: ComponentProps)
         </div>
         <div
           className={
-            'border-l text-sm text-gray-700 px-6 py-3 w-60 flex-grow sarabun-font sm:block dark:bg-gray-700 dark:text-white' +
+            'border-l text-sm text-gray-700 px-6 py-3 w-60 flex-grow sarabun-font sm:block dark:bg-gray-700 dark:text-white overflow-auto' +
             (list ? ' hidden' : '')
           }
         >

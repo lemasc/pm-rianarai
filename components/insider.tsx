@@ -1,0 +1,44 @@
+import { useEffect, useState } from 'react'
+import ModalComponent from './modal'
+import MarkDownComponent from './markdown'
+import useSWR from 'swr/immutable'
+import Image from 'next/image'
+import axios from 'axios'
+
+export default function InsiderModal() {
+  const { data } = useSWR(['/announce', 'v3_insider'], (key, name) =>
+    axios.get(`/api${key}?name=${name}`).then((c) => c.data)
+  )
+  const [show, setShow] = useState(false)
+  useEffect(() => {
+    setTimeout(() => setShow(true), 150)
+  }, [])
+  return (
+    <ModalComponent
+      closable={true}
+      size="max-w-5xl"
+      title="RianArai 3.0 เวอร์ชั่นเบต้าพร้อมใช้งานแล้ว"
+      show={show}
+      onClose={() => {
+        localStorage.setItem('insider_notice', 'true')
+        setShow(false)
+      }}
+      titleClass="bg-black text-white bg-opacity-80 creative-font font-bold"
+    >
+      <>
+        <div className="bg-black text-white flex flex-col gap-3 items-center justify-center p-6">
+          <div className="flex flex-row gap-4 items-center">
+            <Image src="/logo_white.svg" width={50} height={50} />
+            <span className="header-font text-3xl">เรียนอะไร</span>
+          </div>
+          <span className="text-lg">Insider Release</span>
+        </div>
+        <div className="md:px-10 p-6 bg-gray-100 sarabun-font ">
+          {data && (
+            <MarkDownComponent className="leading-7 space-y-4" content={data.content} search="" />
+          )}
+        </div>
+      </>
+    </ModalComponent>
+  )
+}

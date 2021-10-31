@@ -1,6 +1,5 @@
 import { useEffect, useState } from 'react'
 import Link from 'next/link'
-import dynamic from 'next/dynamic'
 import { ClockIcon, BookOpenIcon, DownloadIcon } from '@heroicons/react/outline'
 import { useMeeting } from '@/shared/meetingContext'
 import { useAuth } from '@/shared/authContext'
@@ -12,13 +11,14 @@ import { useCollection } from 'swr-firestore-v9'
 import { ClassroomCourseWorkResult } from '@/types/classroom'
 import { StatusButton } from './work/status'
 import { checkDuedate, checkTurnedIn } from './work/item'
+import dynamic from 'next/dynamic'
 
-const AnnouncementComponent = dynamic(() => import('@/components/announce'))
+const InsiderModal = dynamic(() => import('./insider'))
 
 export default function Dashboard(): JSX.Element {
-  const { metadata, user, classroom, version, announce } = useAuth()
+  const { metadata, user, classroom } = useAuth()
   const { date, schedule, curDay } = useMeeting()
-  const [showAnnounce, setAnnounce] = useState(false)
+  const [insider, showInsider] = useState(false)
   const [classWork, setClassWork] = useState<ClassroomCourseWorkResult[] | null>(null)
   const { classWork: work } = useClasswork()
   const { data: firestoreData } = useCollection<ClassroomCourseWorkResult>(
@@ -47,15 +47,10 @@ export default function Dashboard(): JSX.Element {
   }, [work, firestoreData])
 
   useEffect(() => {
-    if (
-      announce &&
-      !showAnnounce &&
-      metadata &&
-      !(metadata.upgrade && metadata.upgrade == version)
-    ) {
-      setTimeout(() => setAnnounce(true), 3000)
+    if (!localStorage.getItem('insider_notice')) {
+      showInsider(true)
     }
-  }, [announce, metadata, showAnnounce, version])
+  }, [])
 
   function getData(status: StatusButton['status']): ClassroomCourseWorkResult[] {
     if (!classWork) return []
@@ -72,7 +67,9 @@ export default function Dashboard(): JSX.Element {
     })
     return d
   }
-  const percentage = classWork ? getData('turned-in').length / classWork.length : 0
+  const percentage =
+    classWork && classWork.length > 0 ? getData('turned-in').length / classWork.length : 0
+
   return (
     <>
       <div className={CONTAINER + 'space-y-8 mb-20 md:mb-0'}>
@@ -188,7 +185,7 @@ export default function Dashboard(): JSX.Element {
           </div>
         </div>
       </div>
-      <AnnouncementComponent show={showAnnounce} onClose={() => setAnnounce(false)} />
+      {insider && <InsiderModal />}
     </>
   )
 }

@@ -16,12 +16,12 @@ const OAuth = async (
   try {
     const oauth2Client = createOAuth2(req)
     const scopes: string[] = [
-      'courses',
-      'course-work',
-      'announcements',
-      'courseworkmaterials',
-      'student-submissions.me',
-      'topics',
+      'courses.readonly',
+      'coursework.me',
+      'announcements.readonly',
+      'courseworkmaterials.readonly',
+      'student-submissions.me.readonly',
+      'topics.readonly',
     ]
     const state = nanoid()
     const redirectUrl = oauth2Client.generateAuthUrl({
@@ -30,7 +30,7 @@ const OAuth = async (
       scope: [
         'profile',
         'email',
-        ...scopes.map((s) => 'https://www.googleapis.com/auth/classroom.' + s + '.readonly'),
+        ...scopes.map((s) => 'https://www.googleapis.com/auth/classroom.' + s),
       ],
       state,
     })

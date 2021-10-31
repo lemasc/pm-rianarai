@@ -99,7 +99,9 @@ const listWorks = async (
         }
       })
       .filter((w) => w !== null)
+
     await req.session.save()
+    res.setHeader('Cache-Control', `private, max-age=${60 * 60}`)
     res.status(200).json({
       success: true,
       data: work,

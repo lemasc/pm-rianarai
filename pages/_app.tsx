@@ -1,5 +1,5 @@
 import { AppProps } from 'next/app'
-import { MainProvider } from '@/shared/index'
+import { MainProvider, shouldLoadPage } from '@/shared/index'
 //import AuthSpinner from '@/components/auth/spinner'
 import LogRocket from 'logrocket'
 import MaintenancePage from './maintenance'
@@ -14,7 +14,8 @@ import { useRouter } from 'next/router'
 function App({ Component, pageProps }: AppProps): JSX.Element {
   const router = useRouter()
   if (process.env.NODE_ENV === 'production') LogRocket.init('sg61xt/pm-rianarai-i4kpt')
-  if (router.pathname == '/about' || router.pathname == '/support')
+
+  if (shouldLoadPage || router.pathname == '/about' || router.pathname == '/support')
     return (
       <MainProvider>
         <Component {...pageProps} />

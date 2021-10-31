@@ -11,7 +11,9 @@ import { Components } from 'react-markdown/src/ast-to-react'
 export default function MarkDownComponent({
   content,
   search = '',
+  className,
 }: {
+  className?: string
   content: string
   search: string | string[]
 }): JSX.Element {
@@ -48,7 +50,9 @@ export default function MarkDownComponent({
         {...props}
       />
     ),
-    ul: ({ node, depth, ordered, ...props }) => <ol className="list-disc ml-8 px-2" {...props} />,
+    ul: ({ node, depth, ordered, ...props }) => (
+      <ol className="list-disc ml-6 sm:ml-8 px-2" {...props} />
+    ),
     ol: ({ node, depth, ordered, ...props }) => (
       <ol className="list-decimal ml-4 px-2" {...props} />
     ),
@@ -67,7 +71,7 @@ export default function MarkDownComponent({
       components={components}
       rehypePlugins={[raw]}
       remarkPlugins={[gfm]}
-      className="leading-6 space-y-3"
+      className={className ?? 'leading-6 space-y-3'}
     >
       {content}
     </ReactMarkdown>
