@@ -20,13 +20,6 @@ class MyDocument extends Document {
         <Head>
           <link rel="preconnect" href="https://fonts.gstatic.com" />
           <link
-            rel="preload"
-            href="/api/announce?name=v3_insider"
-            as="fetch"
-            crossOrigin="anonymous"
-          />
-
-          <link
             href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,300;0,400;0,500;1,300&family=Kodchasan:wght@400;500;600&display=swap"
             rel="stylesheet"
           />

@@ -72,8 +72,6 @@ export function useProvideAuth(): IAuthContext {
     parseDates: ['created_at', 'released_at'],
     listen: true,
   })
-  console.log([...(user ? [] : ([['needs_login', 'asc']] as any)), ['created_at', 'desc']])
-  console.log()
   const isPWA = (): boolean => {
     const isPWA =
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
