@@ -9,10 +9,6 @@ interface IProps {
   children: ReactNode
 }
 
-export const shouldLoadPage =
-  process.env.NODE_ENV === 'development' ||
-  (new Date().getDate() >= 2 && new Date().getMonth() >= 11)
-
 function AuthProvider({ children }: IProps): JSX.Element {
   const auth = useProvideAuth()
   return <authContext.Provider value={auth}>{children}</authContext.Provider>

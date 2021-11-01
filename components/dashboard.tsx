@@ -1,5 +1,5 @@
 import Link from 'next/link'
-import { ClockIcon, BookOpenIcon, DownloadIcon } from '@heroicons/react/outline'
+import { ClockIcon, BookOpenIcon } from '@heroicons/react/outline'
 import { useMeeting } from '@/shared/meetingContext'
 import { useAuth } from '@/shared/authContext'
 import TimeSlotsComponent from '@/components/timeslots'

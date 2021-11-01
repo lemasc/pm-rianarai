@@ -6,7 +6,6 @@ import Image from 'next/image'
 import axios from 'axios'
 
 export default function InsiderModal() {
-  const [canClose, setCanClose] = useState(false)
   const { data } = useSWR(['/announce', 'v3_insider'], (key, name) =>
     axios.get(`/api${key}?name=${name}`).then((c) => c.data)
   )
@@ -21,7 +20,7 @@ export default function InsiderModal() {
   }
   return (
     <ModalComponent
-      closable={canClose}
+      closable={false}
       size="max-w-5xl"
       title="RianArai 3.0 เวอร์ชั่นเบต้าพร้อมใช้งานแล้ว"
       show={show}
@@ -52,7 +51,6 @@ export default function InsiderModal() {
             <button
               className="w-full btn px-4 py-2 border-2 border-gray-800 from-gray-200 to-gray-200 ring-black"
               onClick={() => {
-                setCanClose(true)
                 onClose()
               }}
             >

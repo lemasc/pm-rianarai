@@ -1,4 +1,3 @@
-import { shouldLoadPage } from '@/shared/index'
 import { useAuth } from '@/shared/authContext'
 import { useRouter } from 'next/router'
 
@@ -24,22 +23,7 @@ export default function FooterComponent(): JSX.Element {
           แจ้งปัญหาการใช้งาน / ติดต่อ
         </a>
       </div>
-
-      {shouldLoadPage ? (
-        <span className="text-gray-800">Version {version.slice(1)}</span>
-      ) : (
-        <span className="text-gray-500 font-light flex flex-row flex-wrap gap-1 justify-center">
-          <span>สามารถติดตามข้อมูลข่าวสารและอัพเดทต่าง ๆ ได้ที่</span>
-          <a
-            href="https://twitter.com/lemascth"
-            className="text-blue-500 hover:text-blue-600 underline text-bold font-normal"
-            target="_blank"
-            rel="noreferrer noopener"
-          >
-            Twitter Official Account
-          </a>{' '}
-        </span>
-      )}
+      <span className="text-gray-800">Version {version.slice(1)}</span>
     </footer>
   )
 }

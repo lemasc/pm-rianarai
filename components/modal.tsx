@@ -31,7 +31,7 @@ export default function ModalComponent({
       <Dialog
         as="div"
         className="fixed inset-0 overflow-y-auto z-20"
-        onClose={onClose}
+        onClose={() => closable && onClose()}
         initialFocus={closeRef}
       >
         <div className="min-h-screen px-4 md:px-8 text-center">

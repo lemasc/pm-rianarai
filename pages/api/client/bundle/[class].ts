@@ -12,14 +12,17 @@ function chunk<Type>(array: Type[], size: number): Type[] {
 }
 
 export default withAuth(async (req, res) => {
-  res.setHeader('Access-Control-Allow-Credentials', 'true')
-  res.setHeader('Access-Control-Allow-Origin', '*')
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Authorization, Accept')
-  res.setHeader('Access-Control-Allow-Methods', 'GET, OPTIONS')
-  if (req.method === 'OPTIONS') return res.status(200).end()
+  if (
+    !req.query.class ||
+    req.query.class.length !== 3 ||
+    isNaN(parseInt(req.query.class.toString()))
+  )
+    return res.status(403).end()
   const db = admin.firestore()
   try {
     const user = (await db.collection('users').doc(req.uid).get()).data() as UserMetadata
+    const userClass = user.class.toString()
+    if (userClass !== req.query.class) return res.status(403).end()
     const classes = await db.collection('classes').doc(user.class.toString()).get()
     const teachers = new Set(
       Object.values(classes.data() as Schedule)
