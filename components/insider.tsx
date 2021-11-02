@@ -12,7 +12,9 @@ export default function InsiderModal() {
   const [show, setShow] = useState(false)
   useEffect(() => {
     if (!data) return
-    setTimeout(() => setShow(true), 250)
+    if (!localStorage.getItem('insider_notice')) {
+      setTimeout(() => setShow(true), 250)
+    }
   }, [data])
   const onClose = () => {
     localStorage.setItem('insider_notice', 'true')
