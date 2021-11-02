@@ -1,7 +1,6 @@
-import { withAuth } from '@/shared/api'
 import admin from '@/shared/firebase-admin'
 import { Schedule } from '@/shared/meetingContext'
-import { UserMetadata } from '@/types/auth'
+import { NextApiHandler } from 'next'
 
 // Chunk function from https://stackoverflow.com/a/60779547
 function chunk<Type>(array: Type[], size: number): Type[] {
@@ -11,7 +10,7 @@ function chunk<Type>(array: Type[], size: number): Type[] {
   }, [])
 }
 
-export default withAuth(async (req, res) => {
+const bundleCreator: NextApiHandler = async (req, res) => {
   if (
     !req.query.class ||
     req.query.class.length !== 3 ||
@@ -20,10 +19,7 @@ export default withAuth(async (req, res) => {
     return res.status(403).end()
   const db = admin.firestore()
   try {
-    const user = (await db.collection('users').doc(req.uid).get()).data() as UserMetadata
-    const userClass = user.class.toString()
-    if (userClass !== req.query.class) return res.status(403).end()
-    const classes = await db.collection('classes').doc(user.class.toString()).get()
+    const classes = await db.collection('classes').doc(req.query.class.toString()).get()
     const teachers = new Set(
       Object.values(classes.data() as Schedule)
         .map((slot) =>
@@ -36,7 +32,7 @@ export default withAuth(async (req, res) => {
 
     // Firestore limits 'IN' query up to 10 comparison values.
     // Split into chunks instead.
-    const bundle = db.bundle(`classes-${user.class.toString()}`).add(classes)
+    const bundle = db.bundle(`classes-${req.query.class.toString()}`).add(classes)
     const chunks = chunk(Array.from(teachers), 10)
     await Promise.all(
       chunks.map(async (t, i) => {
@@ -52,4 +48,6 @@ export default withAuth(async (req, res) => {
     console.error(err)
     res.status(500).end()
   }
-})
+}
+
+export default bundleCreator
