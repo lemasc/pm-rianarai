@@ -61,9 +61,9 @@ export default function SettingsPage(): JSX.Element {
           </div>
           <div className="form-container">
             <span>เวอร์ชั่น:</span>
-            <span>0.0.1</span>
-            <span>เวอร์ชั่นไคลเอนท์:</span>
             <span>3.0.0-beta.1</span>
+            <span>เวอร์ชั่นไคลเอนท์:</span>
+            <span>0.0.2</span>
             <span>เวอร์ชั่น Electron:</span>
             <span>{process.versions['electron']}</span>
             <span>แชนแนลของบิวด์:</span>

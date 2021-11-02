@@ -8,14 +8,18 @@ export default function GoogleSignInComponent() {
   const [error, setError] = useState(false)
   const [signingIn, isSigningIn] = useState(false)
   const { signInWithGoogle } = useAuth()
-  const signIn = () => signInWithGoogle().then((v) => setError(!v.success))
+  const signIn = () =>
+    signInWithGoogle().then((v) => {
+      isSigningIn(false)
+      setError(!v.success)
+    })
   return (
     <div className="flex flex-col gap-4 font-light items-center justify-center text-center">
       <button
         onClick={() => {
           setError(false)
           isSigningIn(true)
-          signIn()
+          setTimeout(() => signIn(), 1000)
         }}
         className="text-gray-600 login-btn w-full border shadow px-4 py-3 rounded hover:bg-gray-100 bg-gray-50"
       >

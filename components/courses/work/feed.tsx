@@ -61,7 +61,7 @@ export default function StreamFeed() {
   return (
     <>
       {feed
-        .map((items, key) => (
+        ?.map((items, key) => (
           <div className="flex flex-col" key={`feed_${key}`}>
             {key !== undefined &&
               (topics ? (

@@ -49,7 +49,7 @@ export const MeetingJoin: React.FC<MeetingJoinProps> = ({ teachers, disabled }) 
         key={index}
         disabled={disabled}
         className="zoom-btn w-full"
-        onClick={() => launchMeeting(meeting)}
+        onClick={() => launchMeeting(meeting.meetings)}
       >
         {disabled ? 'Not In Time' : 'Launch Meetings'}{' '}
         {teachers.length !== 1 && ' : ' + meeting.name}

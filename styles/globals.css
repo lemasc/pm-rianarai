@@ -44,7 +44,10 @@ a {
 }
 
 .btn {
-  @apply focus:bg-gradient-to-b hover:bg-gradient-to-b focus:outline-none dark:focus:ring-offset-gray-900 focus:ring-2 focus:ring-offset-4 rounded disabled:bg-gray-200 disabled:text-gray-500 disabled:from-gray-200 disabled:to-gray-200 disabled:cursor-not-allowed;
+  @apply focus:bg-gradient-to-b hover:bg-gradient-to-b focus:outline-none dark:focus:ring-offset-gray-900 focus:ring-2 focus:ring-offset-4 disabled:bg-gray-200 disabled:text-gray-500 disabled:from-gray-200 disabled:to-gray-200 disabled:cursor-not-allowed;
+}
+.btn:not(.rounded-lg) {
+  @apply rounded;
 }
 .zoom-btn {
   background: #0e72ed;
@@ -85,7 +88,6 @@ a {
 }
 
 .timetable tbody {
- 
   /** A bug which cause the colspan not working correctly.
   display: table;  */
   width: 100%;

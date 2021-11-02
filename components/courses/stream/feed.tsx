@@ -39,7 +39,7 @@ export default function StreamFeed() {
   }
   return (
     <>
-      {feed.map((v) =>
+      {feed?.map((v) =>
         isAnnouncement(v) ? (
           <FeedItem className="rounded-lg border" key={v.id}>
             <FeedItemHeader
