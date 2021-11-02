@@ -93,39 +93,19 @@ export default function MetadataComponent({ onSubmit, minUI }: MetaProps): JSX.E
           className="input rounded-md text-center sm:text-left text-sm"
           {...register('displayName', { required: true })}
         />
-        {true ? (
-          <>
-            <button
-              type="button"
-              onClick={() => cancel()}
-              className="sm:mt-4 btn py-2 ring-gray-300 text-black bg-gray-300 from-gray-300 to-gray-400"
-            >
-              ยกเลิก
-            </button>
-            <button
-              type="submit"
-              className="sm:mt-4 mt-2 text-white btn py-2 ring-apple-500 bg-apple-500 from-apple-500 to-apple-600"
-            >
-              {metadata ? 'บันทึก' : 'เสร็จสิ้น'}
-            </button>
-          </>
-        ) : (
-          <div className="flex flex-col-reverse sm:grid-cols-2 sm:grid gap-4 w-full">
-            <button
-              type="submit"
-              className="sm:mt-4 mt-2 text-white btn py-2 ring-apple-500 bg-apple-500 from-apple-500 to-apple-600"
-            >
-              {metadata ? 'บันทึก' : 'เสร็จสิ้น'}
-            </button>
-            <button
-              type="button"
-              onClick={() => cancel()}
-              className="sm:mt-4 btn py-2 ring-gray-300 text-black bg-gray-300 from-gray-300 to-gray-400"
-            >
-              ยกเลิก
-            </button>
-          </div>
-        )}
+        <button
+          type="button"
+          onClick={() => cancel()}
+          className="sm:mt-4 btn py-2 ring-gray-300 text-black bg-gray-300 from-gray-300 to-gray-400"
+        >
+          ยกเลิก
+        </button>
+        <button
+          type="submit"
+          className="sm:mt-4 mt-2 text-white btn py-2 ring-apple-500 bg-apple-500 from-apple-500 to-apple-600"
+        >
+          {metadata ? 'บันทึก' : 'เสร็จสิ้น'}
+        </button>
       </form>
       {Object.keys(errors).length != 0 && (
         <span className="font-bold text-sm text-red-500">กรุณาตรวจสอบข้อมูลที่กรอกให้ถูกต้อง</span>
