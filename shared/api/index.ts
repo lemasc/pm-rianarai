@@ -29,7 +29,7 @@ export const useSchedule = () => {
   const { metadata, bundle } = useAuth()
   const swr = useSWR(
     bundle && metadata ? ['schedule', metadata.class.toString()] : null,
-    async (key, _class) => (await getDocFromCache(doc(db, 'classes', _class))) ?? null
+    async (key, _class) => (await getDocFromCache(doc(db, 'classes', _class))).data() ?? null
   )
   return swr
 }

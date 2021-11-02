@@ -5,7 +5,6 @@ import { useProvideAuth, authContext } from './authContext'
 import { fuego } from './firebase'
 import { SWRConfig, Cache, Key } from 'swr'
 import { timeslotContext, useProvideTimeslot } from './timeslotContext'
-import { sendEvent, sendEventAsync } from './native'
 import { Map as ImmutableMap } from 'immutable'
 
 interface IProps {
