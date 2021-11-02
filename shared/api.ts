@@ -15,14 +15,6 @@ export type NextApiSessionRequest = NextApiRequest & { session: Session; uid: st
 
 export function withAuth(handler: Handler<NextApiSessionRequest, NextApiResponse>) {
   return async (req: NextApiSessionRequest, res: NextApiResponse<APIResponse>): Promise<void> => {
-    if (req.url?.startsWith('/api/client/bundle/')) {
-      // We should set the CORS headers as soon as we recieved the request.
-      res.setHeader('Access-Control-Allow-Credentials', 'true')
-      res.setHeader('Access-Control-Allow-Origin', '*')
-      res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Authorization, Accept')
-      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-      if (req.method === 'OPTIONS') return res.status(200).end()
-    }
     const authHeader = req.headers.authorization
     if (!authHeader) {
       return res.status(401).json({ success: false })

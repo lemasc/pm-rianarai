@@ -11,12 +11,18 @@ function chunk<Type>(array: Type[], size: number): Type[] {
 }
 
 const bundleCreator: NextApiHandler = async (req, res) => {
+  res.setHeader('Access-Control-Allow-Credentials', 'true')
+  res.setHeader('Access-Control-Allow-Origin', '*')
+  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Authorization, Accept')
+  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
   if (
     !req.query.class ||
     req.query.class.length !== 3 ||
     isNaN(parseInt(req.query.class.toString()))
   )
     return res.status(403).end()
+
+  if (req.method === 'OPTIONS') return res.status(200).end()
   const db = admin.firestore()
   try {
     const classes = await db.collection('classes').doc(req.query.class.toString()).get()
