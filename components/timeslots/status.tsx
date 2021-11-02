@@ -1,11 +1,10 @@
-import { useMeeting } from '@/shared/meetingContext'
-import { Meeting } from '@/types/meeting'
+import { Teacher } from '@/shared-types/classroom'
+import launchMeeting from '@/shared/meeting'
 import Link from 'next/link'
-import { ReactNodeArray } from 'react'
+import { ReactNode } from 'react'
 
 interface MeetingJoinProps {
-  meetings: Meeting[]
-  showNames: boolean
+  teachers: Teacher[]
   disabled: boolean
 }
 
@@ -37,10 +36,9 @@ export const MeetingNotFound: React.FC = () => {
   )
 }
 
-export const MeetingJoin: React.FC<MeetingJoinProps> = ({ showNames, meetings, disabled }) => {
-  const { launchMeeting } = useMeeting()
-  const buttons: ReactNodeArray = []
-  meetings.map((meeting, index) => {
+export const MeetingJoin: React.FC<MeetingJoinProps> = ({ teachers, disabled }) => {
+  const buttons: ReactNode[] = []
+  teachers.map((meeting, index) => {
     buttons.push(
       <button
         title={
@@ -53,7 +51,8 @@ export const MeetingJoin: React.FC<MeetingJoinProps> = ({ showNames, meetings, d
         className="zoom-btn w-full"
         onClick={() => launchMeeting(meeting)}
       >
-        {disabled ? 'Not In Time' : 'Launch Meetings'} {showNames && ' : ' + meeting.name}
+        {disabled ? 'Not In Time' : 'Launch Meetings'}{' '}
+        {teachers.length !== 1 && ' : ' + meeting.name}
       </button>
     )
   })

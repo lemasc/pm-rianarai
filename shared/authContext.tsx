@@ -1,53 +1,30 @@
 import { useState, useEffect, useContext, createContext } from 'react'
 import axios from 'axios'
-import LogRocket from 'logrocket'
-import { useCollection, Document } from 'swr-firestore-v9'
-import { useRouter } from 'next/router'
-import { getDoc, setDoc, doc, updateDoc, arrayUnion, serverTimestamp } from 'firebase/firestore'
-import {
-  createUserWithEmailAndPassword,
-  EmailAuthProvider,
-  FacebookAuthProvider,
-  fetchSignInMethodsForEmail,
-  GoogleAuthProvider,
-  reauthenticateWithCredential,
-  reauthenticateWithPopup,
-  signInWithEmailAndPassword,
-  signInWithPopup,
-  User,
-} from 'firebase/auth'
+import { Document, useDocument } from 'swr-firestore-v9'
+import { setDoc, doc, loadBundle, getDoc } from 'firebase/firestore'
+import { GoogleAuthProvider, signInWithCredential, User } from 'firebase/auth'
 
-import { ClassroomSessionResult } from '@/types/classroom'
-import { Provider, UserMetadata } from '@/types/auth'
-import { Announcement } from '@/types/announce'
+import { FirebaseResult, Provider, UserMetadata } from '@/types/auth'
 import { auth, db } from './firebase'
-import { db as _db } from './db'
+import { db as pluginDb } from './plugin'
 import { withAnalytics } from './analytics'
-import { logEvent, setUserId } from '@firebase/analytics'
-
-type FirebaseResult = {
-  success: boolean
-  message?: string
-}
+import { setUserId } from '@firebase/analytics'
+import { createEventListener, emitEvent, sendEventAsync } from './native'
+import { AuthChangeEvent, GoogleSignInResult } from '@/shared-types/auth'
+import { useRouter } from 'next/router'
 
 interface IAuthContext {
-  version: UserMetadata['upgrade']
-  isPWA: () => boolean
+  endpoint: string | undefined
   user: User | null
   ready: boolean
-  setWelcome: () => Promise<void>
-  classroom: ClassroomSessionResult[] | null
+  bundle: boolean
   remove: () => Promise<boolean>
-  announce: Document<Announcement>[]
-  markAsRead: (announceId: string) => Promise<void>
+  // announce: Document<Announcement>[]
+  // markAsRead: (announceId: string) => Promise<void>
   metadata: UserMetadata
-  getMethods: (email: string) => Promise<Provider[]>
-  signUp: (email: string, password: string) => Promise<FirebaseResult>
-  signIn: (email: string, password: string, reAuthenticate?: boolean) => Promise<FirebaseResult>
-  signInWithProvider: (provider: Provider, reAuthenticate?: boolean) => Promise<FirebaseResult>
+  signInWithGoogle: () => Promise<FirebaseResult>
   signOut: () => Promise<void>
   updateMeta: (meta: UserMetadata) => Promise<boolean>
-  setInsider: () => Promise<void>
 }
 
 export const authContext = createContext<IAuthContext | undefined>(undefined)
@@ -56,92 +33,70 @@ export const useAuth = (): IAuthContext | undefined => {
   return useContext(authContext)
 }
 
-const staticPages = ['/client-login', '/about', '/install', '/support']
-
 // Provider hook that creates auth object and handles state
 export function useProvideAuth(): IAuthContext {
-  const version = 'v2.3'
   const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
   const [metadata, setMetadata] = useState<UserMetadata>(undefined)
   const [ready, setReady] = useState<boolean>(false)
-  const [classroom, setClassroom] = useState<ClassroomSessionResult[] | null>(null)
-  const { data: announce } = useCollection<Announcement>(ready ? 'announcement' : null, {
-    where: [['enable', '==', true], ...(user ? [] : ([['needs_login', '==', false]] as any))],
+  const [bundle, setBundle] = useState(false)
+  const [endpoint, setEndpoint] = useState<string | undefined>()
+  /* const { data: announce } = useCollection<Announcement>(ready ? 'announcement' : null, {
+    where: [['enable', '==', true], ...(!user ? [] : ([['needs_login', '==', false]] as any))],
     orderBy: ['created_at', 'desc'],
     parseDates: ['created_at', 'released_at'],
     listen: true,
   })
-  console.log([...(user ? [] : ([['needs_login', 'asc']] as any)), ['created_at', 'desc']])
-  console.log()
-  const isPWA = (): boolean => {
-    const isPWA =
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      (window.navigator as any).standalone === true ||
-      window.matchMedia('(display-mode: standalone)').matches
-    if (isPWA) {
-      localStorage.setItem('lastPWA', new Date().valueOf().toString())
+*/
+  useEffect(() => {
+    let time = undefined
+    if (time) clearTimeout(time)
+    time = setTimeout(() => {
+      console.log('Ready,', user == null || metadata !== undefined)
+      setReady(true)
+    }, 1000)
+  }, [user, metadata])
+
+  useEffect(() => {
+    const unsubscribe = createEventListener<string>('api-endpoint', (endpoint) => {
+      axios.defaults.baseURL = endpoint
+      setEndpoint(endpoint)
+    })
+    return () => unsubscribe()
+  }, [user, metadata])
+
+  useEffect(() => {
+    if (!metadata) return
+    ;(async () => {
+      try {
+        const wpmBundle = await axios.get(
+          `${process.env.NEXT_PUBLIC_PLUGIN_ENDPOINT}/api/client/bundle/${metadata.class}`,
+          {
+            headers: {
+              Authorization: `Bearer ${await user.getIdToken(true)}`,
+            },
+            responseType: 'arraybuffer',
+          }
+        )
+        await loadBundle(pluginDb, wpmBundle.data)
+        setBundle(true)
+      } catch (err) {
+        setBundle(false)
+      }
+    })()
+  }, [metadata, bundle])
+
+  const signInWithGoogle = async (): Promise<FirebaseResult> => {
+    const { success, token, message } = (await sendEventAsync('sign-in')) as GoogleSignInResult
+    if (success && token) {
+      signInWithCredential(auth, GoogleAuthProvider.credential(token.id_token))
     }
-    return isPWA
+    return {
+      success,
+      message,
+    }
   }
 
-  const getMethods = async (email: string): Promise<Provider[]> => {
-    return (await fetchSignInMethodsForEmail(auth, email)) as Provider[]
-  }
-
-  const signUp = async (email: string, password: string): Promise<FirebaseResult> => {
-    try {
-      await createUserWithEmailAndPassword(auth, email, password)
-      return { success: true }
-    } catch (err) {
-      LogRocket.error(err)
-      return { success: false, message: err.code }
-    }
-  }
-  const signIn = async (
-    email: string,
-    password: string,
-    reAuthenticate?: boolean
-  ): Promise<FirebaseResult> => {
-    try {
-      if (reAuthenticate) {
-        await reauthenticateWithCredential(user, EmailAuthProvider.credential(email, password))
-      } else {
-        await signInWithEmailAndPassword(auth, email, password)
-      }
-      return { success: true }
-    } catch (err) {
-      LogRocket.error(err)
-      return { success: false, message: err.code }
-    }
-  }
-  const signInWithProvider = async (
-    p: Provider,
-    reAuthenticate?: boolean
-  ): Promise<FirebaseResult> => {
-    let provider
-    switch (p) {
-      case 'google.com':
-        provider = new GoogleAuthProvider()
-        break
-      case 'facebook.com':
-        provider = new FacebookAuthProvider()
-        break
-      default:
-        return { success: false }
-    }
-    try {
-      if (reAuthenticate) {
-        await reauthenticateWithPopup(user, provider)
-      } else {
-        await signInWithPopup(auth, provider)
-      }
-      return { success: true }
-    } catch (err) {
-      LogRocket.error(err)
-      return { success: false, message: err.code }
-    }
-  }
   const remove = async (): Promise<boolean> => {
     try {
       await user.delete()
@@ -154,13 +109,24 @@ export function useProvideAuth(): IAuthContext {
       return false
     }
   }
-  const signOut = async (): Promise<void> => {
+  const signOut = async (noPrompt?: boolean): Promise<void> => {
+    // We don't sign out users immediately.
+    // Ask the users before continuing.
+    if (!noPrompt) {
+      const result = await sendEventAsync('log-out')
+      if (!result) return
+    }
     await auth.signOut()
-    _db.courses.clear()
-    _db.courseWork.clear()
     setUser(null)
-    setMetadata(undefined)
   }
+
+  useEffect(() => {
+    const unsubscribe = createEventListener('log-out', () => {
+      signOut(true)
+    })
+    return () => unsubscribe()
+  }, [])
+
   const updateMeta = async (meta: UserMetadata): Promise<boolean> => {
     try {
       meta.name = user.displayName
@@ -171,134 +137,51 @@ export function useProvideAuth(): IAuthContext {
       }
       if (metadata && metadata.upgrade) meta.upgrade = metadata.upgrade
       await setDoc(doc(db, 'users/' + user.uid), meta)
-      LogRocket.log('Metadata update', meta)
       setMetadata(meta)
       return true
     } catch (err) {
       return false
     }
   }
+
   useEffect(() => {
     let _isMounted = true
-    let authReady = null
-
-    async function checkClassroom(token: string): Promise<void> {
-      try {
-        const api = await axios.get('/api/classroom/session', {
-          headers: {
-            Authorization: 'Bearer ' + token,
-          },
-        })
-        setClassroom(api.data.data)
-      } catch (err) {
-        console.error(err)
-        setClassroom([])
-      }
-    }
-
     return auth.onIdTokenChanged(async (curUser) => {
       if (!_isMounted) return
-      if (authReady) clearTimeout(authReady)
       if (curUser) {
-        // Check previous state if user exists
-        if (curUser !== user) {
-          setReady(false)
-        } else {
-          authReady = setTimeout(() => setReady(false), 1000)
-        }
+        if (user?.uid !== curUser?.uid) setReady(false)
+        setUser(curUser)
         // Check if user metadata exists.
-        LogRocket.identify(curUser.uid, {
-          name: curUser.displayName,
-          email: curUser.email,
-          pwa: isPWA(),
-        })
-        withAnalytics((a) => setUserId(a, curUser.uid))
         const meta = await getDoc(doc(db, 'users/' + curUser.uid))
         if (meta.exists) {
           setMetadata(meta.data() as UserMetadata)
-          checkClassroom(await curUser.getIdToken())
         } else {
           setMetadata(null)
         }
-        setUser(curUser)
-        clearTimeout(authReady)
-        const url = sessionStorage.getItem('url')
-        if (url && router.pathname !== url) {
-          return router.push(url)
-        }
-        sessionStorage.removeItem('url')
-        setReady(true)
+        withAnalytics((a) => setUserId(a, curUser.uid))
+        emitEvent<AuthChangeEvent>('auth-changed', {
+          token: await curUser.getIdToken(),
+        })
       } else {
-        authReady = setTimeout(() => {
-          if (router.pathname !== '/' && !staticPages.includes(router.pathname) && !user) {
-            sessionStorage.setItem('url', router.pathname)
-            router.replace('/')
-          } else {
-            setReady(true)
-          }
-        }, 1000)
         setUser(null)
+        emitEvent<AuthChangeEvent>('auth-changed')
+        //router.replace('/')
       }
       return () => {
         _isMounted = false
       }
     })
-  }, [router, user])
-
-  const markAsRead = async (announceId: string): Promise<void> => {
-    if (!user) return
-    const currentIds = new Set(metadata.announceId !== undefined ? metadata.announceId : [])
-    currentIds.add(announceId)
-    await updateDoc(doc(db, 'users/' + user.uid), {
-      announceId: arrayUnion(announceId),
-    })
-    withAnalytics((a) =>
-      logEvent(a, 'view_item', {
-        items: [
-          {
-            item_category: 'announcement',
-            item_id: announceId,
-          },
-        ],
-      })
-    )
-    setMetadata((meta) => ({ ...meta, announceId: Array.from(currentIds) }))
-  }
-  const setWelcome = async (): Promise<void> => {
-    console.log('set welcome')
-    if (user && metadata && metadata.upgrade !== version) {
-      await updateDoc(doc(db, 'users/' + user.uid), {
-        upgrade: version,
-      })
-      setMetadata((meta) => ({ ...meta, upgrade: version }))
-    }
-  }
-  const setInsider = async (): Promise<void> => {
-    if (!user || metadata.insider) return
-    await updateDoc(doc(db, 'users/' + user.uid), {
-      insider: true,
-      insiderAt: serverTimestamp(),
-    })
-    setMetadata((meta) => ({ ...meta, insider: true, insiderAt: new Date() }))
-  }
+  }, [user, router])
 
   return {
-    version,
     user,
-    announce,
-    markAsRead,
+    endpoint,
     metadata,
-    setWelcome,
-    classroom,
     remove,
     ready,
-    isPWA,
-    getMethods,
-    signUp,
-    signIn,
-    signInWithProvider,
+    bundle,
+    signInWithGoogle,
     signOut,
     updateMeta,
-    setInsider,
   }
 }

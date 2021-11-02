@@ -1,97 +1,120 @@
-import Head from 'next/head'
 import { useEffect, useState } from 'react'
 import { Transition } from '@headlessui/react'
 
-import LayoutComponent, { CONTAINER, HEADER } from '@/components/layout'
 import MetadataComponent from '@/components/auth/meta'
+import Title from '@/components/layout/title'
 import { useAuth } from '@/shared/authContext'
-import { XIcon } from '@heroicons/react/outline'
-import Link from 'next/link'
-import FooterComponent from '@/components/layout/footer'
+import Brand from '@/components/layout/brand'
+
+type Screen = 'account' | 'classroom' | 'program' | 'about' | 'signout'
+
+type Navigation = {
+  title: string
+  render?: JSX.Element
+  onClick?: () => void
+}
 
 export default function SettingsPage(): JSX.Element {
-  const { classroom } = useAuth()
+  const { signOut } = useAuth()
+  const [currentScreen, setScreen] = useState<Screen>('account')
   const [success, setSuccess] = useState<boolean>(false)
   useEffect(() => {
     if (success) setTimeout(() => setSuccess(false), 3000)
   }, [success])
-  return (
-    <div className="overflow-hidden min-h-screen flex flex-col dark:bg-gray-900 dark:text-white items-center justify-center">
-      <Head>
-        <title>การตั้งค่า - PM-RianArai</title>
-      </Head>
-      <LayoutComponent>
-        <div className={CONTAINER + 'gap-10 sm:gap-8 mb-20 md:mb-0'}>
-          <h1 className={HEADER}>การตั้งค่า</h1>
-          <Transition
-            show={success}
-            enter="ease-out duration-500"
-            enterFrom="opacity-0"
-            enterTo="opacity-100"
-            leave="ease-in duration-500"
-            leaveFrom="opactity-100"
-            leaveTo="opacity-0"
-          >
-            <div className="px-4 py-3 rounded-lg bg-green-200 text-green-700">
-              บันทึกการตั้งค่าเสร็จสิ้น
-            </div>
-          </Transition>
-          <div className="md:grid-cols-2 grid gap-4">
-            <div className="pb-4 border rounded bg-gray-50 dark:bg-gray-800">
-              <h2 className="text-2xl font-medium px-8 pt-8 pb-4 md:pb-8">ข้อมูลส่วนตัว</h2>
-              <MetadataComponent onSubmit={() => setSuccess(true)} />
-            </div>
-            <div className="border rounded bg-gray-50 dark:bg-gray-800 p-8 flex flex-col gap-4">
-              <h2 className="text-2xl font-medium">Google Classroom</h2>
-              {classroom ? (
-                <>
-                  <span className="font-light">
-                    เชื่อมต่อแล้ว {classroom ? classroom.length : 0} บัญชี
-                  </span>
-                  {classroom.map((c) => (
-                    <div
-                      key={c.email}
-                      className="items-center flex flex-row border dark:bg-gray-700 dark:hover:bg-gray-900 bg-white hover:bg-gray-100 cursor-pointer rounded p-4 gap-4"
-                    >
-                      <div className="flex sm:flex-row flex-col flex-grow gap-2 sm:items-center">
-                        <div className="flex flex-col flex-grow">
-                          <b className="text-lg sarabun-font">{c.name}</b>
-                          <span className="text-sm font-light">{c.email}</span>
-                        </div>
-                        <span className={c.valid ? 'text-green-500' : 'text-red-500'}>
-                          เชื่อมต่อ{c.valid ? 'แล้ว' : 'ไม่สำเร็จ'}
-                        </span>
-                      </div>
 
-                      <Link href={`/relogin?classroom=${c.id}`}>
-                        <a title="ลบบัญชี้นี้" className="outline-none hover:text-red-600">
-                          <XIcon className="h-5 w-5" />
-                        </a>
-                      </Link>
-                    </div>
-                  ))}
-                  {classroom.filter((c) => !c.valid).length > 0 && (
-                    <span className="font-medium text-red-500">
-                      คลิกปุ่มด้านล่างแล้วเข้าสู่ระบบด้วยบัญชีเดิมเพื่อเชื่อมต่อใหม่อีกครั้ง
-                    </span>
-                  )}
-                  <Link href="/api/classroom/authorize">
-                    <a
-                      title="เชื่อมต่อบัญชีใหม่หรือแก้ไขปัญหาการเชื่อมต่อเดิม"
-                      className="text-center w-full btn bg-green-500 from-green-500 to-green-600 text-white px-4 py-2 ring-green-500"
-                    >
-                      เชื่อมต่อบัญชี Google Classroom
-                    </a>
-                  </Link>
-                </>
-              ) : (
-                <span className="font-light">กำลังโหลดข้อมูลบัญชี...</span>
-              )}
+  function getOs() {
+    const ua = navigator?.userAgent ?? ''
+    return ua.slice(ua.indexOf('(') + 1, ua.indexOf(')'))
+  }
+  function getMode() {
+    return window && window.location.protocol === 'https:' ? 'Online' : 'Bundle'
+  }
+  const navigation: Record<string, Navigation> = {
+    account: {
+      title: 'บัญชี',
+      render: (
+        <div className="flex flex-col gap-4">
+          <h2 className="font-medium text-2xl">ข้อมูลส่วนตัว</h2>
+          <MetadataComponent onSubmit={() => console.log('Saved')} />
+        </div>
+      ),
+    },
+    /*   classroom: {
+      title: 'ข้อมูล Classroom',
+      render: <></>,
+    },
+    program: {
+      title: 'ตั้งค่าโปรแกรม',
+    },*/
+    about: {
+      title: 'เกี่ยวกับ RianArai',
+      render: (
+        <>
+          <div className="flex flex-row gap-6 items-center">
+            <img src="/logo.svg" draggable={false} width={75} height={75} alt="Logo" />
+            <div className="flex flex-col gap-2">
+              <Brand className="text-3xl" />
+              <span className="text-sm font-light text-gray-500">
+                เครื่องมือเดียวสำหรับการเรียนออนไลน์
+              </span>
             </div>
           </div>
+          <div className="form-container">
+            <span>เวอร์ชั่น:</span>
+            <span>0.0.1</span>
+            <span>เวอร์ชั่นไคลเอนท์:</span>
+            <span>3.0.0-beta.1</span>
+            <span>เวอร์ชั่น Electron:</span>
+            <span>{process.versions['electron']}</span>
+            <span>แชนแนลของบิวด์:</span>
+            <span>Insider</span>
+            <span>ซอร์สของบิวด์:</span>
+            <span>{getMode()}</span>
+            <span>ระบบปฎิบัติการ:</span>
+            <span>{getOs()}</span>
+          </div>
+        </>
+      ),
+    },
+    signout: { title: 'ออกจากระบบ', onClick: () => signOut() },
+  }
+  return (
+    <>
+      <Title>
+        <h2>การตั้งค่า</h2>
+      </Title>
+      <div className="flex flex-row py-4 divide-x">
+        <div className="flex flex-col w-2/5 max-w-xs" style={{ maxWidth: '15rem' }}>
+          {Object.entries(navigation).map(([screen, n]) => (
+            <button
+              title={n.title}
+              onClick={() => (n.onClick ? n.onClick() : setScreen(screen as Screen))}
+              key={screen}
+              className={`hover:opacity-75 px-2 py-3 ${
+                screen === currentScreen ? 'font-medium' : 'opacity-60'
+              } text-left`}
+            >
+              {n.title}
+            </button>
+          ))}
         </div>
-      </LayoutComponent>
-      <FooterComponent />
-    </div>
+        <div className="px-8 py-4 font-light flex flex-col gap-8">
+          {navigation[currentScreen].render}
+        </div>
+      </div>
+      <Transition
+        show={success}
+        enter="ease-out duration-500"
+        enterFrom="opacity-0"
+        enterTo="opacity-100"
+        leave="ease-in duration-500"
+        leaveFrom="opactity-100"
+        leaveTo="opacity-0"
+      >
+        <div className="px-4 py-3 rounded-lg bg-green-200 text-green-700">
+          บันทึกการตั้งค่าเสร็จสิ้น
+        </div>
+      </Transition>
+    </>
   )
 }

@@ -1,14 +1,19 @@
-const defaultTheme = require('tailwindcss/defaultTheme')
 module.exports = {
   mode: 'jit',
-  purge: ['./pages/**/*.{js,ts,jsx,tsx}', './components/**/*.{js,ts,jsx,tsx}'],
-  darkMode: 'media', // or 'media' or 'class'
+  purge: ['./renderer/pages/**/*.{js,ts,jsx,tsx}', './renderer/components/**/*.{js,ts,jsx,tsx}'],
+  darkMode: 'class', // or 'media' or 'class'
   theme: {
-    screens: {
-      ...defaultTheme.screens,
-      md: '900px',
-    },
     extend: {
+      width: {
+        card: '22rem',
+      },
+      minWidth: {
+        menu: '15rem',
+      },
+      maxWidth: {
+        '2/5': '40%',
+        card: '20rem',
+      },
       colors: {
         'paris-daisy': {
           DEFAULT: '#FFEB66',
@@ -62,14 +67,73 @@ module.exports = {
           800: '#073978',
           900: '#042248',
         },
+        'rianarai-bkup': {
+          DEFAULT: '#FFD46E',
+          50: '#FFFFFF',
+          100: '#FFFFFF',
+          200: '#FFFFFF',
+          300: '#FFF2D4',
+          400: '#FFE3A1',
+          500: '#FFD46E',
+          600: '#FFC53B',
+          700: '#FFB608',
+          800: '#D49500',
+          900: '#A17100',
+        },
+        rianarai: {
+          DEFAULT: '#FFB300',
+          50: '#FFF7E5',
+          100: '#FFF0CC',
+          200: '#FFE199',
+          300: '#FFD166',
+          400: '#FFC233',
+          500: '#FFB300',
+          600: '#CC8F00',
+          700: '#996B00',
+          800: '#664800',
+          900: '#332400',
+        },
+        mariner: {
+          DEFAULT: '#2069DF',
+          50: '#E9F0FC',
+          100: '#D2E1F9',
+          200: '#A6C3F2',
+          300: '#79A5EC',
+          400: '#4D87E5',
+          500: '#2069DF',
+          600: '#1A54B2',
+          700: '#133F86',
+          800: '#0D2A59',
+          900: '#06152D',
+        },
+        jaffa: {
+          DEFAULT: '#F28131',
+          50: '#FFFFFF',
+          100: '#FEF6F1',
+          200: '#FBD9C1',
+          300: '#F8BC91',
+          400: '#F59F61',
+          500: '#F28131',
+          600: '#E2660E',
+          700: '#B2510B',
+          800: '#823B08',
+          900: '#522505',
+        },
+        sunshade: {
+          DEFAULT: '#FF9229',
+          50: '#FFFFFF',
+          100: '#FFFAF5',
+          200: '#FFE0C2',
+          300: '#FFC68F',
+          400: '#FFAC5C',
+          500: '#FF9229',
+          600: '#F57800',
+          700: '#C25F00',
+          800: '#8F4600',
+          900: '#5C2D00',
+        },
       },
     },
   },
-  variants: {
-    extend: {
-      ringWidth: ['hover'],
-      ringColor: ['hover'],
-    },
-  },
-  plugins: [],
+  plugins: [require('@tailwindcss/forms')],
 }

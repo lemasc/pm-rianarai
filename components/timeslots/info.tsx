@@ -1,5 +1,6 @@
-import { useMeeting } from '@/shared/meetingContext'
-import { Meeting, TimeSlots } from '@/types/meeting'
+import { Teacher } from '@/shared-types/classroom'
+import { useTeachers } from '@/shared/api'
+import { TimeSlots } from '@/types/meeting'
 import { ReactNodeArray, useEffect, useState } from 'react'
 import { MeetingNotFound, MeetingJoin } from './status'
 
@@ -32,20 +33,28 @@ export function MeetingPending({ slot }: { slot: TimeSlots }): JSX.Element {
 }
 
 export function MeetingInfo({ slot, disabled }: MeetingInfoProps): JSX.Element {
-  const [meeting, setMeeting] = useState<Meeting[]>([])
-  const { ready, meeting: _meeting } = useMeeting()
+  const [teachers, setTeachers] = useState<Teacher[]>([])
+  const { data: data } = useTeachers()
   useEffect(() => {
-    if (!_meeting || !slot) return
-    setMeeting(_meeting.filter((m) => slot.teacher.includes(m.name)))
-  }, [_meeting, slot])
-  if (!ready || !slot) return null
+    if (!data || !slot) return
+    setTeachers(
+      data
+        .filter((t) => {
+          const name = t.displayName ?? t.name
+          return slot.teacher.includes(name)
+        })
+        .toList()
+        .toArray()
+    )
+  }, [data, slot])
+  if (!slot) return null
   return (
     <div className="flex flex-col md:grid md:grid-cols-2 w-full md:divide-x divide-gray-400 text-center">
       <div className="flex flex-col justify-center items-center">
         <div className="text-2xl p-4 text-blue-600 font-medium px-8 max-w-md">
-          {meeting.length > 0 &&
+          {teachers.length > 0 &&
             slot.code[0].match(/([0-9]){4}\w/g) !== null &&
-            meeting[0].subject + ' : '}
+            teachers[0].subject + ' : '}
           {slot.code.length > 1 && <br />}
           {slot.code.join(' , ')}
         </div>
@@ -57,10 +66,10 @@ export function MeetingInfo({ slot, disabled }: MeetingInfoProps): JSX.Element {
         </span>
       </div>
       <div className="flex flex-col justify-center items-center">
-        {meeting.length === 0 || meeting[0].meet ? (
+        {teachers.length === 0 || teachers[0].meetings?.type === 'meet' ? (
           <MeetingNotFound />
         ) : (
-          <MeetingJoin meetings={meeting} showNames={meeting.length != 1} disabled={disabled} />
+          <MeetingJoin teachers={teachers} disabled={disabled} />
         )}
       </div>
     </div>

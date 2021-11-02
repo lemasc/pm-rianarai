@@ -51,20 +51,14 @@ export default function MetadataComponent({ onSubmit, minUI }: MetaProps): JSX.E
     setValue('displayName', metadata.displayName)
   }, [metadata, setValue])
 
-  function isMinUI(): boolean {
-    return minUI && width > 798 && width < 1210
-  }
   return (
     <>
       <form
-        className={
-          'flex flex-col px-8 pb-2 gap-2' +
-          (isMinUI() ? ' items-center' : ' sm:grid sm:grid-cols-2 gap-x-4')
-        }
+        className={'flex flex-col py-2 gap-2 sm:grid sm:grid-cols-2 gap-x-4'}
         onSubmit={handleSubmit(formSubmit)}
       >
         <label htmlFor="class" className="py-1 sm:py-2 sm:text-left">
-          ห้องเรียน :
+          ระดับชั้น :
         </label>
         <div className="flex flex-row gap-2 items-center justify-center">
           <input
@@ -90,9 +84,7 @@ export default function MetadataComponent({ onSubmit, minUI }: MetaProps): JSX.E
             })}
           />
         </div>
-        <div
-          className={(isMinUI() ? '' : 'sm:text-left') + ' py-1 sm:py-2 flex flex-col align-middle'}
-        >
+        <div className={'sm:text-left py-1 sm:py-2 flex flex-col align-middle'}>
           <label htmlFor="name">อยากให้เราเรียกคุณว่าอะไร? </label>
           <span className="text-gray-400 text-xs py-2">ใส่อิโมจิหรือภาษาอื่น ๆ ลงก็ได้นะ</span>
         </div>
@@ -101,14 +93,8 @@ export default function MetadataComponent({ onSubmit, minUI }: MetaProps): JSX.E
           className="input rounded-md text-center sm:text-left text-sm"
           {...register('displayName', { required: true })}
         />
-        {!isMinUI() ? (
+        {true ? (
           <>
-            <button
-              type="submit"
-              className="sm:mt-4 mt-2 text-white btn py-2 ring-apple-500 bg-apple-500 from-apple-500 to-apple-600"
-            >
-              {metadata ? 'บันทึก' : 'เสร็จสิ้น'}
-            </button>
             <button
               type="button"
               onClick={() => cancel()}
@@ -116,9 +102,15 @@ export default function MetadataComponent({ onSubmit, minUI }: MetaProps): JSX.E
             >
               ยกเลิก
             </button>
+            <button
+              type="submit"
+              className="sm:mt-4 mt-2 text-white btn py-2 ring-apple-500 bg-apple-500 from-apple-500 to-apple-600"
+            >
+              {metadata ? 'บันทึก' : 'เสร็จสิ้น'}
+            </button>
           </>
         ) : (
-          <div className="flex flex-col sm:grid-cols-2 sm:grid gap-4 w-full">
+          <div className="flex flex-col-reverse sm:grid-cols-2 sm:grid gap-4 w-full">
             <button
               type="submit"
               className="sm:mt-4 mt-2 text-white btn py-2 ring-apple-500 bg-apple-500 from-apple-500 to-apple-600"

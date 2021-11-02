@@ -28,12 +28,7 @@ export default function ModalComponent({
   const closeRef = useRef<HTMLButtonElement>(null)
   return (
     <Transition show={show} as={Fragment}>
-      <Dialog
-        as="div"
-        className="fixed inset-0 overflow-y-auto z-20"
-        onClose={onClose}
-        initialFocus={closeRef}
-      >
+      <Dialog as="div" className="fixed inset-0 z-20" onClose={onClose} initialFocus={closeRef}>
         <div className="min-h-screen px-4 text-center">
           <Transition.Child
             as={Fragment}
@@ -63,12 +58,12 @@ export default function ModalComponent({
             <div
               className={
                 size +
-                ' inline-block w-full my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-2xl'
+                ' inline-block w-full my-8 overflow-hidden text-left align-middle transition-all transform bg-white shadow-xl rounded-lg'
               }
             >
               <Dialog.Title
                 as="h3"
-                className={'flex flex-row px-6 py-4 text-lg leading-6 ' + titleClass}
+                className={'flex flex-row px-4 py-4 text-lg leading-6 border-b ' + titleClass}
               >
                 <div className="flex flex-grow">{title}</div>
                 <button

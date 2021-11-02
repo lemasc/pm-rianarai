@@ -12,7 +12,7 @@ export default function AuthSpinner(): JSX.Element {
       leave="ease-in duration-200"
       leaveFrom="opactity-100"
       leaveTo="opacity-0"
-      className="fixed z-20 inset-0 overflow-y-auto"
+      className="fixed z-40 inset-0 overflow-y-auto"
       role="dialog"
       aria-modal="true"
     >

@@ -12,3 +12,8 @@ export interface UserMetadata {
   insider?: boolean
   insiderAt?: Date | any
 }
+
+export type FirebaseResult = {
+  success: boolean
+  message?: string
+}

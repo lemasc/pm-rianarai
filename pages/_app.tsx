@@ -1,29 +1,33 @@
+import Head from 'next/head'
 import { AppProps } from 'next/app'
+import LayoutComponent from '@/components/layout'
 import { MainProvider } from '@/shared/index'
-//import AuthSpinner from '@/components/auth/spinner'
-import LogRocket from 'logrocket'
-import MaintenancePage from './maintenance'
 
 import 'tailwindcss/tailwind.css'
+import '../fonts/index.css'
 import '../styles/globals.css'
-import 'tippy.js/dist/tippy.css'
+import '../styles/content.css'
 import '../styles/react-tabs.css'
-import 'react-circular-progressbar/dist/styles.css'
+import 'react-loading-skeleton/dist/skeleton.css'
 import { useRouter } from 'next/router'
 
 function App({ Component, pageProps }: AppProps): JSX.Element {
   const router = useRouter()
-  if (process.env.NODE_ENV === 'production') LogRocket.init('sg61xt/pm-rianarai-i4kpt')
-  if (router.pathname == '/about' || router.pathname == '/support')
-    return (
-      <MainProvider>
-        <Component {...pageProps} />
-      </MainProvider>
-    )
   return (
-    <MainProvider>
-      <MaintenancePage {...pageProps} />
-    </MainProvider>
+    <>
+      <Head>
+        <title>RianArai</title>
+      </Head>
+      <MainProvider>
+        {router.pathname === '/splash' ? (
+          <Component {...pageProps} />
+        ) : (
+          <LayoutComponent>
+            <Component {...pageProps} />
+          </LayoutComponent>
+        )}
+      </MainProvider>
+    </>
   )
 }
 

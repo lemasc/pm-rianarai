@@ -5,7 +5,7 @@ import { useWindowWidth } from '@react-hook/window-size/throttled'
 
 import { TimeSlots } from '@/types/meeting'
 import PaginationComponent from './layout/pagination'
-import { useMeeting } from '@/shared/meetingContext'
+import { useSchedule } from '@/shared/api'
 
 type dataTimeSlots = {
   start: string[]
@@ -57,7 +57,7 @@ export default function TimetableComponent(): JSX.Element {
   const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday']
   const daysTH = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์']
   const [curDay, setCurday] = useState<number>(dayjs().day())
-  const { schedule: data } = useMeeting()
+  const { data } = useSchedule()
   const width = useWindowWidth()
   // BREAKPOINT Breakpoints
   const BREAKPOINT = 640

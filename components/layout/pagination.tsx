@@ -18,24 +18,25 @@ export default function Pagination({
   className,
 }: PaginationProps): JSX.Element {
   return (
-    <div className="flex flex-row justify-center py-2 px-4">
-      <div className="w-4 h-4 pt-1">
-        {showIcons && (
+    <div className="flex flex-row items-center py-2 px-4">
+      {showIcons && (
+        <div className="w-6 h-6">
           <ChevronLeftIcon
             className={index == 0 ? 'cursor-not-allowed opacity-25' : 'cursor-pointer'}
             onClick={() => index !== 0 && onChange(index - 1)}
           />
-        )}
-      </div>
-      <div className={'flex px-4 justify-center ' + className}>{name}</div>
-      <div className="w-4 h-4 pt-1">
-        {showIcons && (
+        </div>
+      )}
+      <div className={'px-4 text-center ' + className}>{name}</div>
+
+      {showIcons && (
+        <div className="w-6 h-6">
           <ChevronRightIcon
             className={index + 1 == length ? 'cursor-not-allowed opacity-25' : 'cursor-pointer'}
             onClick={() => index + 1 !== length && onChange(index + 1)}
           />
-        )}
-      </div>
+        </div>
+      )}
     </div>
   )
 }
