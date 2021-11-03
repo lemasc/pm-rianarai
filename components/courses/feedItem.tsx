@@ -7,14 +7,11 @@ import buddhistEra from 'dayjs/plugin/buddhistEra'
 import th from 'dayjs/locale/th'
 import { WorkState } from '@/shared-types/classroom'
 import { useAuth } from '@/shared/authContext'
+import { isWorkSubmitted } from '@/shared/work'
 
 dayjs.locale(th)
 dayjs.extend(localizedFormat)
 dayjs.extend(buddhistEra)
-
-function isWorkSubmitted(state: WorkState) {
-  return state === 'TURNED_IN' || state === 'RETURNED'
-}
 
 export function showUpdateTime(creationTime, updateTime) {
   // We allow the gap time between creationTime and updateTime for 30 seconds.

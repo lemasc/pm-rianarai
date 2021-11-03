@@ -1,5 +1,5 @@
 import Markdown from '@/components/markdown'
-import { StaticAttachment, Submission, WorkState } from '@/shared-types/classroom'
+import { isCourseWork, StaticAttachment, Submission } from '@/shared-types/classroom'
 import dayjs from 'dayjs'
 import buddhistEra from 'dayjs/plugin/buddhistEra'
 import { ComponentProps, createElement, ReactNode } from 'react'
@@ -7,6 +7,7 @@ import Attachments from '../attachments'
 import { showUpdateTime } from '../feedItem'
 import Skeleton from 'react-loading-skeleton'
 import { useCourseView } from '../viewContext'
+import { createDueDate, createState, getColor, getStateName } from '@/shared/work'
 
 dayjs.extend(buddhistEra)
 
@@ -18,19 +19,6 @@ type DetailResource = {
   description?: string
   materials?: StaticAttachment[]
   maxPoints?: number
-}
-
-function getStateName(state: WorkState | 'LATE') {
-  switch (state) {
-    case 'RETURNED':
-      return 'ส่งคืนแล้ว'
-    case 'TURNED_IN':
-      return 'ส่งแล้ว'
-    case 'LATE':
-      return 'เลยกำหนด'
-    default:
-      return 'มอบหมายแล้ว'
-  }
 }
 
 function Text<T extends React.ElementType<any>>({
@@ -106,6 +94,14 @@ export default function DetailModal({
                 <br />
                 {showUpdateTime(data.creationTime, data.updateTime) &&
                   dayjs(data.updateTime).format('แก้ไขเมื่อ DD MMM BBBB เวลา HH:mm น.')}
+                {isCourseWork(data) && (
+                  <>
+                    <br />
+                    {data.dueDate
+                      ? createDueDate(data).format('ครบกำหนดวันที่ DD MMM BBBB เวลา HH:mm น.')
+                      : 'ไม่มีวันครบกำหนด'}
+                  </>
+                )}
               </>
             )}
           </Text>
@@ -128,7 +124,7 @@ export default function DetailModal({
               width={150}
               height={24}
               loaded={submission !== undefined}
-              className={'text-lg text-blue-500'}
+              className={`text-lg ${getColor(createState(submission?.state, data))}`}
             >
               {getStateName(submission?.state)}
             </Text>

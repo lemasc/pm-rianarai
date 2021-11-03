@@ -1,6 +1,10 @@
 module.exports = {
   mode: 'jit',
-  purge: ['./renderer/pages/**/*.{js,ts,jsx,tsx}', './renderer/components/**/*.{js,ts,jsx,tsx}'],
+  purge: [
+    './renderer/pages/**/*.{js,ts,jsx,tsx}',
+    './renderer/components/**/*.{js,ts,jsx,tsx}',
+    './renderer/shared/work.ts',
+  ],
   darkMode: 'class', // or 'media' or 'class'
   theme: {
     extend: {

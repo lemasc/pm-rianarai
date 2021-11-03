@@ -1,25 +1,12 @@
-import { WorkFeed as Feed, isCourseWork, CourseWork } from '@/shared-types/classroom'
+import { WorkFeed as Feed, isCourseWork } from '@/shared-types/classroom'
 import { useCourseWork, useMaterials, useSubmissions, useTopics } from '@/shared/api'
 import { List, Seq, Collection } from 'immutable'
 import { useEffect, useState } from 'react'
-import dayjs from 'dayjs'
-import utc from 'dayjs/plugin/utc'
 import { FeedItem, FeedItemHeader } from '../feedItem'
 import Skeleton from 'react-loading-skeleton'
 import { useCourseView } from '../viewContext'
-
-dayjs.extend(utc)
-
-function createDueDate(work: CourseWork) {
-  if (!work.dueDate) return undefined
-  let instance = dayjs.utc(Object.values(work.dueDate).join('/'))
-  if (work.dueTime.hours && work.dueTime.minutes) {
-    instance = instance.hour(work.dueTime.hours).minute(work.dueTime.minutes)
-  } else {
-    instance = instance.hour(23).minute(59)
-  }
-  return instance
-}
+import dayjs from 'dayjs'
+import { createDueDate } from '@/shared/work'
 
 export default function StreamFeed() {
   const { course, setContentModal } = useCourseView()
