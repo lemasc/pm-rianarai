@@ -4010,10 +4010,10 @@ supports-color@^7.1.0:
   dependencies:
     has-flag "^4.0.0"
 
-swr-firestore-v9@1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/swr-firestore-v9/-/swr-firestore-v9-1.0.2.tgz#89113cafd93ab203dd92b42c31f972fcb19272bc"
-  integrity sha512-3e7B3Rh5nUSxbSkngk9ei8D/khioqmS73gAqClHZPOxO7yjjYdZKyUREcr45dkbvKAviIg5/lvnM/4W2GQVY6Q==
+swr-firestore-v9@^1.0.3:
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/swr-firestore-v9/-/swr-firestore-v9-1.0.3.tgz#0f796a65076a2947450266fc14339bf7ff0703d6"
+  integrity sha512-nEC7mT84rWQgOWV4qQlmRE0siAVI1HpV+RElKGltGai7Np7mR0HyiSIGBh1xOjz7kIxuV9k33+mI6M02mOXjng==
   dependencies:
     lodash.get "^4.4.2"
     lodash.set "^4.3.2"

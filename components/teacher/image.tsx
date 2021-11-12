@@ -11,9 +11,8 @@ export default function TeacherImage({
   ...rest
 }: { teacher?: Teacher } & Exclude<ComponentProps<'img'>, 'src'>) {
   const { endpoint } = useAuth()
-  const { data: teachers } = useTeachers()
   const [error, setError] = useState(false)
-  const skeleton = teachers === undefined
+  const skeleton = teacher === undefined
   return (
     <>
       {(error || skeleton) && (

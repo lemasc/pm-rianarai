@@ -126,13 +126,14 @@ export default function DetailModal({
               loaded={submission !== undefined}
               className={`text-lg ${getColor(createState(submission?.state, data))}`}
             >
-              {getStateName(submission?.state)}
+              {getStateName(createState(submission?.state, data))}
             </Text>
 
             <Text as="span" width={50} loaded={data !== undefined && submission !== undefined}>
-              {submission?.assignedGrade
-                ? `${submission.assignedGrade}/${data?.maxPoints}`
-                : `${data?.maxPoints} คะแนน`}
+              {data?.maxPoints &&
+                (submission?.assignedGrade
+                  ? `${submission.assignedGrade}/${data?.maxPoints}`
+                  : `${data?.maxPoints} คะแนน`)}
             </Text>
           </div>
         )}

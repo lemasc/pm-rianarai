@@ -5,6 +5,7 @@ import { State, TimeSlots, TimeSlotsMemory } from '@/types/meeting'
 import { useRouter } from 'next/router'
 import { useSchedule } from './api'
 import { emitEvent } from './native'
+import { useAuth } from './authContext'
 
 export interface Schedule {
   [days: string]: TimeSlots[]
@@ -49,8 +50,10 @@ export const useTimeslot = (): ITimeSlotContext => {
  * to make it simpler to do any other tasks (such as notifications).
  */
 export function useProvideTimeslot(): ITimeSlotContext {
+  const { metadata } = useAuth()
   const router = useRouter()
   const { data: schedule } = useSchedule()
+  const [currentClass, setClass] = useState<string | null>(null)
   const [nextSlot, setNextSlot] = useState(false)
   const [slots, setSlots] = useState<TimeSlotsMemory>({ active: null, next: null })
   const [state, setState] = useState<State>('')
@@ -71,6 +74,10 @@ export function useProvideTimeslot(): ITimeSlotContext {
 
   // Main logic code.
   useEffect(() => {
+    if (!metadata) {
+      setClass(null)
+      return
+    }
     function getActualTime(t: string): string {
       return dayjs()
         .hour(parseInt(t.slice(0, 2)))
@@ -89,7 +96,7 @@ export function useProvideTimeslot(): ITimeSlotContext {
       const timeString = date.toLocaleTimeString('th-TH', { hour: '2-digit', minute: '2-digit' })
       const target = schedule[curDay]
       // If the time is still in range, don't check anything.
-      if (inTimeRange(timeString, slots.active)) {
+      if (inTimeRange(timeString, slots.active) && metadata.class === currentClass) {
         setNextSlot(inNextRange(timeString, slots.active, slots.next))
         setState('active')
         return
@@ -111,7 +118,6 @@ export function useProvideTimeslot(): ITimeSlotContext {
           setSlots({ active: target[i], next: target[i + 1] ? target[i + 1] : null })
           setState('active')
           setNextSlot(inNextRange(timeString, target[i], target[i + 1]))
-          return
         } else if (
           target[i + 1] &&
           timeString > target[i].end &&
@@ -119,13 +125,14 @@ export function useProvideTimeslot(): ITimeSlotContext {
         ) {
           setSlots({ active: null, next: target[i + 1] })
           setState('break')
-          return
         }
       }
+      setClass(metadata.class.toString())
+      return
     }
     setSlots({ active: null, next: null })
     setState('active')
-  }, [schedule, curDay, date, slots.active, slots.next])
+  }, [schedule, curDay, date, slots.active, slots.next, metadata, currentClass])
 
   // Notifications
   useEffect(() => {
@@ -139,7 +146,10 @@ export function useProvideTimeslot(): ITimeSlotContext {
             body: `${slot.code.join('/')} (${slot.teacher.join('/')})`,
           }
         )
-        newNotif.onclick = () => emitEvent('focus-window')
+        newNotif.onclick = () => {
+          emitEvent('focus-window')
+          router.replace('/')
+        }
         return newNotif
       })
     }

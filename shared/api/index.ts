@@ -16,6 +16,7 @@ import { db } from '../plugin'
 import { useEffect, useState } from 'react'
 import { fetchWithIdsMap, useAPIFetcher, useAPIFetcherWithContent } from './base'
 import { LegacyMeeting } from '@/types/meeting'
+import { useCollection } from 'swr-firestore-v9'
 
 type WithDisplayName = {
   name: string
@@ -38,7 +39,7 @@ export const useCourses = () => useAPIFetcher<Course>('/courses')
 
 export const useTeachers = () => {
   const { data: courses } = useCourses()
-  const { bundle, metadata } = useAuth()
+  const { bundle, metadata, user } = useAuth()
   // Stores actual classroom data
   const [classroom, setClassroom] = useState<Map<string, Teacher> | undefined>()
   // Google Classroom Fetch is seperated from the Firestore Cache logic.
@@ -47,6 +48,7 @@ export const useTeachers = () => {
   )
   useEffect(() => {
     swr.mutate()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [courses])
   // Instead of reloading data from firestore everytime.
   // We store this in useSWRInfinite hook to cache and share data between components.
@@ -66,6 +68,24 @@ export const useTeachers = () => {
       })) as unknown as LegacyMeeting[]
     }
   )
+
+  const { data: _googleUserData } = useCollection<Teacher>(
+    user ? `users/${user.uid}/courses` : null,
+    {
+      listen: true,
+      where: ['source', '==', 'google'],
+    }
+  )
+
+  const [googleUserData, setGoogleUserData] = useState<Map<string, Teacher>>(Map())
+
+  useEffect(() => {
+    setGoogleUserData(() =>
+      Map<string, Teacher>().withMutations((map) => {
+        _googleUserData?.map((c) => map.set(c.id, c))
+      })
+    )
+  }, [_googleUserData])
 
   useEffect(() => {
     //if (swr.data && swr.data.size > 0) {
@@ -87,8 +107,9 @@ export const useTeachers = () => {
             type: data.meet ? 'meet' : 'zoom',
           }
           let processed = false
-          if (Array.isArray(data.userId)) {
-            data.userId.map((id) => {
+          const customGoogleData = googleUserData.get(data.id)
+          if (customGoogleData && Array.isArray(customGoogleData.userId)) {
+            customGoogleData.userId.map((id) => {
               if (!classroom.get(id)) return
               map.set(id, {
                 ...classroom.get(id),
@@ -96,6 +117,7 @@ export const useTeachers = () => {
                 displayName: data.name,
                 source: 'google',
                 subject: data.subject,
+                localId: data.id,
               })
               processedGoogleIds.add(id)
               processed = true
@@ -111,26 +133,24 @@ export const useTeachers = () => {
             })
           }
         })
-        Set(classroom.keys())
-          .subtract(processedGoogleIds)
-          .map((id) => {
-            map.set(id, {
-              ...classroom.get(id),
-              source: 'google',
-            })
-          })
-        setClassroom(
-          map
-            .sortBy((v) => v.displayName ?? v.name)
-            .sort((v) => (v.subject ? 0 : -1))
-            .asImmutable()
-        )
+        const notAssigned = Map<string, Teacher>()
+          .withMutations((map) =>
+            Set(classroom.keys())
+              .subtract(processedGoogleIds)
+              .map((id) => {
+                map.set(id, {
+                  ...classroom.get(id),
+                  source: 'google',
+                })
+              })
+          )
+          .sortBy((v) => v.displayName ?? v.name)
+        setClassroom(notAssigned.concat(map.sortBy((v) => v.displayName ?? v.name)))
       }
     })()
-    // }
     // Yes, we know the useEffect dependencies, but we should only listen based on the swr data fields.
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [swr.data, snapshots])
+  }, [swr.data, snapshots, googleUserData])
 
   return { ...swr, data: classroom }
 }

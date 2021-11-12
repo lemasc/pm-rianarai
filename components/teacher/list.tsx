@@ -8,8 +8,11 @@ import TeacherImage from './image'
 import GoogleBadge from './google'
 import ModalComponent from '../modal'
 import launchMeeting from '@/shared/meeting'
+import { useAuth } from '@/shared/authContext'
+import { deleteDoc, setDoc } from 'swr-firestore-v9'
+import { arrayUnion } from '@firebase/firestore'
 
-const TeacherNotFound = dynamic(() => import('./notfound'))
+const TeacherLinkAccount = dynamic(() => import('./link'))
 
 type TeacherInfoProps = {
   desc?: string
@@ -26,7 +29,7 @@ function TeacherInfo({
       <h2 className={`text-lg font-bold truncate ${button ? 'hover:underline' : ''}`}>{name}</h2>
       <GoogleBadge teacher={teacher} />
       <span className={!desc && !teacher?.subject ? 'text-red-500' : undefined}>
-        {desc ?? teacher.subject ? `วิชา${teacher.subject}` : 'ยังไม่ได้ตั้งค่ารายวิชา'}
+        {desc ?? (teacher.subject ? `วิชา${teacher.subject}` : 'ยังไม่ได้ตั้งค่ารายวิชา')}
       </span>
     </div>
   )
@@ -66,11 +69,35 @@ function TeacherCard({ desc, teacher, ...rest }: TeacherCardProps) {
 }
 
 function TeacherModal({ state, onClose }: { state: ModalState; onClose: () => void }) {
+  const { user } = useAuth()
   const { data: teachers } = useTeachers()
   const teacher = teachers?.get(state.id)
   if (!teacher) return null
   const name = getName(teacher)
   const upper = (text: string) => text.slice(0, 1).toUpperCase() + text.slice(1)
+
+  const notAssigned = teachers
+    ?.filter((c) => c.source !== 'google' && c.meetings !== undefined)
+    .sortBy((c) => c.subject)
+
+  const linkAccount = async (linkId: string) => {
+    try {
+      setDoc(`users/${user.uid}/courses/${linkId}`, {
+        source: teacher.source,
+        userId: arrayUnion(teacher.id),
+      })
+    } catch (err) {
+      console.error(err)
+    }
+  }
+  const unlinkAccount = async () => {
+    try {
+      if (teacher.source !== 'google') return
+      deleteDoc(`users/${user.uid}/courses/${teacher.localId}`)
+    } catch (err) {
+      console.error(err)
+    }
+  }
   return (
     <div className="p-4 flex flex-col gap-4 overflow-auto" style={{ maxHeight: '75vh' }}>
       <div className="flex flex-row items-center gap-4">
@@ -100,18 +127,28 @@ function TeacherModal({ state, onClose }: { state: ModalState; onClose: () => vo
               <Password text={teacher.meetings.code} />
             </span>
           </div>
-          <button
-            className="zoom-btn kanit-font"
-            onClick={() => {
-              launchMeeting(teacher.meetings)
-              onClose()
-            }}
-          >
-            เข้าสู่ห้องเรียน
-          </button>
+          <div className="flex flex-col gap-2">
+            <button
+              className="zoom-btn kanit-font"
+              onClick={() => {
+                launchMeeting(teacher.meetings)
+                onClose()
+              }}
+            >
+              เข้าสู่ห้องเรียน
+            </button>
+            {teacher.source === 'google' && teacher.meetings !== undefined && (
+              <button
+                onClick={unlinkAccount}
+                className="kanit-font rounded-lg text-sm btn bg-red-500 from-red-600 to-red-600 ring-red-500 px-4 py-3 text-white"
+              >
+                ยกเลิกการเชื่อมต่อบัญชี Google
+              </button>
+            )}
+          </div>
         </>
       ) : (
-        <TeacherNotFound teacher={teacher} />
+        <TeacherLinkAccount onSubmit={linkAccount} notAssigned={notAssigned} />
       )}
     </div>
   )

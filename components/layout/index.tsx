@@ -1,15 +1,18 @@
 import { useAuth } from '@/shared/authContext'
 import AuthSpinner from '@/components/auth/spinner'
-import { ReactNodeArray, useEffect, useRef, useState } from 'react'
+import { ReactNode, useEffect, useRef, useState } from 'react'
 import Sidebar from 'react-sidebar'
-import MenuBarComponent, { SidebarComponent } from './menubar'
+import dynamic from 'next/dynamic'
 import { Scrollbars } from 'react-custom-scrollbars-2'
 import { useRouter } from 'next/router'
 
 export const HEADER = 'pt-8 md:text-4xl text-3xl'
 
+const MenuBarComponent = dynamic(() => import('./menubar'))
+const SidebarComponent = dynamic(() => import('./menubar').then((c) => c.SidebarComponent))
+
 type LayoutProps = {
-  children: ReactNodeArray | JSX.Element
+  children: ReactNode | ReactNode[]
 }
 const isMobile = false
 
@@ -47,18 +50,16 @@ export default function LayoutComponent({ children }: LayoutProps): JSX.Element 
       <AuthSpinner />
       <Sidebar
         docked={metadata && sidebarDocked}
-        sidebar={
-          <>
-            <SidebarComponent />
-          </>
-        }
+        sidebar={<>{metadata && <SidebarComponent />}</>}
         open={ready && metadata && sidebarOpen}
         onSetOpen={setSidebarOpen}
         rootClassName="flex flex-row select-none"
         sidebarClassName="bg-rianarai-200 h-screen flex flex-col md:px-4 py-4 gap-6 items-center"
         contentClassName={`flex flex-col ${metadata ? 'border-t ' : ''}overflow-hidden select-none`}
       >
-        <MenuBarComponent docked={sidebarDocked} open={sidebarOpen} setOpen={setSidebarOpen} />
+        {metadata && (
+          <MenuBarComponent docked={sidebarDocked} open={sidebarOpen} setOpen={setSidebarOpen} />
+        )}
         <Scrollbars ref={scrollbars} universal>
           {ready && (
             <main

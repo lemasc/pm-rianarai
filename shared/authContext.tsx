@@ -1,15 +1,15 @@
 import { useState, useEffect, useContext, createContext } from 'react'
 import axios from 'axios'
 import { Document, useDocument } from 'swr-firestore-v9'
-import { setDoc, doc, loadBundle, getDoc } from 'firebase/firestore'
+import { loadBundle } from 'firebase/firestore'
 import { GoogleAuthProvider, signInWithCredential, User } from 'firebase/auth'
 
 import { FirebaseResult, Provider, UserMetadata } from '@/types/auth'
-import { auth, db } from './firebase'
+import { auth } from './firebase'
 import { db as pluginDb } from './plugin'
 import { withAnalytics } from './analytics'
 import { setUserId } from '@firebase/analytics'
-import { createEventListener, emitEvent, sendEventAsync } from './native'
+import { createEventListener, emitEvent, sendEvent } from './native'
 import { AuthChangeEvent, GoogleSignInResult } from '@/shared-types/auth'
 import { useRouter } from 'next/router'
 
@@ -21,7 +21,7 @@ interface IAuthContext {
   remove: () => Promise<boolean>
   // announce: Document<Announcement>[]
   // markAsRead: (announceId: string) => Promise<void>
-  metadata: UserMetadata
+  metadata: Document<UserMetadata>
   signInWithGoogle: () => Promise<FirebaseResult>
   signOut: () => Promise<void>
   updateMeta: (meta: UserMetadata) => Promise<boolean>
@@ -37,10 +37,22 @@ export const useAuth = (): IAuthContext | undefined => {
 export function useProvideAuth(): IAuthContext {
   const router = useRouter()
   const [user, setUser] = useState<User | null>(null)
-  const [metadata, setMetadata] = useState<UserMetadata>(undefined)
   const [ready, setReady] = useState<boolean>(false)
   const [bundle, setBundle] = useState(false)
   const [endpoint, setEndpoint] = useState<string | undefined>()
+  const [metadata, setMetadata] = useState(undefined)
+  const { data: _metadata, set } = useDocument<UserMetadata>(user ? `users/${user.uid}` : null, {
+    listen: true,
+  })
+  /**
+   * SWR-Firestore always return a document.
+   * We want SWR style (null if not exists, undefined if loading).
+   * Add a wrapper instead.
+   */
+  useEffect(() => {
+    setMetadata(_metadata !== undefined ? (_metadata?.exists ? _metadata : null) : undefined)
+  }, [_metadata])
+
   /* const { data: announce } = useCollection<Announcement>(ready ? 'announcement' : null, {
     where: [['enable', '==', true], ...(!user ? [] : ([['needs_login', '==', false]] as any))],
     orderBy: ['created_at', 'desc'],
@@ -66,7 +78,7 @@ export function useProvideAuth(): IAuthContext {
   }, [user, metadata])
 
   useEffect(() => {
-    if (!metadata) return
+    if (!metadata || !user) return
     ;(async () => {
       try {
         const wpmBundle = await axios.get(
@@ -84,10 +96,10 @@ export function useProvideAuth(): IAuthContext {
         setBundle(false)
       }
     })()
-  }, [metadata, bundle])
+  }, [metadata, bundle, user])
 
   const signInWithGoogle = async (): Promise<FirebaseResult> => {
-    const { success, token, message } = (await sendEventAsync('sign-in')) as GoogleSignInResult
+    const { success, token, message } = (await sendEvent('sign-in')) as GoogleSignInResult
     if (success && token) {
       signInWithCredential(auth, GoogleAuthProvider.credential(token.id_token))
     }
@@ -113,7 +125,7 @@ export function useProvideAuth(): IAuthContext {
     // We don't sign out users immediately.
     // Ask the users before continuing.
     if (!noPrompt) {
-      const result = await sendEventAsync('log-out')
+      const result = await sendEvent('log-out')
       if (!result) return
     }
     await auth.signOut()
@@ -136,8 +148,7 @@ export function useProvideAuth(): IAuthContext {
         meta.announceId = metadata.announceId //Preserve fields
       }
       if (metadata && metadata.upgrade) meta.upgrade = metadata.upgrade
-      await setDoc(doc(db, 'users/' + user.uid), meta)
-      setMetadata(meta)
+      await set(meta)
       return true
     } catch (err) {
       return false
@@ -151,13 +162,13 @@ export function useProvideAuth(): IAuthContext {
       if (curUser) {
         if (user?.uid !== curUser?.uid) setReady(false)
         setUser(curUser)
-        // Check if user metadata exists.
+        /*       // Check if user metadata exists.
         const meta = await getDoc(doc(db, 'users/' + curUser.uid))
-        if (meta.exists) {
+        if (meta.exists()) {
           setMetadata(meta.data() as UserMetadata)
         } else {
           setMetadata(null)
-        }
+        }*/
         withAnalytics((a) => setUserId(a, curUser.uid))
         emitEvent<AuthChangeEvent>('auth-changed', {
           token: await curUser.getIdToken(),

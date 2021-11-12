@@ -28,7 +28,12 @@ export default function ModalComponent({
   const closeRef = useRef<HTMLButtonElement>(null)
   return (
     <Transition show={show} as={Fragment}>
-      <Dialog as="div" className="fixed inset-0 z-20" onClose={onClose} initialFocus={closeRef}>
+      <Dialog
+        as="div"
+        className="fixed inset-0 z-20"
+        onClose={() => closable && onClose()}
+        initialFocus={closeRef}
+      >
         <div className="min-h-screen px-4 text-center">
           <Transition.Child
             as={Fragment}
@@ -69,7 +74,7 @@ export default function ModalComponent({
                 <button
                   title="ปิด"
                   className={'focus:outline-none' + (!closable ? ' hidden' : '')}
-                  onClick={closable && onClose}
+                  onClick={() => closable && onClose()}
                   ref={closeRef}
                 >
                   <XIcon className="h-6 w-6" />

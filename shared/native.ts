@@ -9,7 +9,13 @@ export function emitEvent<T = any>(eventName: string, data?: T) {
   }
 }
 
-export async function sendEventAsync<T = any>(eventName: string, data?: T): Promise<T> {
+export function sendEventSync<T = any>(eventName: string, data?: T): T {
+  if (ipcRenderer) {
+    return ipcRenderer.sendSync(eventName, data)
+  }
+}
+
+export async function sendEvent<T = any>(eventName: string, data?: T): Promise<T> {
   if (ipcRenderer) {
     return await ipcRenderer.invoke(eventName, data)
   }
