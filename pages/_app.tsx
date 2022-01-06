@@ -10,7 +10,7 @@ import '../styles/react-tabs.css'
 import 'react-circular-progressbar/dist/styles.css'
 
 function App({ Component, pageProps }: AppProps): JSX.Element {
-  if (process.env.NODE_ENV === 'production') LogRocket.init('sg61xt/pm-rianarai-i4kpt')
+  //if (process.env.NODE_ENV === 'production') LogRocket.init('sg61xt/pm-rianarai-i4kpt')
   return (
     <MainProvider>
       <Component {...pageProps} />
