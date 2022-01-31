@@ -145,7 +145,7 @@ export default function useClasswork(): ClassworkHelper {
       const data = await db.courseWork.toArray()
       setClassWork(data)
       setLoad((load) => {
-        if (!load) setFetch(true)
+        //if (!load) setFetch(true)
         return true
       })
     })()

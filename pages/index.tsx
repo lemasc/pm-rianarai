@@ -4,13 +4,11 @@ import dynamic from 'next/dynamic'
 import { Transition } from '@headlessui/react'
 import { useAuth } from '@/shared/authContext'
 import LayoutComponent from '@/components/layout'
-
 const Dashboard = dynamic(() => import('@/components/dashboard'))
 const MetaDataComponent = dynamic(() => import('@/components/auth/meta'))
 const SignInComponent = dynamic(() => import('@/components/auth/signin'))
 const PWAPromoComponent = dynamic(() => import('@/components/pwa'))
 const FooterComponent = dynamic(() => import('@/components/layout/footer'))
-const InsiderModal = dynamic(() => import('@/components/insider'))
 
 interface SPAProps {
   children: ReactNode
@@ -46,17 +44,10 @@ function MultiComponent(props: SPAProps): JSX.Element {
 export default function MainPage(): JSX.Element {
   const { ready, user, metadata } = useAuth()
   const [hero, showHero] = useState(false)
-  const [insider, showInsider] = useState(false)
   useEffect(() => {
     if (!ready || metadata) return
     setTimeout(() => showHero(true), 1500)
   }, [ready, metadata])
-
-  useEffect(() => {
-    if (!localStorage.getItem('insider_notice')) {
-      showInsider(true)
-    }
-  }, [])
 
   return (
     <div
@@ -138,7 +129,6 @@ export default function MainPage(): JSX.Element {
         )}
       </LayoutComponent>
       <PWAPromoComponent show={ready && !metadata} />
-      {ready && insider && <InsiderModal />}
       {ready && !metadata && <FooterComponent />}
     </div>
   )

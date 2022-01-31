@@ -6,6 +6,7 @@ import TimeSlotsComponent from '@/components/timeslots'
 import { CONTAINER, HEADER } from '@/components/layout'
 import WorkWidget from './work/widget'
 import Image from 'next/image'
+import { isDeprecated } from '@/shared/insider'
 
 export default function Dashboard(): JSX.Element {
   const { metadata } = useAuth()
@@ -36,22 +37,22 @@ export default function Dashboard(): JSX.Element {
               </div>
               <div className="flex flex-col gap-4">
                 <span className="sarabun-font text-center max-w-md">
-                  ร่วมเป็นส่วนหนึ่งของ RianArai เวอร์ชันถัดไป
-                  ที่จะเปลี่ยนการเรียนออนไลน์ให้ดีขึ้นกว่าที่เคย
+                  RianArai 3.0 พร้อมใช้งานใน Windows, Android, และ iOS แล้ว
+                  อัพเดททันทีเพื่อรับประสบการณ์การเรียนที่ดีกว่า
                 </span>
                 <a
-                  href="https://rianarai.netlify.app/insider"
+                  href="https://rianarai.netlify.app/insider?utm_source=pm-rianarai&utm_medium=home_banner&utm_campaign=join_insider"
                   target="_blank"
                   rel="noreferrer noopener"
                   className="text-center text-black w-full px-4 py-2 rounded-lg disabled:cursor-not-allowed hover:bg-gray-200 bg-white focus:outline-none focus:ring-2 ring-gray-200 focus:ring-offset-4 ring-offset-black"
                 >
-                  ไปยังหน้า RianArai Insider
+                  ดาวน์โหลด RianArai 3.0
                 </a>
               </div>
             </div>
           </div>
           <div className="md:w-72 w-full gap-8 flex flex-col">
-            <WorkWidget />
+            {!isDeprecated() && <WorkWidget />}
             <Link href="/timetable">
               <a
                 title="ตารางสอน"

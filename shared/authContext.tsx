@@ -10,8 +10,6 @@ import {
   FacebookAuthProvider,
   fetchSignInMethodsForEmail,
   GoogleAuthProvider,
-  reauthenticateWithCredential,
-  reauthenticateWithPopup,
   signInWithEmailAndPassword,
   signInWithPopup,
   User,
@@ -43,8 +41,8 @@ interface IAuthContext {
   metadata: UserMetadata
   getMethods: (email: string) => Promise<Provider[]>
   signUp: (email: string, password: string) => Promise<FirebaseResult>
-  signIn: (email: string, password: string, reAuthenticate?: boolean) => Promise<FirebaseResult>
-  signInWithProvider: (provider: Provider, reAuthenticate?: boolean) => Promise<FirebaseResult>
+  signIn: (email: string, password: string) => Promise<FirebaseResult>
+  signInWithProvider: (provider: Provider) => Promise<FirebaseResult>
   signOut: () => Promise<void>
   updateMeta: (meta: UserMetadata) => Promise<boolean>
   setInsider: () => Promise<void>
@@ -74,7 +72,6 @@ export function useProvideAuth(): IAuthContext {
   })
   const isPWA = (): boolean => {
     const isPWA =
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       (window.navigator as any).standalone === true ||
       window.matchMedia('(display-mode: standalone)').matches
     if (isPWA) {
@@ -96,27 +93,16 @@ export function useProvideAuth(): IAuthContext {
       return { success: false, message: err.code }
     }
   }
-  const signIn = async (
-    email: string,
-    password: string,
-    reAuthenticate?: boolean
-  ): Promise<FirebaseResult> => {
+  const signIn = async (email: string, password: string): Promise<FirebaseResult> => {
     try {
-      if (reAuthenticate) {
-        await reauthenticateWithCredential(user, EmailAuthProvider.credential(email, password))
-      } else {
-        await signInWithEmailAndPassword(auth, email, password)
-      }
+      await signInWithEmailAndPassword(auth, email, password)
       return { success: true }
     } catch (err) {
       LogRocket.error(err)
       return { success: false, message: err.code }
     }
   }
-  const signInWithProvider = async (
-    p: Provider,
-    reAuthenticate?: boolean
-  ): Promise<FirebaseResult> => {
+  const signInWithProvider = async (p: Provider): Promise<FirebaseResult> => {
     let provider
     switch (p) {
       case 'google.com':
@@ -129,11 +115,8 @@ export function useProvideAuth(): IAuthContext {
         return { success: false }
     }
     try {
-      if (reAuthenticate) {
-        await reauthenticateWithPopup(user, provider)
-      } else {
-        await signInWithPopup(auth, provider)
-      }
+      await signInWithPopup(auth, provider)
+
       return { success: true }
     } catch (err) {
       LogRocket.error(err)
@@ -214,7 +197,7 @@ export function useProvideAuth(): IAuthContext {
         const meta = await getDoc(doc(db, 'users/' + curUser.uid))
         if (meta.exists) {
           setMetadata(meta.data() as UserMetadata)
-          checkClassroom(await curUser.getIdToken())
+          // checkClassroom(await curUser.getIdToken())
         } else {
           setMetadata(null)
         }

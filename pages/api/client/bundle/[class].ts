@@ -1,6 +1,8 @@
+import { NextApiSessionRequest, withAuth } from '@/shared/api'
 import admin from '@/shared/firebase-admin'
 import { Schedule } from '@/shared/meetingContext'
-import { NextApiHandler } from 'next'
+import dayjs from 'dayjs'
+import { NextApiResponse } from 'next'
 
 // Chunk function from https://stackoverflow.com/a/60779547
 function chunk<Type>(array: Type[], size: number): Type[] {
@@ -10,22 +12,13 @@ function chunk<Type>(array: Type[], size: number): Type[] {
   }, [])
 }
 
-const bundleCreator: NextApiHandler = async (req, res) => {
-  res.setHeader('Access-Control-Allow-Credentials', 'true')
-  res.setHeader('Access-Control-Allow-Origin', '*')
-  res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Authorization, Accept')
-  res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-  if (
-    !req.query.class ||
-    req.query.class.length !== 3 ||
-    isNaN(parseInt(req.query.class.toString()))
-  )
+const bundleCreator = async (req: NextApiSessionRequest, res: NextApiResponse) => {
+  const classParams = req.query.class as string
+  if (!classParams || classParams.length !== 3 || isNaN(parseInt(classParams)))
     return res.status(403).end()
-
-  if (req.method === 'OPTIONS') return res.status(200).end()
   const db = admin.firestore()
   try {
-    const classes = await db.collection('classes').doc(req.query.class.toString()).get()
+    const classes = await db.collection('classes').doc(classParams).get()
     const teachers = new Set(
       Object.values(classes.data() as Schedule)
         .map((slot) =>
@@ -38,17 +31,25 @@ const bundleCreator: NextApiHandler = async (req, res) => {
 
     // Firestore limits 'IN' query up to 10 comparison values.
     // Split into chunks instead.
-    const bundle = db.bundle(`classes-${req.query.class.toString()}`).add(classes)
+    const bundle = db.bundle(`classes-${classParams}`).add(classes)
     const chunks = chunk(Array.from(teachers), 10)
+    const bundleName = req.query.version === '2' ? `teachers-${classParams}` : `teachers`
     await Promise.all(
       chunks.map(async (t, i) => {
         bundle.add(
-          `teachers-${i}`,
+          `${bundleName}-${i}`,
           await db.collection('meetings').where('name', 'in', Array.from(t)).get()
         )
       })
     )
-    res.setHeader('Cache-Control', `public, max-age=${60 * 10}`)
+    const maxAge = dayjs.unix(req.token.exp)
+    res.setHeader('Expires', maxAge.toString())
+    res.setHeader(
+      'Cache-Control',
+      `private, max-age=${maxAge.diff(dayjs(), 'seconds')}, stale-while-revalidate=${maxAge
+        .add(10, 'minutes')
+        .diff(dayjs(), 'seconds')}`
+    )
     res.end(bundle.build())
   } catch (err) {
     console.error(err)
@@ -56,4 +57,4 @@ const bundleCreator: NextApiHandler = async (req, res) => {
   }
 }
 
-export default bundleCreator
+export default withAuth(bundleCreator, true)

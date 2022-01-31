@@ -23,7 +23,7 @@ export default function AnnouncementComponent({ show, onClose }: ComponentProps)
   useEffect(() => {
     if (!announce) return
     setData((data) =>
-      Object.values(announce).map((a, i) => {
+      Object.values(announce.filter((a) => !a.outdatedClient)).map((a, i) => {
         const content = data[i] && data[i].id == a.id ? data[i].content : undefined
         const success = data[i] && data[i].id == a.id ? data[i].success : undefined
         return {

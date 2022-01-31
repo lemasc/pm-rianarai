@@ -11,10 +11,20 @@ export type SSRContext = {
 
 type SSRHandler = (context: SSRContext) => any
 
-export type NextApiSessionRequest = NextApiRequest & { session: Session; uid: string }
+export type NextApiSessionRequest = NextApiRequest & {
+  session: Session
+  uid: string
+  token: admin.auth.DecodedIdToken
+}
 
-export function withAuth(handler: Handler<NextApiSessionRequest, NextApiResponse>) {
+export function withAuth(handler: Handler<NextApiSessionRequest, NextApiResponse>, cors?: boolean) {
   return async (req: NextApiSessionRequest, res: NextApiResponse<APIResponse>): Promise<void> => {
+    if (cors) {
+      res.setHeader('Access-Control-Allow-Credentials', 'true')
+      res.setHeader('Access-Control-Allow-Origin', '*')
+      res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Authorization, Accept')
+      res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+    }
     const authHeader = req.headers.authorization
     if (!authHeader) {
       return res.status(401).json({ success: false })
@@ -25,9 +35,13 @@ export function withAuth(handler: Handler<NextApiSessionRequest, NextApiResponse
       const decodedToken = await auth.verifyIdToken(token)
       if (!decodedToken || !decodedToken.uid) return res.status(401).json({ success: false })
       req.uid = decodedToken.uid
+      req.token = decodedToken
     } catch (error) {
       console.error(error)
       return res.status(500).json({ success: false })
+    }
+    if (cors && req.method === 'OPTIONS') {
+      res.status(200).end()
     }
     return handler(req, res)
   }

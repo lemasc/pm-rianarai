@@ -8,7 +8,6 @@ import { Provider } from '@/types/auth'
 
 type SignInProps = {
   disableSignUp?: boolean
-  reAuthenticate?: boolean
   onSuccess?: () => void
 }
 type MetaProps = SignInProps & {
@@ -21,7 +20,7 @@ type EmailForm = {
 }
 
 type EmailPage = 'email' | 'signin' | 'signup'
-function EmailForm({ cancel, onSuccess, reAuthenticate, disableSignUp }: MetaProps): JSX.Element {
+function EmailForm({ cancel, onSuccess, disableSignUp }: MetaProps): JSX.Element {
   const [_error, setError] = useState<null | string>(null)
   const [page, setPage] = useState<EmailPage>('email')
   const { signUp, signIn, getMethods } = useAuth()
@@ -82,7 +81,7 @@ function EmailForm({ cancel, onSuccess, reAuthenticate, disableSignUp }: MetaPro
     }
   }
   async function _signIn(email: string, password: string): Promise<void> {
-    const result = await signIn(email, password, reAuthenticate)
+    const result = await signIn(email, password)
     if (!result.success && result.message) {
       console.log(result.message)
       switch (result.message) {
@@ -181,18 +180,14 @@ function EmailForm({ cancel, onSuccess, reAuthenticate, disableSignUp }: MetaPro
   )
 }
 
-export default function SignInComponent({
-  onSuccess,
-  reAuthenticate,
-  disableSignUp,
-}: SignInProps): JSX.Element {
+export default function SignInComponent({ onSuccess, disableSignUp }: SignInProps): JSX.Element {
   const auth = useAuth()
   const [show, setShow] = useState(true)
   const [email, setEmail] = useState(false)
   const [next, setNext] = useState<null | boolean>(false)
   const [error, setError] = useState<null | string>(null)
   async function provider(p: Provider): Promise<void> {
-    const result = await auth.signInWithProvider(p, reAuthenticate)
+    const result = await auth.signInWithProvider(p)
     if (email) return
     if (!result.success) {
       console.error(result.message)
@@ -240,7 +235,6 @@ export default function SignInComponent({
       {email ? (
         <EmailForm
           disableSignUp={disableSignUp}
-          reAuthenticate={reAuthenticate}
           onSuccess={onSuccess}
           cancel={() => {
             setNext(false)

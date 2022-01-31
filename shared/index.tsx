@@ -4,6 +4,7 @@ import { FuegoProvider } from 'swr-firestore-v9'
 import { meetingContext, useProvideMeeting } from './meetingContext'
 import { useProvideAuth, authContext } from './authContext'
 import { fuego } from './firebase'
+import { InsiderProvider } from './insider'
 
 interface IProps {
   children: ReactNode
@@ -21,7 +22,9 @@ export function MainProvider({ children }: IProps): JSX.Element {
   return (
     <AuthProvider>
       <FuegoProvider fuego={fuego}>
-        <MeetingProvier>{children}</MeetingProvier>
+        <MeetingProvier>
+          <InsiderProvider>{children}</InsiderProvider>
+        </MeetingProvier>
       </FuegoProvider>
     </AuthProvider>
   )
