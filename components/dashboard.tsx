@@ -23,7 +23,7 @@ export default function Dashboard(): JSX.Element {
           </span>
         </div>
         <div className="flex md:flex-row flex-col gap-8 md:items-start">
-          <div className="flex flex-1 flex-col flex-grow md:gap-8 gap-6">
+          <div className="flex flex-1 flex-col-reverse md:flex-col flex-grow md:gap-8 gap-6">
             <div className="flex flex-grow shadow-md rounded bg-gray-100 dark:bg-gray-800 sm:px-4 py-4">
               <TimeSlotsComponent />
             </div>
