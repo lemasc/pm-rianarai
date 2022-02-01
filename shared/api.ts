@@ -1,4 +1,4 @@
-import admin from './firebase-admin'
+import admin, { internalApp } from './firebase-admin'
 import type { GetServerSidePropsContext, NextApiRequest, NextApiResponse } from 'next'
 import { withIronSession, Handler, Session } from 'next-iron-session'
 import { Auth, google, Common } from 'googleapis'
@@ -17,9 +17,12 @@ export type NextApiSessionRequest = NextApiRequest & {
   token: admin.auth.DecodedIdToken
 }
 
-export function withAuth(handler: Handler<NextApiSessionRequest, NextApiResponse>, cors?: boolean) {
+export function withAuth(
+  handler: Handler<NextApiSessionRequest, NextApiResponse>,
+  client?: boolean
+) {
   return async (req: NextApiSessionRequest, res: NextApiResponse<APIResponse>): Promise<void> => {
-    if (cors) {
+    if (client) {
       res.setHeader('Access-Control-Allow-Credentials', 'true')
       res.setHeader('Access-Control-Allow-Origin', '*')
       res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Authorization, Accept')
@@ -32,7 +35,7 @@ export function withAuth(handler: Handler<NextApiSessionRequest, NextApiResponse
     if (!authHeader) {
       return res.status(401).json({ success: false })
     }
-    const auth = admin.auth()
+    const auth = admin.auth(client ? internalApp : undefined)
     const token = authHeader.split(' ')[1]
     try {
       const decodedToken = await auth.verifyIdToken(token)
