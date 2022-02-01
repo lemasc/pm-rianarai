@@ -6,7 +6,7 @@ import { ReactNode } from 'react-markdown'
 
 export const isDeprecated = () => dayjs().isAfter('2022-02-01')
 
-const EXPECTED_SET_VALUE = () => (isDeprecated() ? 'true' : TARGET_DOCS())
+const EXPECTED_SET_VALUE = () => (isDeprecated() ? TARGET_DOCS() : 'true')
 
 export const TARGET_DOCS = () => (isDeprecated() ? 'v2_deprecated' : 'v3_insider')
 
