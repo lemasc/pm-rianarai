@@ -24,6 +24,9 @@ export function withAuth(handler: Handler<NextApiSessionRequest, NextApiResponse
       res.setHeader('Access-Control-Allow-Origin', '*')
       res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With, Authorization, Accept')
       res.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
+      if (req.method === 'OPTIONS') {
+        return res.status(200).end()
+      }
     }
     const authHeader = req.headers.authorization
     if (!authHeader) {
@@ -39,9 +42,6 @@ export function withAuth(handler: Handler<NextApiSessionRequest, NextApiResponse
     } catch (error) {
       console.error(error)
       return res.status(500).json({ success: false })
-    }
-    if (cors && req.method === 'OPTIONS') {
-      res.status(200).end()
     }
     return handler(req, res)
   }
