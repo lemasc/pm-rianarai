@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
 import Image from 'next/image'
 import { useAuth } from '@/shared/authContext'
+import Link from 'next/link'
 const ModalComponent = dynamic(() => import('./modal'))
 
 export default function WelcomeComponent(): JSX.Element {
@@ -36,7 +37,7 @@ export default function WelcomeComponent(): JSX.Element {
             index === 0 ? 'flex' : 'hidden'
           } flex-col items-center justify-center font-light gap-2`}
         >
-          <Image src="/banner_3105.jpg" width={400} height={209} priority={true} />
+          <Image src="/banner_3105.jpg" alt="Bannner" width={400} height={209} priority={true} />
           <h4 className="font-medium text-xl">ยินดีต้อนรับสู่ PM-RianArai โฉมใหม่!</h4>
           <span>มาเรียนรู้กันว่า PM-RianArai ทำอะไรได้บ้าง</span>
         </div>
@@ -97,9 +98,11 @@ export default function WelcomeComponent(): JSX.Element {
           <h4 className="font-medium text-2xl">แค่นี้แหละ !</h4>
           <span className="text-center max-w-md">
             ขอให้ใช้ชีวิตในแต่ละวันอย่างมีความสุขนะ หากมีปัญหาอะไรสามารถติดต่อได้ที่{' '}
-            <a className="underline text-blue-500 hover:text-blue-600 font-medium" href="/support">
-              PM-RianArai Support Form
-            </a>
+            <Link href="/support">
+              <a className="underline text-blue-500 hover:text-blue-600 font-medium">
+                PM-RianArai Support Form
+              </a>
+            </Link>
           </span>
           <span className="text-center font-medium">
             อัพเดทข่าวสารได้ทาง{' '}

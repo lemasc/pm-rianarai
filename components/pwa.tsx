@@ -67,7 +67,6 @@ export default function PWAPromo({ show }: PWAPromoProps): JSX.Element {
   function installOrOpenPWA(): void {
     LogRocket.track('PWA Promo Clicked')
     if (prompt !== null) {
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
       ;(prompt as any).prompt()
     } else {
       // iOS devices doesn't support native prompt
